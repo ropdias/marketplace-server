@@ -1,0 +1,9 @@
+{
+  "material-icon-theme.activeIconPack": "nest",
+  "editor.formatOnSave": false,
+  "eslint.format.enable": true,
+  "eslint.useFlatConfig": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+}
