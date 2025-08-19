@@ -6,4 +6,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+  "material-icon-theme.files.associations": {
+    "vitest.config.e2e.ts": "vitest",
+  },
 }
