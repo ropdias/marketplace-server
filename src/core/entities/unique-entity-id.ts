@@ -6,8 +6,10 @@ interface UniqueEntityIDProps {
 }
 
 export class UniqueEntityID extends ValueObject<UniqueEntityIDProps> {
-  constructor(value?: string) {
-    super({ value: value ?? randomUUID() })
+  static create(props?: UniqueEntityIDProps): UniqueEntityID {
+    return new UniqueEntityID({
+      value: props?.value ?? randomUUID(),
+    })
   }
 
   toString() {
