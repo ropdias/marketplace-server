@@ -16,11 +16,11 @@ export class Seller extends AggregateRoot<SellerProps> {
   }
 
   get phone() {
-    return this.props.name
+    return this.props.phone
   }
 
   get email() {
-    return this.props.name
+    return this.props.email
   }
 
   get password() {
