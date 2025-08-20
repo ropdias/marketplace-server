@@ -8,8 +8,8 @@
     - [X]  Deve ser feito o hash da senha do usuário
     - [X]  Não deve ser possível atualizar para um e-mail duplicado
     - [X]  Não deve ser possível atualizar para um telefone duplicado
-- [ ]  Deve ser possível obter o token de autenticação
-    - [ ]  Não deve ser possível se autenticar com credenciais incorretas
+- [X]  Deve ser possível obter o token de autenticação
+    - [X]  Não deve ser possível se autenticar com credenciais incorretas
 - [ ]  Deve ser possível realizar o upload de arquivos
 - [ ]  Deve ser possível criar e editar um Produto
     - [ ]  Deve ser possível armazenar o valor do produto em centavos
