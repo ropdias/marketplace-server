@@ -1,4 +1,4 @@
-// App flow: UI -> controller -> use-case -> entity -> use-case -> repository -> DB
+// App flow: UI -> controller -> use-case -> (Entity + Repository) -> DB
 // If everything is ok the flow is going RIGHT
 // If something goes wrong it should go LEFT
 
