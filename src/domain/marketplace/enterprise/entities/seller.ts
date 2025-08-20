@@ -6,6 +6,7 @@ interface SellerProps {
   name: string
   phone: string
   email: string
+  password: string
   avatar?: Attachment
 }
 
@@ -20,6 +21,10 @@ export class Seller extends AggregateRoot<SellerProps> {
 
   get email() {
     return this.props.name
+  }
+
+  get password() {
+    return this.props.password
   }
 
   get avatar() {
