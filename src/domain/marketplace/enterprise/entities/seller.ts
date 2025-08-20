@@ -10,6 +10,22 @@ interface SellerProps {
 }
 
 export class Seller extends AggregateRoot<SellerProps> {
+  get name() {
+    return this.props.name
+  }
+
+  get phone() {
+    return this.props.name
+  }
+
+  get email() {
+    return this.props.name
+  }
+
+  get avatar() {
+    return this.props.avatar
+  }
+
   static create(props: SellerProps, id?: UniqueEntityID) {
     const seller = new Seller(props, id)
 
