@@ -10,7 +10,7 @@
     - [X]  Não deve ser possível atualizar para um telefone duplicado
 - [X]  Deve ser possível obter o token de autenticação
     - [X]  Não deve ser possível se autenticar com credenciais incorretas
-- [ ]  Deve ser possível realizar o upload de arquivos
+- [X]  Deve ser possível realizar o upload de arquivos
 - [ ]  Deve ser possível criar e editar um Produto
     - [ ]  Deve ser possível armazenar o valor do produto em centavos
     - [ ]  Não deve ser possível criar/editar um Produto com um usuário inexistente
