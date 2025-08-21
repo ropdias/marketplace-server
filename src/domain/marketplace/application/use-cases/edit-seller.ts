@@ -1,6 +1,5 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
-import { Seller } from '../../enterprise/entities/seller'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -11,6 +10,8 @@ import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-different-error'
 import { HashComparator } from '../cryptography/hash-comparator'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
+import { Attachment } from '../../enterprise/entities/attachment'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -29,7 +30,7 @@ type EditSellerUseCaseResponse = Either<
   | SellerEmailAlreadyExistsError
   | SellerPhoneAlreadyExistsError,
   {
-    seller: Seller
+    sellerProfile: SellerProfile
   }
 >
 
@@ -51,6 +52,7 @@ export class EditSellerUseCase {
     password,
     newPassword,
   }: EditSellerUseCaseRequest): Promise<EditSellerUseCaseResponse> {
+    let avatarAttachment: Attachment | null = null
     let hashedNewPassword: string | undefined
 
     const seller = await this.sellersRepository.findById(sellerId)
@@ -104,6 +106,8 @@ export class EditSellerUseCase {
       if (!foundAvatar) {
         return left(new ResourceNotFoundError())
       }
+
+      avatarAttachment = foundAvatar
     }
 
     seller.name = name
@@ -116,8 +120,16 @@ export class EditSellerUseCase {
 
     await this.sellersRepository.save(seller)
 
+    const sellerProfile = SellerProfile.create({
+      sellerId: seller.id,
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatar: avatarAttachment,
+    })
+
     return right({
-      seller,
+      sellerProfile,
     })
   }
 }

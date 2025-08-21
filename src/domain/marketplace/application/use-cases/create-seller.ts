@@ -9,6 +9,8 @@ import { PasswordIsDifferentError } from './errors/password-is-different-error'
 import { Attachment } from '../../enterprise/entities/attachment'
 import { SellerEmailAlreadyExistsError } from './errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exists-error'
+import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 interface CreateSellerUseCaseRequest {
   name: string
@@ -24,7 +26,7 @@ type CreateSellerUseCaseResponse = Either<
   | SellerPhoneAlreadyExistsError
   | ResourceNotFoundError,
   {
-    seller: Seller
+    sellerProfile: SellerProfile
   }
 >
 
@@ -44,6 +46,8 @@ export class CreateSellerUseCase {
     password,
     passwordConfirmation,
   }: CreateSellerUseCaseRequest): Promise<CreateSellerUseCaseResponse> {
+    let avatarAttachment: Attachment | null = null
+
     if (password !== passwordConfirmation) {
       return left(new PasswordIsDifferentError())
     }
@@ -59,8 +63,6 @@ export class CreateSellerUseCase {
     if (sellerWithSamePhone) {
       return left(new SellerPhoneAlreadyExistsError())
     }
-
-    let avatarAttachment: Attachment | undefined
 
     if (avatarId) {
       const foundAvatar = await this.attachmentsRepository.findById(avatarId)
@@ -79,13 +81,21 @@ export class CreateSellerUseCase {
       phone,
       email,
       password: hashedPassword,
-      avatar: avatarAttachment,
+      avatarId: avatarId ? UniqueEntityID.create({ value: avatarId }) : null,
     })
 
     await this.sellersRepository.create(seller)
 
+    const sellerProfile = SellerProfile.create({
+      sellerId: seller.id,
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatar: avatarAttachment,
+    })
+
     return right({
-      seller,
+      sellerProfile,
     })
   }
 }
