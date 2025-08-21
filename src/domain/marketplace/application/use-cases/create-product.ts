@@ -9,6 +9,7 @@ import { CategoriesRepository } from '../repositories/categories-repository'
 import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
+import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -66,7 +67,7 @@ export class CreateProductUseCase {
       title,
       category,
       description,
-      priceInCents,
+      priceInCents: PriceInCents.create(priceInCents),
       owner: seller,
     })
 
