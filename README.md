@@ -32,12 +32,12 @@
     - [ ]  Não deve ser possível listar os produtos de um usuário inexistente
     - [ ]  Deve ser possível filtrar pelo Status
     - [ ]  Deve ser possível buscar pelo título ou pela descrição do produto
-- [ ]  Deve ser possível alterar o Status do Produto
-    - [ ]  Não deve ser possível alterar o Status de um Produto com um usuário inexistente
-    - [ ]  Não deve ser possível alterar o Status de um Produto inexistente
-    - [ ]  Não deve ser possível alterar o Status de um Produto de outro usuário
-    - [ ]  Não deve ser possível marcar como Cancelado um Produto já Vendido
-    - [ ]  Não deve ser possível marcar como Vendido um Produto Cancelado
+- [X]  Deve ser possível alterar o Status do Produto
+    - [X]  Não deve ser possível alterar o Status de um Produto com um usuário inexistente
+    - [X]  Não deve ser possível alterar o Status de um Produto inexistente
+    - [X]  Não deve ser possível alterar o Status de um Produto de outro usuário
+    - [X]  Não deve ser possível marcar como Cancelado um Produto já Vendido
+    - [X]  Não deve ser possível marcar como Vendido um Produto Cancelado
 - [X]  Deve ser possível obter informações do perfil de um usuário
     - [X]  Não deve ser possível obter informações do perfil de um usuário inexistente
     - [ ]  Não deve ser possível obter a senha do usuário
