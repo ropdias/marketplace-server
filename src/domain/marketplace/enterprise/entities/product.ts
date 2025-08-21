@@ -8,12 +8,13 @@ import {
   ProductStatusEnum,
 } from './value-objects/product-status'
 import { Optional } from '@/core/types/optional'
+import { PriceInCents } from './value-objects/price-in-cents'
 
 interface ProductProps {
   title: string
   category: Category
   description: string
-  priceInCents: number
+  priceInCents: PriceInCents
   attachments: ProductAttachmentList
   status: ProductStatus
   owner: Seller
@@ -48,7 +49,7 @@ export class Product extends AggregateRoot<ProductProps> {
     return this.props.priceInCents
   }
 
-  set priceInCents(priceInCents: number) {
+  set priceInCents(priceInCents: PriceInCents) {
     this.props.priceInCents = priceInCents
   }
 
