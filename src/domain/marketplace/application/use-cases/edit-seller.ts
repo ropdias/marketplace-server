@@ -11,7 +11,7 @@ import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-d
 import { HashComparator } from '../cryptography/hash-comparator'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
-import { Attachment } from '../../enterprise/entities/attachment'
+import { SellerProfileFactory } from '../factories/seller-profile-factory'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -41,6 +41,7 @@ export class EditSellerUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
     private hashComparator: HashComparator,
+    private sellerProfileFactory: SellerProfileFactory,
   ) {}
 
   async execute({
@@ -52,7 +53,6 @@ export class EditSellerUseCase {
     password,
     newPassword,
   }: EditSellerUseCaseRequest): Promise<EditSellerUseCaseResponse> {
-    let avatarAttachment: Attachment | null = null
     let hashedNewPassword: string | undefined
 
     const seller = await this.sellersRepository.findById(sellerId)
@@ -106,8 +106,6 @@ export class EditSellerUseCase {
       if (!foundAvatar) {
         return left(new ResourceNotFoundError())
       }
-
-      avatarAttachment = foundAvatar
     }
 
     seller.name = name
@@ -120,13 +118,8 @@ export class EditSellerUseCase {
 
     await this.sellersRepository.save(seller)
 
-    const sellerProfile = SellerProfile.create({
-      sellerId: seller.id,
-      name: seller.name,
-      phone: seller.phone,
-      email: seller.email,
-      avatar: avatarAttachment,
-    })
+    const sellerProfile =
+      await this.sellerProfileFactory.createFromSeller(seller)
 
     return right({
       sellerProfile,
