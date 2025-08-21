@@ -4,11 +4,21 @@ import { Seller } from '../../enterprise/entities/seller'
 import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 import { Attachment } from '../../enterprise/entities/attachment'
 
+interface ICreateFromSellerRequest {
+  seller: Seller
+}
+
+interface ICreateFromSellerResponse {
+  sellerProfile: SellerProfile
+}
+
 @Injectable()
 export class SellerProfileFactory {
   constructor(private attachmentsRepository: AttachmentsRepository) {}
 
-  async createFromSeller(seller: Seller): Promise<SellerProfile> {
+  async createFromSeller({
+    seller,
+  }: ICreateFromSellerRequest): Promise<ICreateFromSellerResponse> {
     let avatarAttachment: Attachment | null = null
 
     if (seller.avatarId) {
@@ -21,12 +31,16 @@ export class SellerProfileFactory {
       }
     }
 
-    return SellerProfile.create({
+    const sellerProfile = SellerProfile.create({
       sellerId: seller.id,
       name: seller.name,
       phone: seller.phone,
       email: seller.email,
       avatar: avatarAttachment,
     })
+
+    return {
+      sellerProfile,
+    }
   }
 }

@@ -32,8 +32,9 @@ export class GetSellerProfileUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const sellerProfile =
-      await this.sellerProfileFactory.createFromSeller(seller)
+    const { sellerProfile } = await this.sellerProfileFactory.createFromSeller({
+      seller,
+    })
 
     return right({
       sellerProfile,

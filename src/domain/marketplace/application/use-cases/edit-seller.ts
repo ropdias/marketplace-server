@@ -118,8 +118,9 @@ export class EditSellerUseCase {
 
     await this.sellersRepository.save(seller)
 
-    const sellerProfile =
-      await this.sellerProfileFactory.createFromSeller(seller)
+    const { sellerProfile } = await this.sellerProfileFactory.createFromSeller({
+      seller,
+    })
 
     return right({
       sellerProfile,

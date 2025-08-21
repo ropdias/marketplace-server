@@ -83,8 +83,9 @@ export class CreateSellerUseCase {
 
     await this.sellersRepository.create(seller)
 
-    const sellerProfile =
-      await this.sellerProfileFactory.createFromSeller(seller)
+    const { sellerProfile } = await this.sellerProfileFactory.createFromSeller({
+      seller,
+    })
 
     return right({
       sellerProfile,
