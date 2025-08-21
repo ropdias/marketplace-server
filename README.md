@@ -11,14 +11,14 @@
 - [X]  Deve ser possível obter o token de autenticação
     - [X]  Não deve ser possível se autenticar com credenciais incorretas
 - [X]  Deve ser possível realizar o upload de arquivos
-- []  Deve ser possível criar e editar um Produto
+- [X]  Deve ser possível criar e editar um Produto
     - [X]  Deve ser possível armazenar o valor do produto em centavos
-    - [ ]  Não deve ser possível criar/editar um Produto com um usuário inexistente
-    - [ ]  Não deve ser possível criar/editar um Produto com uma categoria inexistente
-    - [ ]  Não deve ser possível criar/editar um Produto com imagens inexistentes
-    - [ ]  Não deve ser possível editar um Produto inexistente
-    - [ ]  Não deve ser possível alterar um Produto de outro usuário
-    - [ ]  Não deve ser possível editar um Produto já vendido
+    - [X]  Não deve ser possível criar/editar um Produto com um usuário inexistente
+    - [X]  Não deve ser possível criar/editar um Produto com uma categoria inexistente
+    - [X]  Não deve ser possível criar/editar um Produto com imagens inexistentes
+    - [X]  Não deve ser possível editar um Produto inexistente
+    - [X]  Não deve ser possível alterar um Produto de outro usuário
+    - [X]  Não deve ser possível editar um Produto já vendido
 - [ ]  Deve ser possível obter dados de um Produto
     - [ ]  Qualquer usuário deve poder obter dados do Produto
 - [X]  Deve ser possível listar todas as categorias
