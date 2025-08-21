@@ -109,11 +109,9 @@ export class EditSellerUseCase {
     seller.name = name
     seller.phone = phone
     seller.email = email
-    if (avatarId) {
-      seller.avatarId = UniqueEntityID.create({ value: avatarId })
-    } else {
-      seller.avatarId = null
-    }
+    seller.avatarId = avatarId
+      ? UniqueEntityID.create({ value: avatarId })
+      : null
     seller.password = hashedNewPassword || seller.password
 
     await this.sellersRepository.save(seller)
