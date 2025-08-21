@@ -1,7 +1,6 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
-import { Product } from '../../enterprise/entities/product'
 import { ProductsRepository } from '../repositories/products-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -17,6 +16,8 @@ import { ProductAlreadySoldError } from './errors/produc-already-sold-error'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
 import { ProductAttachmentsRepository } from '../repositories/product-attachments-repository'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
+import { ProductDetailsFactory } from '../factories/product-details-factory'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -31,7 +32,7 @@ interface EditProductUseCaseRequest {
 type EditProductUseCaseResponse = Either<
   ResourceNotFoundError | NotProductOwnerError | ProductAlreadySoldError,
   {
-    product: Product
+    productDetails: ProductDetails
   }
 >
 
@@ -43,6 +44,7 @@ export class EditProductUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productAttachmentsRepository: ProductAttachmentsRepository,
+    private productDetailsFactory: ProductDetailsFactory,
   ) {}
 
   async execute({
@@ -111,8 +113,15 @@ export class EditProductUseCase {
 
     await this.productsRepository.save(product)
 
-    return right({
+    const productDetails = await this.productDetailsFactory.create({
       product,
+      seller,
+      category,
+      attachments,
+    })
+
+    return right({
+      productDetails,
     })
   }
 }

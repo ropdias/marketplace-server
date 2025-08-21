@@ -10,6 +10,8 @@ import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
+import { ProductDetailsFactory } from '../factories/product-details-factory'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -23,7 +25,7 @@ interface CreateProductUseCaseRequest {
 type CreateProductUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    product: Product
+    productDetails: ProductDetails
   }
 >
 
@@ -34,6 +36,7 @@ export class CreateProductUseCase {
     private sellersRepository: SellersRepository,
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
+    private productDetailsFactory: ProductDetailsFactory,
   ) {}
 
   async execute({
@@ -82,8 +85,15 @@ export class CreateProductUseCase {
 
     await this.productsRepository.create(product)
 
-    return right({
+    const productDetails = await this.productDetailsFactory.create({
       product,
+      seller,
+      category,
+      attachments,
+    })
+
+    return right({
+      productDetails,
     })
   }
 }
