@@ -1,13 +1,12 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import { Attachment } from './attachment'
 
 interface SellerProps {
   name: string
   phone: string
   email: string
   password: string
-  avatar?: Attachment
+  avatarId: UniqueEntityID | null
 }
 
 export class Seller extends AggregateRoot<SellerProps> {
@@ -43,12 +42,12 @@ export class Seller extends AggregateRoot<SellerProps> {
     this.props.password = password
   }
 
-  get avatar() {
-    return this.props.avatar
+  get avatarId() {
+    return this.props.avatarId
   }
 
-  set avatar(avatar: Attachment | undefined) {
-    this.props.avatar = avatar
+  set avatarId(avatarId: UniqueEntityID | null) {
+    this.props.avatarId = avatarId
   }
 
   static create(props: SellerProps, id?: UniqueEntityID) {

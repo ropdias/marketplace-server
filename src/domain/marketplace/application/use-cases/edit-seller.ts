@@ -5,12 +5,12 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
-import { Attachment } from '../../enterprise/entities/attachment'
 import { SellerEmailAlreadyExistsError } from './errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exists-error'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-different-error'
 import { HashComparator } from '../cryptography/hash-comparator'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -51,7 +51,6 @@ export class EditSellerUseCase {
     password,
     newPassword,
   }: EditSellerUseCaseRequest): Promise<EditSellerUseCaseResponse> {
-    let avatarAttachment: Attachment | undefined
     let hashedNewPassword: string | undefined
 
     const seller = await this.sellersRepository.findById(sellerId)
@@ -105,17 +104,15 @@ export class EditSellerUseCase {
       if (!foundAvatar) {
         return left(new ResourceNotFoundError())
       }
-
-      avatarAttachment = foundAvatar
     }
 
     seller.name = name
     seller.phone = phone
     seller.email = email
-    if (avatarId === null) {
-      seller.avatar = undefined
-    } else if (avatarAttachment) {
-      seller.avatar = avatarAttachment
+    if (avatarId) {
+      seller.avatarId = UniqueEntityID.create({ value: avatarId })
+    } else {
+      seller.avatarId = null
     }
     seller.password = hashedNewPassword || seller.password
 
