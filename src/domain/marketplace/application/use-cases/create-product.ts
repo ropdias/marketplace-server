@@ -65,10 +65,10 @@ export class CreateProductUseCase {
 
     const product = Product.create({
       title,
-      category,
+      categoryId: UniqueEntityID.create({ value: categoryId }),
       description,
       priceInCents: PriceInCents.create(priceInCents),
-      owner: seller,
+      ownerId: UniqueEntityID.create({ value: sellerId }),
     })
 
     const productAttachments = attachmentsIds.map((attachmentId) => {

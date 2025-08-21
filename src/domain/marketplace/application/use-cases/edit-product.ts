@@ -79,7 +79,7 @@ export class EditProductUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (product.owner.id.toString() !== sellerId) {
+    if (product.ownerId.toString() !== sellerId) {
       return left(new NotProductOwnerError())
     }
 
@@ -105,7 +105,7 @@ export class EditProductUseCase {
 
     product.attachments = productAttachmentList
     product.title = title
-    product.category = category
+    product.categoryId = UniqueEntityID.create({ value: categoryId })
     product.description = description
     product.priceInCents = PriceInCents.create(priceInCents)
 

@@ -1,8 +1,6 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import { Category } from './category'
 import { ProductAttachmentList } from './product-attachment-list'
-import { Seller } from './seller'
 import {
   ProductStatus,
   ProductStatusEnum,
@@ -12,12 +10,12 @@ import { PriceInCents } from './value-objects/price-in-cents'
 
 interface ProductProps {
   title: string
-  category: Category
+  categoryId: UniqueEntityID
   description: string
   priceInCents: PriceInCents
   attachments: ProductAttachmentList
   status: ProductStatus
-  owner: Seller
+  ownerId: UniqueEntityID
 }
 
 export class Product extends AggregateRoot<ProductProps> {
@@ -29,12 +27,12 @@ export class Product extends AggregateRoot<ProductProps> {
     this.props.title = title
   }
 
-  get category() {
-    return this.props.category
+  get categoryId() {
+    return this.props.categoryId
   }
 
-  set category(category: Category) {
-    this.props.category = category
+  set categoryId(categoryId: UniqueEntityID) {
+    this.props.categoryId = categoryId
   }
 
   get description() {
@@ -69,8 +67,8 @@ export class Product extends AggregateRoot<ProductProps> {
     this.props.status = status
   }
 
-  get owner() {
-    return this.props.owner
+  get ownerId() {
+    return this.props.ownerId
   }
 
   static create(
