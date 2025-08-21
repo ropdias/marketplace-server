@@ -16,7 +16,7 @@ interface CreateProductUseCaseRequest {
   description: string
   priceInCents: number
   attachmentsIds: string[]
-  ownerId: string
+  sellerId: string
 }
 
 type CreateProductUseCaseResponse = Either<
@@ -41,11 +41,11 @@ export class CreateProductUseCase {
     description,
     priceInCents,
     attachmentsIds,
-    ownerId,
+    sellerId,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    const owner = await this.sellersRepository.findById(ownerId)
+    const seller = await this.sellersRepository.findById(sellerId)
 
-    if (!owner) {
+    if (!seller) {
       return left(new ResourceNotFoundError())
     }
 
@@ -67,7 +67,7 @@ export class CreateProductUseCase {
       category,
       description,
       priceInCents,
-      owner,
+      owner: seller,
     })
 
     const productAttachments = attachmentsIds.map((attachmentId) => {
