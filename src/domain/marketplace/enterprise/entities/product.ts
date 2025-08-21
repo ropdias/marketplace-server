@@ -68,6 +68,10 @@ export class Product extends AggregateRoot<ProductProps> {
     this.props.status = status
   }
 
+  get owner() {
+    return this.props.owner
+  }
+
   static create(
     props: Optional<ProductProps, 'status' | 'attachments'>,
     id?: UniqueEntityID,
