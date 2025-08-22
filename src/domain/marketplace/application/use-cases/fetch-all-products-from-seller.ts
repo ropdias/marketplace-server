@@ -69,7 +69,10 @@ export class FetchAllProductsFromSellerUseCase {
     }
 
     try {
-      productDetailsList = await this.buildProductDetails({ products, seller })
+      productDetailsList = await this.buildProductDetailsFromProductsAndSeller({
+        products,
+        seller,
+      })
       return right({ productDetailsList })
     } catch (error) {
       if (error instanceof ResourceNotFoundError) return left(error)
@@ -77,7 +80,7 @@ export class FetchAllProductsFromSellerUseCase {
     }
   }
 
-  private async buildProductDetails({
+  private async buildProductDetailsFromProductsAndSeller({
     products,
     seller,
   }: {
