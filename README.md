@@ -23,11 +23,11 @@
     - [X]  Qualquer usuário deve poder obter dados do Produto
 - [X]  Deve ser possível listar todas as categorias
     - [X]  Qualquer usuário deve poder obter a lista de categorias
-- [ ]  Deve ser possível listar todos os produtos por ordem de criação (mais recente)
-    - [ ]  Qualquer usuário deve poder obter a lista de produtos
-    - [ ]  Deve ser possível realizar paginação pela lista de produtos
-    - [ ]  Deve ser possível filtrar pelo Status
-    - [ ]  Deve ser possível buscar pelo título ou pela descrição do produto
+- [X]  Deve ser possível listar todos os produtos por ordem de criação (mais recente)
+    - [X]  Qualquer usuário deve poder obter a lista de produtos
+    - [X]  Deve ser possível realizar paginação pela lista de produtos
+    - [X]  Deve ser possível filtrar pelo Status
+    - [X]  Deve ser possível buscar pelo título ou pela descrição do produto
 - [X]  Deve ser possível listar todos os produtos de um usuário
     - [X]  Não deve ser possível listar os produtos de um usuário inexistente
     - [X]  Deve ser possível filtrar pelo Status
