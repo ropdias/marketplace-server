@@ -92,8 +92,6 @@ export class ChangeProductStatusUseCase {
 
     product.status = newStatus
 
-    await this.productsRepository.save(product)
-
     const [category, attachments] = await Promise.all([
       this.categoriesRepository.findById(product.categoryId.toString()),
       this.attachmentsRepository.findManyByIds(
@@ -113,6 +111,8 @@ export class ChangeProductStatusUseCase {
       category,
       attachments,
     })
+
+    await this.productsRepository.save(product)
 
     return right({
       productDetails,

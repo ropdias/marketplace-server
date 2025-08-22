@@ -111,14 +111,14 @@ export class EditProductUseCase {
     product.description = description
     product.priceInCents = PriceInCents.create(priceInCents)
 
-    await this.productsRepository.save(product)
-
     const productDetails = await this.productDetailsFactory.create({
       product,
       seller,
       category,
       attachments,
     })
+
+    await this.productsRepository.save(product)
 
     return right({
       productDetails,

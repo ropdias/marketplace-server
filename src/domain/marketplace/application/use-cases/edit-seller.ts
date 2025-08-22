@@ -116,11 +116,11 @@ export class EditSellerUseCase {
       : null
     seller.password = hashedNewPassword || seller.password
 
-    await this.sellersRepository.save(seller)
-
     const sellerProfile = await this.sellerProfileFactory.create({
       seller,
     })
+
+    await this.sellersRepository.save(seller)
 
     return right({
       sellerProfile,

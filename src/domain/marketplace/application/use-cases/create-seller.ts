@@ -81,11 +81,11 @@ export class CreateSellerUseCase {
       avatarId: avatarId ? UniqueEntityID.create({ value: avatarId }) : null,
     })
 
-    await this.sellersRepository.create(seller)
-
     const sellerProfile = await this.sellerProfileFactory.create({
       seller,
     })
+
+    await this.sellersRepository.create(seller)
 
     return right({
       sellerProfile,

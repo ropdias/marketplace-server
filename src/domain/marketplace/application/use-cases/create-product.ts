@@ -83,14 +83,14 @@ export class CreateProductUseCase {
 
     product.attachments = new ProductAttachmentList(productAttachments)
 
-    await this.productsRepository.create(product)
-
     const productDetails = await this.productDetailsFactory.create({
       product,
       seller,
       category,
       attachments,
     })
+
+    await this.productsRepository.create(product)
 
     return right({
       productDetails,
