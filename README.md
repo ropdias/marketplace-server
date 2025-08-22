@@ -46,10 +46,10 @@
     - [X]  Não deve ser possível registrar uma visualização de um usuário inexistente
     - [X]  Não deve ser possível registrar uma visualização do próprio dono do produto
     - [X]  Não deve ser possível registrar uma visualização duplicada
-- [ ]  Métricas
+- [X]  Métricas
     - [X]  Não deve ser possível obter métricas de usuários inexistentes
     - [X]  Deve ser possível obter a métrica de produtos vendidos nos últimos 30 dias
     - [X]  Deve ser possível obter a métrica de produtos disponíveis nos últimos 30 dias
-    - [ ]  Deve ser possível obter a métrica de visualizações nos últimos 30 dias
+    - [X]  Deve ser possível obter a métrica de visualizações nos últimos 30 dias
     - [ ]  Deve ser possível obter a métrica de visualizações por dia dos últimos 30 dias
     - [ ]  Deve ser possível obter a métrica de visualizações de um produto nos últimos 7 dias
