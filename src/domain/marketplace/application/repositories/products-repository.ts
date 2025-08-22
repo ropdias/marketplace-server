@@ -21,4 +21,12 @@ export abstract class ProductsRepository {
   ): Promise<Product[]>
   abstract save(product: Product): Promise<void>
   abstract create(product: Product): Promise<void>
+  abstract countSoldSince(params: {
+    ownerId: string
+    since: Date
+  }): Promise<number>
+  abstract countAvailableSince(params: {
+    ownerId: string
+    since: Date
+  }): Promise<number>
 }
