@@ -40,7 +40,7 @@
     - [X]  Não deve ser possível marcar como Vendido um Produto Cancelado
 - [X]  Deve ser possível obter informações do perfil de um usuário
     - [X]  Não deve ser possível obter informações do perfil de um usuário inexistente
-    - [ ]  Não deve ser possível obter a senha do usuário
+    - [X]  Não deve ser possível obter a senha do usuário
 - [ ]  Deve ser possível registrar uma visualização em um produto
     - [ ]  Não deve ser possível registrar uma visualização em um produto inexistente
     - [ ]  Não deve ser possível registrar uma visualização de um usuário inexistente
