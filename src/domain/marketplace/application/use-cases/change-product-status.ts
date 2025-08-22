@@ -66,11 +66,7 @@ export class ChangeProductStatusUseCase {
       return left(new NotProductOwnerError())
     }
 
-    const isValidStatus = Object.values(ProductStatusEnum).includes(
-      status as ProductStatusEnum,
-    )
-
-    if (!isValidStatus) {
+    if (!ProductStatus.isValid(status)) {
       return left(new InvalidProductStatusError(status))
     }
 

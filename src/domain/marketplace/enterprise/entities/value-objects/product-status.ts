@@ -19,6 +19,12 @@ export class ProductStatus extends ValueObject<ProductStatusProps> {
     return new ProductStatus({ value })
   }
 
+  static isValid(status: string): boolean {
+    return Object.values(ProductStatusEnum).includes(
+      status as ProductStatusEnum,
+    )
+  }
+
   public equals(other: ProductStatus): boolean {
     return this.props.value === other.props.value
   }
