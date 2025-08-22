@@ -16,6 +16,9 @@ interface ProductProps {
   attachments: ProductAttachmentList
   status: ProductStatus
   ownerId: UniqueEntityID
+  createdAt: Date
+  updatedAt?: Date
+  soldAt?: Date
 }
 
 export class Product extends AggregateRoot<ProductProps> {
@@ -25,6 +28,7 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set title(title: string) {
     this.props.title = title
+    this.touch()
   }
 
   get categoryId() {
@@ -33,6 +37,7 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set categoryId(categoryId: UniqueEntityID) {
     this.props.categoryId = categoryId
+    this.touch()
   }
 
   get description() {
@@ -41,6 +46,7 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set description(description: string) {
     this.props.description = description
+    this.touch()
   }
 
   get priceInCents() {
@@ -49,6 +55,7 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set priceInCents(priceInCents: PriceInCents) {
     this.props.priceInCents = priceInCents
+    this.touch()
   }
 
   get attachments() {
@@ -57,6 +64,7 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set attachments(attachments: ProductAttachmentList) {
     this.props.attachments = attachments
+    this.touch()
   }
 
   get status() {
@@ -65,14 +73,45 @@ export class Product extends AggregateRoot<ProductProps> {
 
   set status(status: ProductStatus) {
     this.props.status = status
+    this.touch()
+
+    if (status.value === ProductStatusEnum.SOLD) {
+      this.markAsSold()
+    } else {
+      this.clearSoldAt()
+    }
   }
 
   get ownerId() {
     return this.props.ownerId
   }
 
+  get createdAt() {
+    return this.props.createdAt
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
+  get soldAt() {
+    return this.props.soldAt
+  }
+
+  private touch() {
+    this.props.updatedAt = new Date()
+  }
+
+  private markAsSold() {
+    this.props.soldAt = new Date()
+  }
+
+  private clearSoldAt() {
+    this.props.soldAt = undefined
+  }
+
   static create(
-    props: Optional<ProductProps, 'status' | 'attachments'>,
+    props: Optional<ProductProps, 'status' | 'attachments' | 'createdAt'>,
     id?: UniqueEntityID,
   ) {
     const product = new Product(
@@ -81,6 +120,7 @@ export class Product extends AggregateRoot<ProductProps> {
         status:
           props.status ?? ProductStatus.create(ProductStatusEnum.AVAILABLE),
         attachments: props.attachments ?? new ProductAttachmentList(),
+        createdAt: props.createdAt ?? new Date(),
       },
       id,
     )
