@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
-interface SellerProps {
+export interface SellerProps {
   name: string
   phone: string
   email: string
