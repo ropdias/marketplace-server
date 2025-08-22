@@ -6,4 +6,16 @@ export abstract class ProductViewsRepository {
     productId: string
     viewerId: string
   }): Promise<boolean>
+  abstract countViewsFromProductSince(params: {
+    productId: string
+    since: Date
+  }): Promise<number>
+  abstract countViewsFromProductsSince(params: {
+    productIds: string[]
+    since: Date
+  }): Promise<number>
+  abstract countViewsPerDaySince(params: {
+    productIds: string[]
+    since: Date
+  }): Promise<{ date: Date; amount: number }[]>
 }
