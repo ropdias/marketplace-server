@@ -2,7 +2,7 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
-import { ProductViewRepository } from '../repositories/product-view-repository'
+import { ProductViewsRepository } from '../repositories/product-views-repository'
 import { ProductView } from '../../enterprise/entities/product-view'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProductsRepository } from '../repositories/products-repository'
@@ -30,7 +30,7 @@ type RegisterProductViewResponse = Either<
 @Injectable()
 export class RegisterProductViewUseCase {
   constructor(
-    private productViewsRepository: ProductViewRepository,
+    private productViewsRepository: ProductViewsRepository,
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
     private categoriesRepository: CategoriesRepository,

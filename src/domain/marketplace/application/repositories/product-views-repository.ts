@@ -1,6 +1,6 @@
 import { ProductView } from '../../enterprise/entities/product-view'
 
-export abstract class ProductViewRepository {
+export abstract class ProductViewsRepository {
   abstract create(productView: ProductView): Promise<void>
   abstract exists(props: {
     productId: string
