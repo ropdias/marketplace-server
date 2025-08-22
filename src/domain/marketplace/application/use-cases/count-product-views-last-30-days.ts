@@ -35,10 +35,13 @@ export class CountProductViewsLast30DaysUseCase {
       sellerId,
     })
 
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    since.setHours(0, 0, 0, 0)
+
     const amount =
       await this.productViewsRepository.countViewsFromProductsSince({
         productIds: products.map((product) => product.id.toString()),
-        since: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        since,
       })
 
     return right({

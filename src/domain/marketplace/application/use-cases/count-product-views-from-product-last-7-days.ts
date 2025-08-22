@@ -39,10 +39,13 @@ export class CountProductViewsFromProductLast7DaysUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    since.setHours(0, 0, 0, 0)
+
     const amount = await this.productViewsRepository.countViewsFromProductSince(
       {
         productId,
-        since: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        since,
       },
     )
 

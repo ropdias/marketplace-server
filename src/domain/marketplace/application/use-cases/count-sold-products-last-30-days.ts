@@ -29,9 +29,12 @@ export class CountSoldProductsLast30DaysUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    since.setHours(0, 0, 0, 0)
+
     const amount = await this.productsRepository.countSoldSince({
       ownerId: sellerId,
-      since: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      since,
     })
 
     return right({
