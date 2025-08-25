@@ -108,8 +108,6 @@ describe('Get Seller Profile', () => {
 
     const result = await sut.execute({ sellerId: seller.id.toString() })
 
-    console.log(result.value)
-
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       expect(result.value.sellerProfile).not.toHaveProperty('password')
