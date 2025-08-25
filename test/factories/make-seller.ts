@@ -5,7 +5,7 @@ import {
   SellerProps,
 } from '@/domain/marketplace/enterprise/entities/seller'
 
-export function makeseller(
+export function makeSeller(
   override: Partial<SellerProps> = {},
   id?: UniqueEntityID,
 ) {
