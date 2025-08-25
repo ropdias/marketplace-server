@@ -22,6 +22,7 @@ describe('Fetch All Categories', () => {
 
     const result = await sut.execute()
 
+    expect(result.isRight()).toBe(true)
     expect(result.value?.categories).toHaveLength(3)
     expect(result.value?.categories).toEqual(
       expect.arrayContaining([
@@ -44,6 +45,7 @@ describe('Fetch All Categories', () => {
   it('should return empty array if no categories exist', async () => {
     const result = await sut.execute()
 
+    expect(result.isRight()).toBe(true)
     expect(result.value?.categories).toHaveLength(0)
   })
 })
