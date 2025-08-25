@@ -102,7 +102,7 @@ describe('Get Seller Profile', () => {
     }
   })
 
-  it('should not expose password in the seller profile', async () => {
+  it('should never include password field in the seller profile DTO', async () => {
     const seller = makeSeller({ name: 'Seller 1', password: 'secret' })
     await inMemorySellersRepository.create(seller)
 
