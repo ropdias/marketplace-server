@@ -8,7 +8,7 @@ import {
 import { Optional } from '@/core/types/optional'
 import { PriceInCents } from './value-objects/price-in-cents'
 
-interface ProductProps {
+export interface ProductProps {
   title: string
   categoryId: UniqueEntityID
   description: string
