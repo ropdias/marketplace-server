@@ -8,9 +8,10 @@ import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { PasswordIsDifferentError } from './errors/password-is-different-error'
 import { SellerEmailAlreadyExistsError } from './errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exists-error'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
+import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 
 interface CreateSellerUseCaseRequest {
   name: string
@@ -22,11 +23,12 @@ interface CreateSellerUseCaseRequest {
 }
 
 type CreateSellerUseCaseResponse = Either<
+  | PasswordIsDifferentError
   | SellerEmailAlreadyExistsError
   | SellerPhoneAlreadyExistsError
   | ResourceNotFoundError,
   {
-    sellerProfile: SellerProfile
+    sellerProfile: SellerProfileDTO
   }
 >
 
@@ -37,6 +39,7 @@ export class CreateSellerUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
     private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
   async execute({
@@ -85,10 +88,12 @@ export class CreateSellerUseCase {
       seller,
     })
 
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+
     await this.sellersRepository.create(seller)
 
     return right({
-      sellerProfile,
+      sellerProfile: sellerProfileDTO,
     })
   }
 }
