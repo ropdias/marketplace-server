@@ -1,14 +1,20 @@
 import { FetchAllCategoriesUseCase } from './fetch-all-categories'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { makeCategory } from 'test/factories/make-category'
+import { CategoryMapper } from '../mappers/category-mapper'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
+let categoriesMapper: CategoryMapper
 let sut: FetchAllCategoriesUseCase
 
 describe('Fetch All Categories', () => {
   beforeEach(() => {
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
-    sut = new FetchAllCategoriesUseCase(inMemoryCategoriesRepository)
+    categoriesMapper = new CategoryMapper()
+    sut = new FetchAllCategoriesUseCase(
+      inMemoryCategoriesRepository,
+      categoriesMapper,
+    )
   })
 
   it('should be able to fetch all categories', async () => {
@@ -27,16 +33,16 @@ describe('Fetch All Categories', () => {
     expect(result.value?.categories).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          id: category1.id.toString(),
           title: 'Category 1',
-          id: category1.id,
         }),
         expect.objectContaining({
+          id: category2.id.toString(),
           title: 'Category 2',
-          id: category2.id,
         }),
         expect.objectContaining({
+          id: category3.id.toString(),
           title: 'Category 3',
-          id: category3.id,
         }),
       ]),
     )
