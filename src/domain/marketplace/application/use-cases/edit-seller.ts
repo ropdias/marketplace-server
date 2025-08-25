@@ -10,8 +10,9 @@ import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-different-error'
 import { HashComparator } from '../cryptography/hash-comparator'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
+import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -30,7 +31,7 @@ type EditSellerUseCaseResponse = Either<
   | SellerEmailAlreadyExistsError
   | SellerPhoneAlreadyExistsError,
   {
-    sellerProfile: SellerProfile
+    sellerProfile: SellerProfileDTO
   }
 >
 
@@ -42,6 +43,7 @@ export class EditSellerUseCase {
     private hashGenerator: HashGenerator,
     private hashComparator: HashComparator,
     private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
   async execute({
@@ -120,10 +122,12 @@ export class EditSellerUseCase {
       seller,
     })
 
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+
     await this.sellersRepository.save(seller)
 
     return right({
-      sellerProfile,
+      sellerProfile: sellerProfileDTO,
     })
   }
 }
