@@ -2,8 +2,9 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
+import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 
 interface GetSellerProfileUseCaseRequest {
   sellerId: string
@@ -12,7 +13,7 @@ interface GetSellerProfileUseCaseRequest {
 type GetSellerProfileUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    sellerProfile: SellerProfile
+    sellerProfile: SellerProfileDTO
   }
 >
 
@@ -21,6 +22,7 @@ export class GetSellerProfileUseCase {
   constructor(
     private sellersRepository: SellersRepository,
     private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
   async execute({
@@ -36,8 +38,10 @@ export class GetSellerProfileUseCase {
       seller,
     })
 
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+
     return right({
-      sellerProfile,
+      sellerProfile: sellerProfileDTO,
     })
   }
 }
