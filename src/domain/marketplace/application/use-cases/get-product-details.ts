@@ -2,11 +2,12 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductsRepository } from '../repositories/products-repository'
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
+import { ProductDetailsDTO } from '../dtos/product-details-dtos'
+import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
 interface GetProductDetailsUseCaseRequest {
   productId: string
@@ -15,7 +16,7 @@ interface GetProductDetailsUseCaseRequest {
 type GetProductDetailsUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    productDetails: ProductDetails
+    productDetails: ProductDetailsDTO
   }
 >
 
@@ -27,6 +28,7 @@ export class GetProductDetailsUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -59,8 +61,10 @@ export class GetProductDetailsUseCase {
       attachments,
     })
 
+    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+
     return right({
-      productDetails,
+      productDetails: productDetailsDTO,
     })
   }
 }
