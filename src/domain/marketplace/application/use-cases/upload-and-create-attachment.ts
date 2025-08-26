@@ -4,6 +4,8 @@ import { InvalidAttachmentTypeError } from './errors/invalid-attachment-type-err
 import { Attachment } from '../../enterprise/entities/attachment'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { Uploader } from '../storage/uploader'
+import { AttachmentDTO } from '../dtos/attachment-dtos'
+import { AttachmentMapper } from '../mappers/attachment-mapper'
 
 interface UploadAndCreateAttachmentRequest {
   fileName: string
@@ -13,7 +15,7 @@ interface UploadAndCreateAttachmentRequest {
 
 type UploadAndCreateAttachmentResponse = Either<
   InvalidAttachmentTypeError,
-  { attachment: Attachment }
+  { attachment: AttachmentDTO }
 >
 
 @Injectable()
@@ -21,6 +23,7 @@ export class UploadAndCreateAttachmentUseCase {
   constructor(
     private attachmentsRepository: AttachmentsRepository,
     private uploader: Uploader,
+    private attachmentMapper: AttachmentMapper,
   ) {}
 
   async execute({
@@ -38,10 +41,12 @@ export class UploadAndCreateAttachmentUseCase {
       url,
     })
 
+    const attachmentDTO = this.attachmentMapper.toDTO(attachment)
+
     await this.attachmentsRepository.create(attachment)
 
     return right({
-      attachment,
+      attachment: attachmentDTO,
     })
   }
 }
