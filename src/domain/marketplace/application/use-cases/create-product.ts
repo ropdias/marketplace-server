@@ -10,8 +10,9 @@ import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
+import { ProductDetailsDTO } from '../dtos/product-details-dtos'
+import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -25,7 +26,7 @@ interface CreateProductUseCaseRequest {
 type CreateProductUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    productDetails: ProductDetails
+    productDetails: ProductDetailsDTO
   }
 >
 
@@ -37,6 +38,7 @@ export class CreateProductUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -90,10 +92,12 @@ export class CreateProductUseCase {
       attachments,
     })
 
+    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+
     await this.productsRepository.create(product)
 
     return right({
-      productDetails,
+      productDetails: productDetailsDTO,
     })
   }
 }
