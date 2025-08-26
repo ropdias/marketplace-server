@@ -16,8 +16,9 @@ import { ProductAlreadySoldError } from './errors/produc-already-sold-error'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
 import { ProductAttachmentsRepository } from '../repositories/product-attachments-repository'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
+import { ProductDetailsDTO } from '../dtos/product-details-dtos'
+import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -32,7 +33,7 @@ interface EditProductUseCaseRequest {
 type EditProductUseCaseResponse = Either<
   ResourceNotFoundError | NotProductOwnerError | ProductAlreadySoldError,
   {
-    productDetails: ProductDetails
+    productDetails: ProductDetailsDTO
   }
 >
 
@@ -45,6 +46,7 @@ export class EditProductUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private productAttachmentsRepository: ProductAttachmentsRepository,
     private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -107,7 +109,7 @@ export class EditProductUseCase {
 
     product.attachments = productAttachmentList
     product.title = title
-    product.categoryId = UniqueEntityID.create({ value: categoryId })
+    product.categoryId = category.id
     product.description = description
     product.priceInCents = PriceInCents.create(priceInCents)
 
@@ -118,10 +120,12 @@ export class EditProductUseCase {
       attachments,
     })
 
+    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+
     await this.productsRepository.save(product)
 
     return right({
-      productDetails,
+      productDetails: productDetailsDTO,
     })
   }
 }
