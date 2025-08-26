@@ -4,11 +4,15 @@ import { CategoryDTO } from '../dtos/category-dtos'
 
 @Injectable()
 export class CategoryMapper {
-  public toDTOList(categories: Category[]): CategoryDTO[] {
-    return categories.map((category) => ({
+  public toDTO(category: Category): CategoryDTO {
+    return {
       id: category.id.toString(),
       title: category.title,
       slug: category.slug.value,
-    }))
+    }
+  }
+
+  public toDTOList(categories: Category[]): CategoryDTO[] {
+    return categories.map((category) => this.toDTO(category))
   }
 }
