@@ -18,11 +18,13 @@ describe('SellerProfileFactory', () => {
 
     const sellerProfile = await sut.create({ seller })
 
+    // VO/Entity equality
     expect(sellerProfile.sellerId.equals(seller.id)).toBe(true)
+    expect(sellerProfile.avatar).toBeNull()
+    // Primitive equality
     expect(sellerProfile.name).toBe(seller.name)
     expect(sellerProfile.phone).toBe(seller.phone)
     expect(sellerProfile.email).toBe(seller.email)
-    expect(sellerProfile.avatar).toBeNull()
   })
 
   it('should create a seller profile with avatar when attachment is not null', async () => {
@@ -32,11 +34,13 @@ describe('SellerProfileFactory', () => {
 
     const sellerProfile = await sut.create({ seller })
 
+    // VO/Entity equality
     expect(sellerProfile.sellerId.equals(seller.id)).toBe(true)
+    expect(sellerProfile.avatar?.equals(avatar)).toBe(true)
+    // Primitive equality
     expect(sellerProfile.name).toBe(seller.name)
     expect(sellerProfile.phone).toBe(seller.phone)
     expect(sellerProfile.email).toBe(seller.email)
-    expect(sellerProfile.avatar).toEqual(avatar)
   })
 
   it('should create a seller profile with avatar === null if attachment does not exist', async () => {
@@ -46,10 +50,12 @@ describe('SellerProfileFactory', () => {
 
     const sellerProfile = await sut.create({ seller })
 
+    // VO/Entity equality
     expect(sellerProfile.sellerId.equals(seller.id)).toBe(true)
+    expect(sellerProfile.avatar).toBeNull()
+    // Primitive equality
     expect(sellerProfile.name).toBe(seller.name)
     expect(sellerProfile.phone).toBe(seller.phone)
     expect(sellerProfile.email).toBe(seller.email)
-    expect(sellerProfile.avatar).toBeNull()
   })
 })
