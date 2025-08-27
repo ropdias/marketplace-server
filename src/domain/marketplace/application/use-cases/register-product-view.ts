@@ -1,7 +1,5 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 import { ProductViewsRepository } from '../repositories/product-views-repository'
 import { ProductView } from '../../enterprise/entities/product-view'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
@@ -14,6 +12,10 @@ import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
+import { ProductDetailsDTO } from '../dtos/product-details-dtos'
+import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
+import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
+import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
 interface RegisterProductViewRequest {
   productId: string
@@ -24,7 +26,7 @@ type RegisterProductViewResponse = Either<
   | ResourceNotFoundError
   | ViewerIsProductOwnerError
   | ProductViewAlreadyExistsError,
-  { productDetails: ProductDetails; viewerProfile: SellerProfile }
+  { productDetails: ProductDetailsDTO; viewerProfile: SellerProfileDTO }
 >
 
 @Injectable()
@@ -37,6 +39,8 @@ export class RegisterProductViewUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private productDetailsFactory: ProductDetailsFactory,
     private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileMapper: SellerProfileMapper,
+    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -89,9 +93,13 @@ export class RegisterProductViewUseCase {
       attachments,
     })
 
+    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+
     const viewerProfile = await this.sellerProfileFactory.create({
       seller: viewer,
     })
+
+    const viewerProfileDTO = this.sellerProfileMapper.toDTO(viewerProfile)
 
     const productView = ProductView.create({
       productId: UniqueEntityID.create({ value: productId }),
@@ -101,8 +109,8 @@ export class RegisterProductViewUseCase {
     await this.productViewsRepository.create(productView)
 
     return right({
-      productDetails,
-      viewerProfile,
+      productDetails: productDetailsDTO,
+      viewerProfile: viewerProfileDTO,
     })
   }
 }
