@@ -37,7 +37,7 @@ let categoryMapper: CategoryMapper
 let productDetailsMapper: ProductDetailsMapper
 let sut: FetchAllProductsFromSellerUseCase
 
-describe('Get Product Details', () => {
+describe('Fetch All Products From Seller', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
