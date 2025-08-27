@@ -55,6 +55,22 @@ type AuthenticateSellerUseCaseResponse = Either<
    - Run `vitest` for unit tests
    - Run `vitest --config vitest.config.e2e.ts` for E2E tests
 
+### Factory Testing Best Practices
+- When testing factories that return Value Objects or Entities:
+  - Use `.equals()` for comparing Value Objects and Entities instead of `toBe` or deep equality, since VO/Entities may be new instances but logically equal.
+  - Use `toBe` only for primitives (strings, numbers, booleans) and array length checks.
+  - For arrays of VOs or Entities, iterate and compare each element with `.equals()`.
+  - Avoid comparing internal IDs of Value Objects; instead, test the logical properties inside.
+- Example for ProductDetailsFactory:
+```typescript
+const ownerProfile = await sellerProfileFactory.create({ seller });
+const productDetails = await sut.create({ product, seller, category, attachments });
+expect(productDetails.owner.equals(ownerProfile)).toBe(true); // VO equality
+expect(productDetails.title).toBe(product.title);             // primitive equality
+expect(productDetails.attachments[0].equals(attachments[0])).toBe(true); // array of VO/Entity
+```
+- This ensures that factories produce correctly composed objects without relying on object identity.
+
 ## Common Tasks
 
 ### Adding New Features
@@ -85,3 +101,6 @@ type AuthenticateSellerUseCaseResponse = Either<
 - Use TypeScript strict mode
 - Define explicit interfaces for all data structures
 - Leverage type system for error handling with `Either`
+
+4. **Testing**
+- Test different scenarios that represent real-world use cases (e.g., with/without optional properties, empty collections vs populated collections)
