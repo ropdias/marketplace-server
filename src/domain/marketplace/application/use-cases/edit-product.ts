@@ -12,13 +12,13 @@ import {
   ProductStatus,
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
-import { ProductAlreadySoldError } from './errors/produc-already-sold-error'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
 import { ProductAttachmentsRepository } from '../repositories/product-attachments-repository'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -31,7 +31,7 @@ interface EditProductUseCaseRequest {
 }
 
 type EditProductUseCaseResponse = Either<
-  ResourceNotFoundError | NotProductOwnerError | ProductAlreadySoldError,
+  ResourceNotFoundError | NotProductOwnerError | ProductHasAlreadyBeenSoldError,
   {
     productDetails: ProductDetailsDTO
   }
@@ -88,7 +88,7 @@ export class EditProductUseCase {
     }
 
     if (product.status.equals(ProductStatus.create(ProductStatusEnum.SOLD))) {
-      return left(new ProductAlreadySoldError())
+      return left(new ProductHasAlreadyBeenSoldError())
     }
 
     const currentProductAttachments =

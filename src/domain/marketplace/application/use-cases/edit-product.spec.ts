@@ -19,11 +19,11 @@ import { ProductAttachmentList } from '../../enterprise/entities/product-attachm
 import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { EditProductUseCase } from './edit-product'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
-import { ProductAlreadySoldError } from './errors/produc-already-sold-error'
 import {
   ProductStatus,
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
+import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -422,7 +422,7 @@ describe('Edit Product', () => {
     }
   })
 
-  it('should return ProductAlreadySoldError if the product has already been sold', async () => {
+  it('should return ProductHasAlreadyBeenSoldError if the product has already been sold', async () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
@@ -451,7 +451,7 @@ describe('Edit Product', () => {
 
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ProductAlreadySoldError)
+      expect(result.value).toBeInstanceOf(ProductHasAlreadyBeenSoldError)
     }
   })
 
