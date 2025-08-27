@@ -511,6 +511,43 @@ describe('Fetch All Products From Seller', () => {
     }
   })
 
+  it('should return empty list if no product matches search filter', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product1 = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+      title: 'Book 1',
+    })
+    const product2 = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+      title: 'Phone 1',
+    })
+    const product3 = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+      title: 'Book 2',
+    })
+    await inMemoryProductsRepository.create(product1)
+    await inMemoryProductsRepository.create(product2)
+    await inMemoryProductsRepository.create(product3)
+
+    const result = await sut.execute({
+      sellerId: seller.id.toString(),
+      search: 'tv',
+    })
+
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.productDetailsList).toStrictEqual([])
+    }
+  })
+
   it('should return ResourceNotFoundError if seller does not exist', async () => {
     const category = makeCategory()
     await inMemoryCategoriesRepository.create(category)
