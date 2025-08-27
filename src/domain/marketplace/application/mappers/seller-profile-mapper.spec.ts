@@ -1,5 +1,5 @@
-import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
+import { AttachmentMapper } from './attachment-mapper'
+import { SellerProfileMapper } from './seller-profile-mapper'
 import { makeSeller } from 'test/factories/make-seller'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
