@@ -123,6 +123,10 @@ describe('Register Product View', () => {
         avatar: null,
       })
       expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer.id,
+      })
     }
   })
 
@@ -203,6 +207,10 @@ describe('Register Product View', () => {
         avatar: { id: avatar2.id.toString(), url: avatar2.url },
       })
       expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer.id,
+      })
     }
   })
 
@@ -303,6 +311,73 @@ describe('Register Product View', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(ProductViewAlreadyExistsError)
+    }
+  })
+
+  it('should be able to create a product view and the next time it should return ProductViewAlreadyExistsError', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+    const viewer = makeSeller()
+    await inMemorySellersRepository.create(viewer)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
+    await inMemoryProductsRepository.create(product)
+
+    const result1 = await sut.execute({
+      productId: product.id.toString(),
+      viewerId: viewer.id.toString(),
+    })
+
+    expect(result1.isRight()).toBe(true)
+    if (result1.isRight()) {
+      expect(result1.value.productDetails).toMatchObject({
+        productId: product.id.toString(),
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents.value,
+        status: product.status.value,
+        owner: {
+          sellerId: seller.id.toString(),
+          name: seller.name,
+          phone: seller.phone,
+          email: seller.email,
+          avatar: null,
+        },
+        category: {
+          id: category.id.toString(),
+          title: category.title,
+          slug: category.slug.value,
+        },
+        attachments: [],
+      })
+      expect(result1.value.viewerProfile).toMatchObject({
+        sellerId: viewer.id.toString(),
+        name: viewer.name,
+        phone: viewer.phone,
+        email: viewer.email,
+        avatar: null,
+      })
+      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer.id,
+      })
+    }
+
+    const result2 = await sut.execute({
+      productId: product.id.toString(),
+      viewerId: viewer.id.toString(),
+    })
+
+    expect(result2.isLeft()).toBe(true)
+    if (result2.isLeft()) {
+      expect(result2.value).toBeInstanceOf(ProductViewAlreadyExistsError)
     }
   })
 
