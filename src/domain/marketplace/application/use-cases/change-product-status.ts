@@ -2,7 +2,6 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductsRepository } from '../repositories/products-repository'
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { CategoriesRepository } from '../repositories/categories-repository'
@@ -16,6 +15,8 @@ import { InvalidProductStatusError } from './errors/invalid-product-status-error
 import { ProductWithSameStatusError } from './errors/product-with-same-status-error'
 import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
 import { ProductHasAlreadyBeenCancelledError } from './errors/product-has-already-been-cancelled-error'
+import { ProductDetailsDTO } from '../dtos/product-details-dtos'
+import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
 interface ChangeProductStatusUseCaseRequest {
   status: string
@@ -31,7 +32,7 @@ type ChangeProductStatusUseCaseResponse = Either<
   | ProductHasAlreadyBeenSoldError
   | ProductHasAlreadyBeenCancelledError,
   {
-    productDetails: ProductDetails
+    productDetails: ProductDetailsDTO
   }
 >
 
@@ -43,6 +44,7 @@ export class ChangeProductStatusUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -112,10 +114,12 @@ export class ChangeProductStatusUseCase {
       attachments,
     })
 
+    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+
     await this.productsRepository.save(product)
 
     return right({
-      productDetails,
+      productDetails: productDetailsDTO,
     })
   }
 }
