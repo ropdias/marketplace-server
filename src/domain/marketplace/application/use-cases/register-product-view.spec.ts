@@ -130,6 +130,110 @@ describe('Register Product View', () => {
     }
   })
 
+  it('should be able to create multiple different product views of a single product', async () => {
+    const seller = makeSeller()
+    await inMemorySellersRepository.create(seller)
+    const viewer1 = makeSeller()
+    await inMemorySellersRepository.create(viewer1)
+    const viewer2 = makeSeller()
+    await inMemorySellersRepository.create(viewer2)
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const product = makeProduct({
+      ownerId: seller.id,
+      categoryId: category.id,
+    })
+    await inMemoryProductsRepository.create(product)
+
+    const result1 = await sut.execute({
+      productId: product.id.toString(),
+      viewerId: viewer1.id.toString(),
+    })
+
+    expect(result1.isRight()).toBe(true)
+    if (result1.isRight()) {
+      expect(result1.value.productDetails).toMatchObject({
+        productId: product.id.toString(),
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents.value,
+        status: product.status.value,
+        owner: {
+          sellerId: seller.id.toString(),
+          name: seller.name,
+          phone: seller.phone,
+          email: seller.email,
+          avatar: null,
+        },
+        category: {
+          id: category.id.toString(),
+          title: category.title,
+          slug: category.slug.value,
+        },
+        attachments: [],
+      })
+      expect(result1.value.viewerProfile).toMatchObject({
+        sellerId: viewer1.id.toString(),
+        name: viewer1.name,
+        phone: viewer1.phone,
+        email: viewer1.email,
+        avatar: null,
+      })
+      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer1.id,
+      })
+    }
+
+    const result2 = await sut.execute({
+      productId: product.id.toString(),
+      viewerId: viewer2.id.toString(),
+    })
+
+    expect(result2.isRight()).toBe(true)
+    if (result2.isRight()) {
+      expect(result2.value.productDetails).toMatchObject({
+        productId: product.id.toString(),
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents.value,
+        status: product.status.value,
+        owner: {
+          sellerId: seller.id.toString(),
+          name: seller.name,
+          phone: seller.phone,
+          email: seller.email,
+          avatar: null,
+        },
+        category: {
+          id: category.id.toString(),
+          title: category.title,
+          slug: category.slug.value,
+        },
+        attachments: [],
+      })
+      expect(result2.value.viewerProfile).toMatchObject({
+        sellerId: viewer2.id.toString(),
+        name: viewer2.name,
+        phone: viewer2.phone,
+        email: viewer2.email,
+        avatar: null,
+      })
+      expect(inMemoryProductViewsRepository.items).toHaveLength(2)
+      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer1.id,
+      })
+      expect(inMemoryProductViewsRepository.items[1]).toMatchObject({
+        productId: product.id,
+        viewerId: viewer2.id,
+      })
+    }
+  })
+
   it('should be able to create a product view with owner avatar, viewer avatar and attachments', async () => {
     const avatar1 = makeAttachment()
     await inMemoryAttachmentsRepository.create(avatar1)
