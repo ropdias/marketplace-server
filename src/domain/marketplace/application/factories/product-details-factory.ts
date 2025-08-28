@@ -1,39 +1,34 @@
 import { Injectable } from '@nestjs/common'
 import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { Product } from '../../enterprise/entities/product'
-import { SellerProfileFactory } from './seller-profile-factory'
-import { Seller } from '../../enterprise/entities/seller'
 import { Category } from '../../enterprise/entities/category'
 import { Attachment } from '../../enterprise/entities/attachment'
+import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 
 interface ProductDetailsFactoryCreateRequest {
   product: Product
-  seller: Seller
+  ownerProfile: SellerProfile
   category: Category
   attachments: Attachment[]
 }
 
 @Injectable()
 export class ProductDetailsFactory {
-  constructor(private sellerProfileFactory: SellerProfileFactory) {}
+  constructor() {}
 
-  async create({
+  create({
     product,
-    seller,
+    ownerProfile,
     category,
     attachments,
-  }: ProductDetailsFactoryCreateRequest): Promise<ProductDetails> {
-    const sellerProfile = await this.sellerProfileFactory.create({
-      seller,
-    })
-
+  }: ProductDetailsFactoryCreateRequest): ProductDetails {
     return ProductDetails.create({
       productId: product.id,
       title: product.title,
       description: product.description,
       priceInCents: product.priceInCents,
       status: product.status,
-      owner: sellerProfile,
+      owner: ownerProfile,
       category: category,
       attachments: attachments,
     })

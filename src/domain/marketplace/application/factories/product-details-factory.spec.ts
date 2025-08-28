@@ -1,36 +1,31 @@
 import { makeSeller } from 'test/factories/make-seller'
 import { SellerProfileFactory } from './seller-profile-factory'
-import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { ProductDetailsFactory } from './product-details-factory'
 import { makeCategory } from 'test/factories/make-category'
 import { makeProduct } from 'test/factories/make-product'
 import { Attachment } from '../../enterprise/entities/attachment'
 import { makeAttachment } from 'test/factories/make-attachment'
 
-let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
 let sut: ProductDetailsFactory
 
-describe('SellerProfileFactory', () => {
+describe('ProductDetailsFactory', () => {
   beforeEach(() => {
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
-    sut = new ProductDetailsFactory(sellerProfileFactory)
+    sellerProfileFactory = new SellerProfileFactory()
+    sut = new ProductDetailsFactory()
   })
 
-  it('should create a product details without attachments if attachment list is empty', async () => {
+  it('should create a product details without attachments if attachment list is empty', () => {
     const seller = makeSeller()
     const category = makeCategory()
     const product = makeProduct({ ownerId: seller.id, categoryId: category.id })
     const attachments: Attachment[] = []
 
-    const ownerProfile = await sellerProfileFactory.create({ seller })
+    const ownerProfile = sellerProfileFactory.create({ seller, avatar: null })
 
-    const productDetails = await sut.create({
+    const productDetails = sut.create({
       product,
-      seller,
+      ownerProfile,
       category,
       attachments,
     })
@@ -48,17 +43,17 @@ describe('SellerProfileFactory', () => {
     expect(productDetails.attachments).toHaveLength(0)
   })
 
-  it('should create a product details with attachments', async () => {
+  it('should create a product details with attachments', () => {
     const seller = makeSeller()
     const category = makeCategory()
     const product = makeProduct({ ownerId: seller.id, categoryId: category.id })
     const attachments: Attachment[] = [makeAttachment(), makeAttachment()]
 
-    const ownerProfile = await sellerProfileFactory.create({ seller })
+    const ownerProfile = sellerProfileFactory.create({ seller, avatar: null })
 
-    const productDetails = await sut.create({
+    const productDetails = sut.create({
       product,
-      seller,
+      ownerProfile,
       category,
       attachments,
     })
