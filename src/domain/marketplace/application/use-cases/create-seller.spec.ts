@@ -45,31 +45,40 @@ describe('Create Seller', () => {
   })
 
   it('should be able to create a new seller without avatar', async () => {
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
-      avatarId: null,
       password: 'password',
-      passwordConfirmation: 'password',
+      avatarId: null,
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: seller.password,
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       expect(inMemorySellersRepository.items).toHaveLength(1)
-      expect(inMemorySellersRepository.items[0]).toMatchObject({
-        name: 'Seller',
-        phone: '123456789',
-        email: 'seller@example.com',
-        avatarId: null,
-      })
-      expect(result.value.sellerProfile).toMatchObject({
-        sellerId: inMemorySellersRepository.items[0].id.toString(),
-        name: 'Seller',
-        phone: '123456789',
-        email: 'seller@example.com',
+      const createdSeller = inMemorySellersRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller: createdSeller,
         avatar: null,
       })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+
+      expect(createdSeller).toMatchObject({
+        name: seller.name,
+        phone: seller.phone,
+        email: seller.email,
+        avatarId: null,
+      })
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })
 
@@ -80,44 +89,59 @@ describe('Create Seller', () => {
     const avatar = makeAttachment({}, avatarId)
     await inMemoryAttachmentsRepository.create(avatar)
 
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
-      avatarId: avatarId.toString(),
       password: 'password',
-      passwordConfirmation: 'password',
+      avatarId,
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: seller.password,
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       expect(inMemorySellersRepository.items).toHaveLength(1)
-      expect(inMemorySellersRepository.items[0]).toMatchObject({
-        name: 'Seller',
-        phone: '123456789',
-        email: 'seller@example.com',
+      const createdSeller = inMemorySellersRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller: createdSeller,
+        avatar,
       })
-      expect(inMemorySellersRepository.items[0].avatarId?.toString()).toBe(
-        avatarId.toString(),
-      )
-      expect(result.value.sellerProfile).toMatchObject({
-        sellerId: inMemorySellersRepository.items[0].id.toString(),
-        name: 'Seller',
-        phone: '123456789',
-        email: 'seller@example.com',
-        avatar: { id: avatar.id.toString(), url: avatar.url },
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+
+      expect(createdSeller).toMatchObject({
+        name: seller.name,
+        phone: seller.phone,
+        email: seller.email,
       })
+      expect(createdSeller.avatarId?.equals(avatarId)).toBe(true)
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })
 
   it('should return PasswordIsDifferentError if passwords do not match', async () => {
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
+      password: 'password',
       avatarId: null,
-      password: '123',
-      passwordConfirmation: '456',
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: 'wrong-password',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -127,18 +151,26 @@ describe('Create Seller', () => {
   })
 
   it('should return SellerEmailAlreadyExistsError if email is already taken', async () => {
-    const seller = makeSeller({
+    const otherSeller = makeSeller({
       email: 'seller@example.com',
     })
-    await inMemorySellersRepository.create(seller)
+    await inMemorySellersRepository.create(otherSeller)
 
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
-      avatarId: null,
       password: 'password',
-      passwordConfirmation: 'password',
+      avatarId: null,
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: seller.password,
     })
 
     expect(result.isLeft()).toBe(true)
@@ -148,18 +180,26 @@ describe('Create Seller', () => {
   })
 
   it('should return SellerPhoneAlreadyExistsError if phone is already taken', async () => {
-    const seller = makeSeller({
+    const otherSeller = makeSeller({
       phone: '123456789',
     })
-    await inMemorySellersRepository.create(seller)
+    await inMemorySellersRepository.create(otherSeller)
 
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
-      avatarId: null,
       password: 'password',
-      passwordConfirmation: 'password',
+      avatarId: null,
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: seller.password,
     })
 
     expect(result.isLeft()).toBe(true)
@@ -173,13 +213,21 @@ describe('Create Seller', () => {
       value: 'non-existent-attachment-id',
     })
 
-    const result = await sut.execute({
+    const seller = makeSeller({
       name: 'Seller',
       phone: '123456789',
       email: 'seller@example.com',
-      avatarId: avatarId.toString(),
       password: 'password',
-      passwordConfirmation: 'password',
+      avatarId,
+    })
+
+    const result = await sut.execute({
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatarId: seller.avatarId ? seller.avatarId.toString() : null,
+      password: seller.password,
+      passwordConfirmation: seller.password,
     })
 
     expect(result.isLeft()).toBe(true)
