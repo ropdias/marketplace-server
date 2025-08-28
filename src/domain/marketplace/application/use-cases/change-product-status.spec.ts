@@ -27,6 +27,8 @@ import { InvalidProductStatusError } from './errors/invalid-product-status-error
 import { ProductWithSameStatusError } from './errors/product-with-same-status-error'
 import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
 import { ProductHasAlreadyBeenCancelledError } from './errors/product-has-already-been-cancelled-error'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -35,6 +37,8 @@ let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
 let productDetailsFactory: ProductDetailsFactory
+let sellerProfileAssembler: SellerProfileAssembler
+let productDetailsAssembler: ProductDetailsAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let categoryMapper: CategoryMapper
@@ -51,10 +55,8 @@ describe('Change Product Status', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsFactory = new ProductDetailsFactory(sellerProfileFactory)
+    sellerProfileFactory = new SellerProfileFactory()
+    productDetailsFactory = new ProductDetailsFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     categoryMapper = new CategoryMapper()
@@ -63,12 +65,21 @@ describe('Change Product Status', () => {
       categoryMapper,
       attachmentMapper,
     )
-    sut = new ChangeProductStatusUseCase(
-      inMemoryProductsRepository,
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
+    productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
+      sellerProfileAssembler,
       productDetailsFactory,
+    )
+    sut = new ChangeProductStatusUseCase(
+      inMemoryProductsRepository,
+      inMemorySellersRepository,
+      productDetailsAssembler,
       productDetailsMapper,
     )
   })

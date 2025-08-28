@@ -2,10 +2,7 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductsRepository } from '../repositories/products-repository'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { SellersRepository } from '../repositories/sellers-repository'
-import { CategoriesRepository } from '../repositories/categories-repository'
-import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
 import {
   ProductStatus,
@@ -17,6 +14,7 @@ import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-bee
 import { ProductHasAlreadyBeenCancelledError } from './errors/product-has-already-been-cancelled-error'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface ChangeProductStatusUseCaseRequest {
   status: string
@@ -41,9 +39,7 @@ export class ChangeProductStatusUseCase {
   constructor(
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private categoriesRepository: CategoriesRepository,
-    private attachmentsRepository: AttachmentsRepository,
-    private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsAssembler: ProductDetailsAssembler,
     private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
@@ -94,27 +90,14 @@ export class ChangeProductStatusUseCase {
 
     product.status = newStatus
 
-    const [category, attachments] = await Promise.all([
-      this.categoriesRepository.findById(product.categoryId.toString()),
-      this.attachmentsRepository.findManyByIds(
-        product.attachments
-          .getItems()
-          .map((attachment) => attachment.attachmentId.toString()),
-      ),
-    ])
-
-    if (!category) {
-      return left(new ResourceNotFoundError())
-    }
-
-    const productDetails = await this.productDetailsFactory.create({
+    const productDetailsEither = await this.productDetailsAssembler.assemble({
       product,
-      seller,
-      category,
-      attachments,
     })
+    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+    const productDetailsDTO = this.productDetailsMapper.toDTO(
+      productDetailsEither.value,
+    )
 
     await this.productsRepository.save(product)
 
