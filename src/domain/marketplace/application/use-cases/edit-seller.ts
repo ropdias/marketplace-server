@@ -10,9 +10,9 @@ import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-different-error'
 import { HashComparator } from '../cryptography/hash-comparator'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -42,7 +42,7 @@ export class EditSellerUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
     private hashComparator: HashComparator,
-    private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileAssembler: SellerProfileAssembler,
     private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
@@ -118,11 +118,14 @@ export class EditSellerUseCase {
       : null
     seller.password = hashedNewPassword || seller.password
 
-    const sellerProfile = await this.sellerProfileFactory.create({
+    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
       seller,
     })
+    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
 
-    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(
+      sellerProfileEither.value,
+    )
 
     await this.sellersRepository.save(seller)
 

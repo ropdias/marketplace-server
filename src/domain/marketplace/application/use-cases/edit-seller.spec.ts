@@ -13,11 +13,13 @@ import { makeAttachment } from 'test/factories/make-attachment'
 import { EditSellerUseCase } from './edit-seller'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { NewPasswordMustBeDifferentError } from './errors/new-password-must-be-different-error'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
 let sellerProfileFactory: SellerProfileFactory
+let sellerProfileAssembler: SellerProfileAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let sut: EditSellerUseCase
@@ -27,17 +29,19 @@ describe('Edit Seller', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
+    sellerProfileFactory = new SellerProfileFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
     sut = new EditSellerUseCase(
       inMemorySellersRepository,
       inMemoryAttachmentsRepository,
       fakeHasher,
       fakeHasher,
-      sellerProfileFactory,
+      sellerProfileAssembler,
       sellerProfileMapper,
     )
   })
