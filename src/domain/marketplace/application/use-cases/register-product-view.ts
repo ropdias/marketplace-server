@@ -8,14 +8,12 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ViewerIsProductOwnerError } from './errors/viewer-is-product-owner-error'
 import { ProductViewAlreadyExistsError } from './errors/product-view-already-exists-error'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
-import { CategoriesRepository } from '../repositories/categories-repository'
-import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface RegisterProductViewRequest {
   productId: string
@@ -35,10 +33,8 @@ export class RegisterProductViewUseCase {
     private productViewsRepository: ProductViewsRepository,
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private categoriesRepository: CategoriesRepository,
-    private attachmentsRepository: AttachmentsRepository,
-    private productDetailsFactory: ProductDetailsFactory,
-    private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileAssembler: SellerProfileAssembler,
+    private productDetailsAssembler: ProductDetailsAssembler,
     private sellerProfileMapper: SellerProfileMapper,
     private productDetailsMapper: ProductDetailsMapper,
   ) {}
@@ -72,34 +68,23 @@ export class RegisterProductViewUseCase {
       return left(new ProductViewAlreadyExistsError())
     }
 
-    const [seller, category, attachments] = await Promise.all([
-      this.sellersRepository.findById(product.ownerId.toString()),
-      this.categoriesRepository.findById(product.categoryId.toString()),
-      this.attachmentsRepository.findManyByIds(
-        product.attachments
-          .getItems()
-          .map((attachment) => attachment.attachmentId.toString()),
-      ),
-    ])
-
-    if (!seller || !category) {
-      return left(new ResourceNotFoundError())
-    }
-
-    const productDetails = await this.productDetailsFactory.create({
+    const productDetailsEither = await this.productDetailsAssembler.assemble({
       product,
-      seller,
-      category,
-      attachments,
     })
+    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+    const productDetailsDTO = this.productDetailsMapper.toDTO(
+      productDetailsEither.value,
+    )
 
-    const viewerProfile = await this.sellerProfileFactory.create({
+    const viewerProfileEither = await this.sellerProfileAssembler.assemble({
       seller: viewer,
     })
+    if (viewerProfileEither.isLeft()) return left(viewerProfileEither.value)
 
-    const viewerProfileDTO = this.sellerProfileMapper.toDTO(viewerProfile)
+    const viewerProfileDTO = this.sellerProfileMapper.toDTO(
+      viewerProfileEither.value,
+    )
 
     const productView = ProductView.create({
       productId: UniqueEntityID.create({ value: productId }),
