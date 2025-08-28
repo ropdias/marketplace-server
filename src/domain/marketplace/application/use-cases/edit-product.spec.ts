@@ -4,7 +4,6 @@ import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
@@ -24,6 +23,8 @@ import {
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
 import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -32,6 +33,8 @@ let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
 let productDetailsFactory: ProductDetailsFactory
+let sellerProfileAssembler: SellerProfileAssembler
+let productDetailsAssembler: ProductDetailsAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let categoryMapper: CategoryMapper
@@ -48,10 +51,8 @@ describe('Edit Product', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsFactory = new ProductDetailsFactory(sellerProfileFactory)
+    sellerProfileFactory = new SellerProfileFactory()
+    productDetailsFactory = new ProductDetailsFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     categoryMapper = new CategoryMapper()
@@ -60,13 +61,24 @@ describe('Edit Product', () => {
       categoryMapper,
       attachmentMapper,
     )
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
+    productDetailsAssembler = new ProductDetailsAssembler(
+      inMemorySellersRepository,
+      inMemoryCategoriesRepository,
+      inMemoryAttachmentsRepository,
+      sellerProfileAssembler,
+      productDetailsFactory,
+    )
     sut = new EditProductUseCase(
       inMemoryProductsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
       inMemoryProductAttachmentsRepository,
-      productDetailsFactory,
+      productDetailsAssembler,
       productDetailsMapper,
     )
   })

@@ -15,10 +15,10 @@ import {
 import { NotProductOwnerError } from './errors/not-product-owner-error'
 import { ProductAttachmentsRepository } from '../repositories/product-attachments-repository'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -45,7 +45,7 @@ export class EditProductUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productAttachmentsRepository: ProductAttachmentsRepository,
-    private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsAssembler: ProductDetailsAssembler,
     private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
@@ -113,14 +113,14 @@ export class EditProductUseCase {
     product.description = description
     product.priceInCents = PriceInCents.create(priceInCents)
 
-    const productDetails = await this.productDetailsFactory.create({
+    const productDetailsEither = await this.productDetailsAssembler.assemble({
       product,
-      seller,
-      category,
-      attachments,
     })
+    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+    const productDetailsDTO = this.productDetailsMapper.toDTO(
+      productDetailsEither.value,
+    )
 
     await this.productsRepository.save(product)
 
