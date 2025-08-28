@@ -37,4 +37,11 @@ describe('SellerProfileFactory', () => {
     expect(sellerProfile.phone).toBe(seller.phone)
     expect(sellerProfile.email).toBe(seller.email)
   })
+
+  it('should never include password in seller profile', () => {
+    const seller = makeSeller({ password: 'super-secret' })
+    const sellerProfile = sut.create({ seller, avatar: null })
+
+    expect(sellerProfile).not.toHaveProperty('password')
+  })
 })
