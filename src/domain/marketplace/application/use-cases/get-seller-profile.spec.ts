@@ -8,10 +8,12 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { AttachmentMapper } from '../mappers/attachment-mapper'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
+let sellerProfileAssembler: SellerProfileAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let sut: GetSellerProfileUseCase
@@ -20,14 +22,16 @@ describe('Get Seller Profile', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
+    sellerProfileFactory = new SellerProfileFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
     sut = new GetSellerProfileUseCase(
       inMemorySellersRepository,
-      sellerProfileFactory,
+      sellerProfileAssembler,
       sellerProfileMapper,
     )
   })
