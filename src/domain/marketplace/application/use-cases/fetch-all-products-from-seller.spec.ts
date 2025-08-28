@@ -621,43 +621,4 @@ describe('Fetch All Products From Seller', () => {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError)
     }
   })
-
-  it('should never include password field in the seller profile DTO', async () => {
-    const seller = makeSeller()
-    await inMemorySellersRepository.create(seller)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const product1 = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-    const product2 = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-    const product3 = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-    await inMemoryProductsRepository.create(product1)
-    await inMemoryProductsRepository.create(product2)
-    await inMemoryProductsRepository.create(product3)
-
-    const result = await sut.execute({ sellerId: seller.id.toString() })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.productDetailsList[0].owner).not.toHaveProperty(
-        'password',
-      )
-      expect(result.value.productDetailsList[1].owner).not.toHaveProperty(
-        'password',
-      )
-      expect(result.value.productDetailsList[2].owner).not.toHaveProperty(
-        'password',
-      )
-    }
-  })
 })

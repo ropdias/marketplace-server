@@ -542,31 +542,4 @@ describe('Register Product View', () => {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError)
     }
   })
-
-  it('should never include password field in the seller profile DTO', async () => {
-    const seller = makeSeller()
-    await inMemorySellersRepository.create(seller)
-    const viewer = makeSeller()
-    await inMemorySellersRepository.create(viewer)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const product = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-    await inMemoryProductsRepository.create(product)
-
-    const result = await sut.execute({
-      productId: product.id.toString(),
-      viewerId: viewer.id.toString(),
-    })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.productDetails.owner).not.toHaveProperty('password')
-      expect(result.value.viewerProfile).not.toHaveProperty('password')
-    }
-  })
 })

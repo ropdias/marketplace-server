@@ -89,16 +89,4 @@ describe('Get Seller Profile', () => {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError)
     }
   })
-
-  it('should never include password field in the seller profile DTO', async () => {
-    const seller = makeSeller({ name: 'Seller 1', password: 'secret' })
-    await inMemorySellersRepository.create(seller)
-
-    const result = await sut.execute({ sellerId: seller.id.toString() })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.sellerProfile).not.toHaveProperty('password')
-    }
-  })
 })

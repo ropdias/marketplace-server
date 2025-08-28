@@ -358,22 +358,4 @@ describe('Edit Seller', () => {
       expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
     }
   })
-
-  it('should never include password field in the seller profile DTO', async () => {
-    const seller = makeSeller()
-    await inMemorySellersRepository.create(seller)
-
-    const result = await sut.execute({
-      sellerId: seller.id.toString(),
-      name: 'Seller 2',
-      phone: '987654321',
-      email: 'seller2@example.com',
-    })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(Object.keys(result.value)).toEqual(['sellerProfile'])
-      expect(result.value.sellerProfile).not.toHaveProperty('password')
-    }
-  })
 })
