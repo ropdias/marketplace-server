@@ -63,8 +63,8 @@ type AuthenticateSellerUseCaseResponse = Either<
   - Avoid comparing internal IDs of Value Objects; instead, test the logical properties inside.
 - Example for ProductDetailsFactory:
 ```typescript
-const ownerProfile = await sellerProfileFactory.create({ seller });
-const productDetails = await sut.create({ product, seller, category, attachments });
+const ownerProfile = sellerProfileFactory.create({ seller, avatar });
+const productDetails = sut.create({ product, ownerProfile, category, attachments });
 expect(productDetails.owner.equals(ownerProfile)).toBe(true); // VO equality
 expect(productDetails.title).toBe(product.title);             // primitive equality
 expect(productDetails.attachments[0].equals(attachments[0])).toBe(true); // array of VO/Entity
