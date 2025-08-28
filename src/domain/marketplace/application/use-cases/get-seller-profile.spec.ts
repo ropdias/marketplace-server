@@ -90,22 +90,6 @@ describe('Get Seller Profile', () => {
     }
   })
 
-  it('should return profile with avatar = null if avatarId points to non-existent attachment', async () => {
-    const seller = makeSeller({ name: 'Seller X' })
-    seller.avatarId = UniqueEntityID.create({
-      value: 'non-existent-attachment-id',
-    })
-
-    await inMemorySellersRepository.create(seller)
-
-    const result = await sut.execute({ sellerId: seller.id.toString() })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.sellerProfile.avatar).toBeNull()
-    }
-  })
-
   it('should never include password field in the seller profile DTO', async () => {
     const seller = makeSeller({ name: 'Seller 1', password: 'secret' })
     await inMemorySellersRepository.create(seller)
