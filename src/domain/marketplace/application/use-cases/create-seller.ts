@@ -9,9 +9,9 @@ import { PasswordIsDifferentError } from './errors/password-is-different-error'
 import { SellerEmailAlreadyExistsError } from './errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exists-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface CreateSellerUseCaseRequest {
   name: string
@@ -38,7 +38,7 @@ export class CreateSellerUseCase {
     private sellersRepository: SellersRepository,
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
-    private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileAssembler: SellerProfileAssembler,
     private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
@@ -84,11 +84,14 @@ export class CreateSellerUseCase {
       avatarId: avatarId ? UniqueEntityID.create({ value: avatarId }) : null,
     })
 
-    const sellerProfile = await this.sellerProfileFactory.create({
-      seller,
+    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
+      seller: seller,
     })
+    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
 
-    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(
+      sellerProfileEither.value,
+    )
 
     await this.sellersRepository.create(seller)
 
