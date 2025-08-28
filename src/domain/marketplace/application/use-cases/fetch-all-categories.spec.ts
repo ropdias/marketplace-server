@@ -29,29 +29,23 @@ describe('Fetch All Categories', () => {
     const result = await sut.execute()
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.categories).toHaveLength(3)
-    expect(result.value?.categories).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: category1.id.toString(),
-          title: 'Category 1',
-        }),
-        expect.objectContaining({
-          id: category2.id.toString(),
-          title: 'Category 2',
-        }),
-        expect.objectContaining({
-          id: category3.id.toString(),
-          title: 'Category 3',
-        }),
-      ]),
-    )
+    if (result.isRight()) {
+      const categoriesDTO = categoriesMapper.toDTOList([
+        category1,
+        category2,
+        category3,
+      ])
+      expect(result.value.categories).toMatchObject(categoriesDTO)
+      expect(result.value.categories).toHaveLength(3)
+    }
   })
 
   it('should return empty array if no categories exist', async () => {
     const result = await sut.execute()
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.categories).toHaveLength(0)
+    if (result.isRight()) {
+      expect(result.value.categories).toHaveLength(0)
+    }
   })
 })
