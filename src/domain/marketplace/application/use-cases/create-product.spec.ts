@@ -16,6 +16,11 @@ import { makeCategory } from 'test/factories/make-category'
 import { CreateProductUseCase } from './create-product'
 import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
+import { makeProduct } from 'test/factories/make-product'
+import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
+import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
+import { ProductAttachment } from '../../enterprise/entities/product-attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -73,94 +78,66 @@ describe('Create Product', () => {
     )
   })
 
-  it('should be able to create a product without owner avatar and attachments', async () => {
+  it('should be able to create a product without attachments', async () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
     const category = makeCategory()
     await inMemoryCategoriesRepository.create(category)
 
-    const result = await sut.execute({
+    const product = makeProduct({
       title: 'Product',
-      categoryId: category.id.toString(),
+      categoryId: category.id,
       description: 'Product description',
-      priceInCents: 1000,
-      attachmentsIds: [],
-      sellerId: seller.id.toString(),
+      priceInCents: PriceInCents.create(1000),
+      ownerId: seller.id,
+    })
+
+    const result = await sut.execute({
+      title: product.title,
+      categoryId: product.categoryId.toString(),
+      description: product.description,
+      priceInCents: product.priceInCents.value,
+      attachmentsIds: product.attachments
+        .getItems()
+        .map((attachment) => attachment.id.toString()),
+      sellerId: product.ownerId.toString(),
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: inMemoryProductsRepository.items[0].id.toString(),
-        title: 'Product',
-        description: 'Product description',
-        priceInCents: 1000,
-        status: 'available',
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
+      expect(inMemoryProductsRepository.items).toHaveLength(1)
+
+      const createdProduct = inMemoryProductsRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar: null,
+      })
+      const productDetails = productDetailsFactory.create({
+        product: createdProduct,
+        ownerProfile: sellerProfile,
+        category,
         attachments: [],
       })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+
+      // VO/Entity equality
+      expect(createdProduct.categoryId.equals(product.categoryId)).toBe(true)
+      expect(createdProduct.priceInCents.equals(product.priceInCents)).toBe(
+        true,
+      )
+      expect(createdProduct.status.equals(product.status)).toBe(true)
+      expect(createdProduct.ownerId.equals(product.ownerId)).toBe(true)
+      // Primitive equality
+      expect(createdProduct.title).toBe(product.title)
+      expect(createdProduct.description).toBe(product.description)
+
+      expect(result.value.productDetails).toMatchObject(productDetailsDTO)
     }
   })
 
-  it('should be able to create a product with owner avatar and without attachments', async () => {
-    const avatar = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar)
-    const seller = makeSeller({ avatarId: avatar.id })
-    await inMemorySellersRepository.create(seller)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const result = await sut.execute({
-      title: 'Product',
-      categoryId: category.id.toString(),
-      description: 'Product description',
-      priceInCents: 1000,
-      attachmentsIds: [],
-      sellerId: seller.id.toString(),
-    })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: inMemoryProductsRepository.items[0].id.toString(),
-        title: 'Product',
-        description: 'Product description',
-        priceInCents: 1000,
-        status: 'available',
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar.id.toString(), url: avatar.url },
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [],
-      })
-    }
-  })
-
-  it('should be able create a product with owner avatar and attachments', async () => {
-    const avatar = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar)
-    const seller = makeSeller({ avatarId: avatar.id })
+  it('should be able create a product with attachments', async () => {
+    const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
     const category = makeCategory()
@@ -171,40 +148,77 @@ describe('Create Product', () => {
     await inMemoryAttachmentsRepository.create(attachment1)
     await inMemoryAttachmentsRepository.create(attachment2)
 
-    const result = await sut.execute({
+    const product = makeProduct({
       title: 'Product',
-      categoryId: category.id.toString(),
+      categoryId: category.id,
       description: 'Product description',
-      priceInCents: 1000,
-      attachmentsIds: [attachment1.id.toString(), attachment2.id.toString()],
-      sellerId: seller.id.toString(),
+      priceInCents: PriceInCents.create(1000),
+      ownerId: seller.id,
+    })
+
+    const productAttachmentList = new ProductAttachmentList([
+      ProductAttachment.create({
+        attachmentId: attachment1.id,
+        productId: product.id,
+      }),
+      ProductAttachment.create({
+        attachmentId: attachment2.id,
+        productId: product.id,
+      }),
+    ])
+
+    product.attachments = productAttachmentList
+
+    const result = await sut.execute({
+      title: product.title,
+      categoryId: product.categoryId.toString(),
+      description: product.description,
+      priceInCents: product.priceInCents.value,
+      attachmentsIds: product.attachments
+        .getItems()
+        .map((attachment) => attachment.attachmentId.toString()),
+      sellerId: product.ownerId.toString(),
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: inMemoryProductsRepository.items[0].id.toString(),
-        title: 'Product',
-        description: 'Product description',
-        priceInCents: 1000,
-        status: 'available',
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar.id.toString(), url: avatar.url },
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [
-          { id: attachment1.id.toString(), url: attachment1.url },
-          { id: attachment2.id.toString(), url: attachment2.url },
-        ],
+      expect(inMemoryProductsRepository.items).toHaveLength(1)
+
+      const createdProduct = inMemoryProductsRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar: null,
       })
+      const productDetails = productDetailsFactory.create({
+        product: createdProduct,
+        ownerProfile: sellerProfile,
+        category,
+        attachments: [attachment1, attachment2],
+      })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+
+      // VO/Entity equality
+      expect(createdProduct.categoryId.equals(product.categoryId)).toBe(true)
+      expect(createdProduct.priceInCents.equals(product.priceInCents)).toBe(
+        true,
+      )
+      expect(createdProduct.status.equals(product.status)).toBe(true)
+      expect(createdProduct.ownerId.equals(product.ownerId)).toBe(true)
+      expect(
+        createdProduct.attachments
+          .getItems()[0]
+          .attachmentId.equals(product.attachments.getItems()[0].attachmentId),
+      ).toBe(true)
+      expect(
+        createdProduct.attachments
+          .getItems()[1]
+          .attachmentId.equals(product.attachments.getItems()[1].attachmentId),
+      ).toBe(true)
+      // Primitive equality
+      expect(createdProduct.title).toBe(product.title)
+      expect(createdProduct.description).toBe(product.description)
+
+      expect(result.value.productDetails).toMatchObject(productDetailsDTO)
     }
   })
 
@@ -212,13 +226,23 @@ describe('Create Product', () => {
     const category = makeCategory()
     await inMemoryCategoriesRepository.create(category)
 
-    const result = await sut.execute({
+    const product = makeProduct({
       title: 'Product',
-      categoryId: category.id.toString(),
+      categoryId: category.id,
       description: 'Product description',
-      priceInCents: 1000,
-      attachmentsIds: [],
-      sellerId: 'non-existent-seller-id',
+      priceInCents: PriceInCents.create(1000),
+      ownerId: UniqueEntityID.create({ value: 'non-existent-seller-id' }),
+    })
+
+    const result = await sut.execute({
+      title: product.title,
+      categoryId: product.categoryId.toString(),
+      description: product.description,
+      priceInCents: product.priceInCents.value,
+      attachmentsIds: product.attachments
+        .getItems()
+        .map((attachment) => attachment.id.toString()),
+      sellerId: product.ownerId.toString(),
     })
 
     expect(result.isLeft()).toBe(true)
@@ -231,13 +255,23 @@ describe('Create Product', () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
-    const result = await sut.execute({
+    const product = makeProduct({
       title: 'Product',
-      categoryId: 'non-existent-category-id',
+      categoryId: UniqueEntityID.create({ value: 'non-existent-category-id' }),
       description: 'Product description',
-      priceInCents: 1000,
-      attachmentsIds: [],
-      sellerId: seller.id.toString(),
+      priceInCents: PriceInCents.create(1000),
+      ownerId: seller.id,
+    })
+
+    const result = await sut.execute({
+      title: product.title,
+      categoryId: product.categoryId.toString(),
+      description: product.description,
+      priceInCents: product.priceInCents.value,
+      attachmentsIds: product.attachments
+        .getItems()
+        .map((attachment) => attachment.id.toString()),
+      sellerId: product.ownerId.toString(),
     })
 
     expect(result.isLeft()).toBe(true)
@@ -258,17 +292,39 @@ describe('Create Product', () => {
     const attachment2 = makeAttachment()
     await inMemoryAttachmentsRepository.create(attachment2)
 
-    const result = await sut.execute({
+    const product = makeProduct({
       title: 'Product',
-      categoryId: category.id.toString(),
+      categoryId: category.id,
       description: 'Product description',
-      priceInCents: 1000,
+      priceInCents: PriceInCents.create(1000),
+      ownerId: seller.id,
+    })
+
+    const productAttachmentList = new ProductAttachmentList([
+      ProductAttachment.create({
+        attachmentId: attachment1.id,
+        productId: product.id,
+      }),
+      ProductAttachment.create({
+        attachmentId: attachment2.id,
+        productId: product.id,
+      }),
+    ])
+
+    product.attachments = productAttachmentList
+
+    const result = await sut.execute({
+      title: product.title,
+      categoryId: product.categoryId.toString(),
+      description: product.description,
+      priceInCents: product.priceInCents.value,
       attachmentsIds: [
-        attachment1.id.toString(),
+        ...product.attachments
+          .getItems()
+          .map((attachment) => attachment.attachmentId.toString()),
         'non-existent-attachment-id',
-        attachment2.id.toString(),
       ],
-      sellerId: seller.id.toString(),
+      sellerId: product.ownerId.toString(),
     })
 
     expect(result.isLeft()).toBe(true)
