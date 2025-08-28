@@ -10,9 +10,9 @@ import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -37,7 +37,7 @@ export class CreateProductUseCase {
     private sellersRepository: SellersRepository,
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
-    private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsAssembler: ProductDetailsAssembler,
     private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
@@ -85,14 +85,14 @@ export class CreateProductUseCase {
 
     product.attachments = new ProductAttachmentList(productAttachments)
 
-    const productDetails = await this.productDetailsFactory.create({
+    const productDetailsEither = await this.productDetailsAssembler.assemble({
       product,
-      seller,
-      category,
-      attachments,
     })
+    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(productDetails)
+    const productDetailsDTO = this.productDetailsMapper.toDTO(
+      productDetailsEither.value,
+    )
 
     await this.productsRepository.create(product)
 
