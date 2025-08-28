@@ -10,6 +10,7 @@ import { SellerProfileAssembler } from './seller-profile-assembler'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { Seller } from '../../enterprise/entities/seller'
 import { Attachment } from '../../enterprise/entities/attachment'
+import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 
 @Injectable()
 export class ProductDetailsAssembler {
@@ -53,6 +54,70 @@ export class ProductDetailsAssembler {
     return right(productDetails)
   }
 
+  async assembleMany({
+    products,
+  }: {
+    products: Product[]
+  }): Promise<Either<ResourceNotFoundError, ProductDetails[]>> {
+    // Get all categories and create a mapper
+    const categories = await this.categoriesRepository.findAll()
+    const categoriesMap = new Map(categories.map((c) => [c.id.toString(), c]))
+
+    // Get all attachments and create a mapper
+    const attachmentIds = products.flatMap((product) =>
+      product.attachments
+        .getItems()
+        .map((attachment) => attachment.attachmentId.toString()),
+    )
+    const attachments =
+      await this.attachmentsRepository.findManyByIds(attachmentIds)
+    const attachmentsMap = new Map(
+      attachments.map((attachment) => [attachment.id.toString(), attachment]),
+    )
+
+    // Get all sellers and create a mapper
+    const sellerIds = [
+      ...new Set(products.map((product) => product.ownerId.toString())),
+    ]
+    const sellers = await this.sellersRepository.findManyByIds(sellerIds)
+    const ownerProfilesMap = new Map<string, SellerProfile>()
+    for (const seller of sellers) {
+      const ownerProfileEither = await this.sellerProfileAssembler.assemble({
+        seller,
+      })
+      if (ownerProfileEither.isLeft()) return left(ownerProfileEither.value)
+      ownerProfilesMap.set(seller.id.toString(), ownerProfileEither.value)
+    }
+
+    const productDetailsList: ProductDetails[] = []
+
+    for (const product of products) {
+      const productAttachments = product.attachments
+        .getItems()
+        .map((item) => attachmentsMap.get(item.attachmentId.toString()))
+        .filter((attachment): attachment is Attachment => !!attachment)
+
+      const category = categoriesMap.get(product.categoryId.toString())
+
+      if (!category) return left(new ResourceNotFoundError())
+
+      const ownerProfile = ownerProfilesMap.get(product.ownerId.toString())
+
+      if (!ownerProfile) return left(new ResourceNotFoundError())
+
+      productDetailsList.push(
+        this.productDetailsFactory.create({
+          product,
+          ownerProfile,
+          category,
+          attachments: productAttachments,
+        }),
+      )
+    }
+
+    return right(productDetailsList)
+  }
+
   async assembleManyFromSeller({
     products,
     seller,
@@ -91,9 +156,7 @@ export class ProductDetailsAssembler {
 
       const category = categoriesMap.get(product.categoryId.toString())
 
-      if (!category) {
-        return left(new ResourceNotFoundError())
-      }
+      if (!category) return left(new ResourceNotFoundError())
 
       productDetailsList.push(
         this.productDetailsFactory.create({
