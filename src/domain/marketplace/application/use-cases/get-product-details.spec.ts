@@ -18,6 +18,8 @@ import { makeProduct } from 'test/factories/make-product'
 import { makeCategory } from 'test/factories/make-category'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
 import { ProductAttachment } from '../../enterprise/entities/product-attachment'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -26,6 +28,8 @@ let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
 let productDetailsFactory: ProductDetailsFactory
+let sellerProfileAssembler: SellerProfileAssembler
+let productDetailsAssembler: ProductDetailsAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let categoryMapper: CategoryMapper
@@ -42,10 +46,8 @@ describe('Get Product Details', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsFactory = new ProductDetailsFactory(sellerProfileFactory)
+    sellerProfileFactory = new SellerProfileFactory()
+    productDetailsFactory = new ProductDetailsFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     categoryMapper = new CategoryMapper()
@@ -54,13 +56,21 @@ describe('Get Product Details', () => {
       categoryMapper,
       attachmentMapper,
     )
-    sut = new GetProductDetailsUseCase(
-      inMemoryProductsRepository,
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
+    productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
+      sellerProfileAssembler,
       productDetailsFactory,
+    )
+    sut = new GetProductDetailsUseCase(
+      inMemoryProductsRepository,
       productDetailsMapper,
+      productDetailsAssembler,
     )
   })
 
