@@ -23,6 +23,8 @@ import {
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from './errors/invalid-product-status-error'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -31,6 +33,8 @@ let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileFactory: SellerProfileFactory
 let productDetailsFactory: ProductDetailsFactory
+let sellerProfileAssembler: SellerProfileAssembler
+let productDetailsAssembler: ProductDetailsAssembler
 let attachmentMapper: AttachmentMapper
 let sellerProfileMapper: SellerProfileMapper
 let categoryMapper: CategoryMapper
@@ -47,10 +51,8 @@ describe('Fetch All Products From Seller', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsFactory = new ProductDetailsFactory(sellerProfileFactory)
+    sellerProfileFactory = new SellerProfileFactory()
+    productDetailsFactory = new ProductDetailsFactory()
     attachmentMapper = new AttachmentMapper()
     sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     categoryMapper = new CategoryMapper()
@@ -59,12 +61,21 @@ describe('Fetch All Products From Seller', () => {
       categoryMapper,
       attachmentMapper,
     )
-    sut = new FetchAllProductsFromSellerUseCase(
-      inMemoryProductsRepository,
+    sellerProfileAssembler = new SellerProfileAssembler(
+      inMemoryAttachmentsRepository,
+      sellerProfileFactory,
+    )
+    productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
+      sellerProfileAssembler,
       productDetailsFactory,
+    )
+    sut = new FetchAllProductsFromSellerUseCase(
+      inMemoryProductsRepository,
+      inMemorySellersRepository,
+      productDetailsAssembler,
       productDetailsMapper,
     )
   })

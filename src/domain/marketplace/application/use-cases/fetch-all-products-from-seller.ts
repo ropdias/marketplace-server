@@ -8,14 +8,9 @@ import {
 import { InvalidProductStatusError } from './errors/invalid-product-status-error'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
-import { CategoriesRepository } from '../repositories/categories-repository'
-import { AttachmentsRepository } from '../repositories/attachments-repository'
-import { Product } from '../../enterprise/entities/product'
-import { Seller } from '../../enterprise/entities/seller'
-import { Attachment } from '../../enterprise/entities/attachment'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface FetchAllProductsFromSellerUseCaseRequest {
   sellerId: string
@@ -35,9 +30,7 @@ export class FetchAllProductsFromSellerUseCase {
   constructor(
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private categoriesRepository: CategoriesRepository,
-    private attachmentsRepository: AttachmentsRepository,
-    private productDetailsFactory: ProductDetailsFactory,
+    private productDetailsAssembler: ProductDetailsAssembler,
     private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
@@ -70,70 +63,18 @@ export class FetchAllProductsFromSellerUseCase {
       return right({ productDetailsList: [] })
     }
 
-    try {
-      productDetailsDTOList =
-        await this.buildProductDetailsDTOListFromProductsAndSeller({
-          products,
-          seller,
-        })
-      return right({ productDetailsList: productDetailsDTOList })
-    } catch (error) {
-      if (error instanceof ResourceNotFoundError) return left(error)
-      throw error
-    }
-  }
+    const productDetailsListEither =
+      await this.productDetailsAssembler.assembleManyFromSeller({
+        products,
+        seller,
+      })
+    if (productDetailsListEither.isLeft())
+      return left(productDetailsListEither.value)
 
-  private async buildProductDetailsDTOListFromProductsAndSeller({
-    products,
-    seller,
-  }: {
-    products: Product[]
-    seller: Seller
-  }): Promise<ProductDetailsDTO[]> {
-    // Get all categories and create a mapper
-    const categories = await this.categoriesRepository.findAll()
-    const categoriesMap = new Map(categories.map((c) => [c.id.toString(), c]))
-
-    // Get all attachments and create a mapper
-    const attachmentIds = products.flatMap((product) =>
-      product.attachments
-        .getItems()
-        .map((attachment) => attachment.attachmentId.toString()),
+    productDetailsDTOList = productDetailsListEither.value.map(
+      (productDetails) => this.productDetailsMapper.toDTO(productDetails),
     )
 
-    const attachments =
-      await this.attachmentsRepository.findManyByIds(attachmentIds)
-
-    const attachmentsMap = new Map(
-      attachments.map((attachment) => [attachment.id.toString(), attachment]),
-    )
-
-    const productDetailsList = await Promise.all(
-      products.map((product) => {
-        const productAttachments = product.attachments
-          .getItems()
-          .map((item) => attachmentsMap.get(item.attachmentId.toString()))
-          .filter((attachment): attachment is Attachment => !!attachment)
-
-        const category = categoriesMap.get(product.categoryId.toString())
-
-        if (!category) {
-          throw new ResourceNotFoundError()
-        }
-
-        return this.productDetailsFactory.create({
-          product,
-          seller,
-          category,
-          attachments: productAttachments,
-        })
-      }),
-    )
-
-    const productDetailsDTOList = productDetailsList.map((productDetails) =>
-      this.productDetailsMapper.toDTO(productDetails),
-    )
-
-    return productDetailsDTOList
+    return right({ productDetailsList: productDetailsDTOList })
   }
 }
