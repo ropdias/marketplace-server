@@ -2,9 +2,9 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
+import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface GetSellerProfileUseCaseRequest {
   sellerId: string
@@ -21,7 +21,7 @@ type GetSellerProfileUseCaseResponse = Either<
 export class GetSellerProfileUseCase {
   constructor(
     private sellersRepository: SellersRepository,
-    private sellerProfileFactory: SellerProfileFactory,
+    private sellerProfileAssembler: SellerProfileAssembler,
     private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
@@ -34,11 +34,14 @@ export class GetSellerProfileUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const sellerProfile = await this.sellerProfileFactory.create({
-      seller,
+    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
+      seller: seller,
     })
+    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
 
-    const sellerProfileDTO = this.sellerProfileMapper.toDTO(sellerProfile)
+    const sellerProfileDTO = this.sellerProfileMapper.toDTO(
+      sellerProfileEither.value,
+    )
 
     return right({
       sellerProfile: sellerProfileDTO,
