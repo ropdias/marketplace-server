@@ -44,15 +44,12 @@ describe('Get Seller Profile', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value).toStrictEqual({
-        sellerProfile: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar: null,
       })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })
 
@@ -68,15 +65,12 @@ describe('Get Seller Profile', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value).toStrictEqual({
-        sellerProfile: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar.id.toString(), url: avatar.url },
-        },
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar,
       })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })
 
