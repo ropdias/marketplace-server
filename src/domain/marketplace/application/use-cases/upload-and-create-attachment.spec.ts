@@ -31,10 +31,11 @@ describe('Upload and create attachment', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.attachment).toMatchObject({
-        id: inMemoryAttachmentsRepository.items[0].id.toString(),
-        url: inMemoryAttachmentsRepository.items[0].url,
-      })
+      expect(inMemoryAttachmentsRepository.items).toHaveLength(1)
+      const createdAttachment = inMemoryAttachmentsRepository.items[0]
+      const attachmentDTO = attachmentMapper.toDTO(createdAttachment)
+
+      expect(result.value.attachment).toMatchObject(attachmentDTO)
       expect(fakeUploader.uploads).toHaveLength(1)
       expect(fakeUploader.uploads[0]).toMatchObject({
         fileName: 'profile.png',
