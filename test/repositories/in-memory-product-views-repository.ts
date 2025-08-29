@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { ProductViewsRepository } from '@/domain/marketplace/application/repositories/product-views-repository'
 import { ProductView } from '@/domain/marketplace/enterprise/entities/product-view'
+import { dayjs } from '@/core/libs/dayjs'
 
 export class InMemoryProductViewsRepository implements ProductViewsRepository {
   public items: ProductView[] = []
@@ -61,16 +62,14 @@ export class InMemoryProductViewsRepository implements ProductViewsRepository {
       if (!productIds.includes(item.productId.toString())) continue
       if (item.createdAt < since) continue
 
-      // Normalize date
-      const day = new Date(item.createdAt)
-      day.setHours(0, 0, 0, 0)
-      const key = day.toISOString() // unique key for the day
+      const day = dayjs(item.createdAt).utc().startOf('day')
+      const key = day.valueOf().toString()
       counts.set(key, (counts.get(key) ?? 0) + 1)
     }
 
     return Array.from(counts.entries())
-      .map(([dateString, amount]) => ({
-        date: new Date(dateString),
+      .map(([timestamp, amount]) => ({
+        date: dayjs(Number(timestamp)).toDate(),
         amount,
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime())
