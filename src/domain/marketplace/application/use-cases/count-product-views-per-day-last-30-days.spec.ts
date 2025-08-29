@@ -48,7 +48,7 @@ describe('Count Product Views Per Day Last 30 Days', () => {
     const category = makeCategory()
     await inMemoryCategoriesRepository.create(category)
 
-    const now = new Date()
+    const now = dayjs().utc().startOf('day').toDate()
 
     // 10 products to seller[0] (target)
     const productsFromSeller: Product[] = []
@@ -82,9 +82,8 @@ describe('Count Product Views Per Day Last 30 Days', () => {
       const viewer = sellers[i]
       for (let j = 0; j < 3; j++) {
         const product = productsFromSeller[i * 3 + j - 1]
-        const createdAt = dayjs()
-          .utc()
-          .startOf('day')
+        const createdAt = dayjs
+          .utc(now)
           .subtract(i * 3 + j, 'day')
           .toDate()
 
@@ -109,14 +108,14 @@ describe('Count Product Views Per Day Last 30 Days', () => {
       makeProductView({
         productId: productsFromOtherSellers[0].id,
         viewerId: sellers[0].id, // own seller
-        createdAt: dayjs.utc(now).startOf('day').subtract(5, 'day').toDate(), // within 30 days
+        createdAt: dayjs.utc(now).subtract(5, 'day').toDate(), // within 30 days
       }),
     )
     await inMemoryProductViewsRepository.create(
       makeProductView({
         productId: productsFromSeller[0].id,
         viewerId: sellers[1].id,
-        createdAt: dayjs.utc(now).startOf('day').subtract(31, 'day').toDate(), // older than 30 days
+        createdAt: dayjs.utc(now).subtract(31, 'day').toDate(), // older than 30 days
       }),
     )
 
