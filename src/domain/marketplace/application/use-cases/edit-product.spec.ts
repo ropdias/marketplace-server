@@ -83,7 +83,7 @@ describe('Edit Product', () => {
     )
   })
 
-  it('should be able to edit a product without owner avatar and attachments', async () => {
+  it('should be able to edit a product without attachments', async () => {
     const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
@@ -111,86 +111,31 @@ describe('Edit Product', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: 'New Title',
-        description: 'New Description',
-        priceInCents: 2000,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: newCategory.id.toString(),
-          title: newCategory.title,
-          slug: newCategory.slug.value,
-        },
+      const editedProduct = inMemoryProductsRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar: null,
+      })
+      const productDetails = productDetailsFactory.create({
+        product: editedProduct,
+        ownerProfile: sellerProfile,
+        category: newCategory,
         attachments: [],
       })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result.value.productDetails).toMatchObject(productDetailsDTO)
+
+      expect(result.value.productDetails.title).toBe('New Title')
+      expect(result.value.productDetails.category.id).toBe(
+        newCategory.id.toString(),
+      )
+      expect(result.value.productDetails.description).toBe('New Description')
+      expect(result.value.productDetails.priceInCents).toBe(2000)
     }
   })
 
-  it('should be able to edit a product with owner avatar and without attachments', async () => {
-    const avatar = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar)
-    const seller = makeSeller({ avatarId: avatar.id })
-    await inMemorySellersRepository.create(seller)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const product = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-    await inMemoryProductsRepository.create(product)
-
-    const newCategory = makeCategory()
-    await inMemoryCategoriesRepository.create(newCategory)
-
-    const result = await sut.execute({
-      productId: product.id.toString(),
-      title: 'New Title',
-      categoryId: newCategory.id.toString(),
-      description: 'New Description',
-      priceInCents: 2000,
-      attachmentsIds: [],
-      sellerId: seller.id.toString(),
-    })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: 'New Title',
-        description: 'New Description',
-        priceInCents: 2000,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar.id.toString(), url: avatar.url },
-        },
-        category: {
-          id: newCategory.id.toString(),
-          title: newCategory.title,
-          slug: newCategory.slug.value,
-        },
-        attachments: [],
-      })
-    }
-  })
-
-  it('should be able to edit a product with owner avatar and new attachments', async () => {
-    const avatar = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar)
-    const seller = makeSeller({ avatarId: avatar.id })
+  it('should be able to edit a product with new attachments', async () => {
+    const seller = makeSeller()
     await inMemorySellersRepository.create(seller)
 
     const category = makeCategory()
@@ -245,30 +190,36 @@ describe('Edit Product', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: 'New Title',
-        description: 'New Description',
-        priceInCents: 2000,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar.id.toString(), url: avatar.url },
-        },
-        category: {
-          id: newCategory.id.toString(),
-          title: newCategory.title,
-          slug: newCategory.slug.value,
-        },
-        attachments: [
-          { id: attachment1.id.toString(), url: attachment1.url },
-          { id: attachment3.id.toString(), url: attachment3.url },
-          { id: attachment4.id.toString(), url: attachment4.url },
-        ],
+      const editedProduct = inMemoryProductsRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
+        avatar: null,
       })
+      const productDetails = productDetailsFactory.create({
+        product: editedProduct,
+        ownerProfile: sellerProfile,
+        category: newCategory,
+        attachments: [attachment1, attachment3, attachment4],
+      })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result.value.productDetails).toMatchObject(productDetailsDTO)
+
+      expect(result.value.productDetails.title).toBe('New Title')
+      expect(result.value.productDetails.category.id).toBe(
+        newCategory.id.toString(),
+      )
+      expect(result.value.productDetails.description).toBe('New Description')
+      expect(result.value.productDetails.priceInCents).toBe(2000)
+      expect(result.value.productDetails.attachments).toHaveLength(3)
+      expect(result.value.productDetails.attachments[0].id).toBe(
+        attachment1.id.toString(),
+      )
+      expect(result.value.productDetails.attachments[1].id).toBe(
+        attachment3.id.toString(),
+      )
+      expect(result.value.productDetails.attachments[2].id).toBe(
+        attachment4.id.toString(),
+      )
     }
   })
 
