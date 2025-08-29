@@ -107,26 +107,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -182,26 +174,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -259,26 +243,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -362,26 +338,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -451,26 +419,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -540,26 +500,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -623,26 +575,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          return {
-            productId: p.id.toString(),
-            title: p.title,
-            description: p.description,
-            priceInCents: p.priceInCents.value,
-            status: p.status.value,
-            owner: {
-              sellerId: owner.id.toString(),
-              name: owner.name,
-              phone: owner.phone,
-              email: owner.email,
-              avatar: null,
-            },
-            category: {
-              id: category.id.toString(),
-              title: category.title,
-              slug: category.slug.value,
-            },
+          const sellerProfile = sellerProfileFactory.create({
+            seller: owner,
+            avatar: null,
+          })
+          const productDetails = productDetailsFactory.create({
+            product: p,
+            ownerProfile: sellerProfile,
+            category,
             attachments: [],
-          }
+          })
+
+          return productDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
