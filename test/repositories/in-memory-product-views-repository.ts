@@ -29,7 +29,8 @@ export class InMemoryProductViewsRepository implements ProductViewsRepository {
     since: Date
   }): Promise<number> {
     return this.items.filter(
-      (item) => item.id.toString() === productId && item.createdAt >= since,
+      (item) =>
+        item.productId.toString() === productId && item.createdAt >= since,
     ).length
   }
 
@@ -42,7 +43,8 @@ export class InMemoryProductViewsRepository implements ProductViewsRepository {
   }): Promise<number> {
     return this.items.filter(
       (item) =>
-        productIds.includes(item.id.toString()) && item.createdAt >= since,
+        productIds.includes(item.productId.toString()) &&
+        item.createdAt >= since,
     ).length
   }
 
