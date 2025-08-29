@@ -22,6 +22,7 @@ import {
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from './errors/invalid-product-status-error'
+import { dayjs } from '@/core/libs/dayjs'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -93,7 +94,7 @@ describe('Fetch Recent Products', () => {
       const product = makeProduct({
         ownerId: randomSeller.id,
         categoryId: category.id,
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       products.push(product)
@@ -147,7 +148,7 @@ describe('Fetch Recent Products', () => {
         ownerId: seller.id,
         categoryId: category.id,
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       expectedProducts.push(product)
@@ -160,7 +161,7 @@ describe('Fetch Recent Products', () => {
         ownerId: seller.id,
         categoryId: category.id,
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -216,7 +217,7 @@ describe('Fetch Recent Products', () => {
         ownerId: seller.id,
         categoryId: category.id,
         title: 'Book ' + (i + 1),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       expectedProducts.push(product)
@@ -229,7 +230,7 @@ describe('Fetch Recent Products', () => {
         ownerId: seller.id,
         categoryId: category.id,
         title: 'Phone ' + (i + 1),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -286,7 +287,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       expectedProducts.push(product)
@@ -300,7 +301,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -312,7 +313,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Phone ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -324,7 +325,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'TV ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -381,7 +382,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -393,7 +394,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Phone ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -405,7 +406,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'TV ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -462,7 +463,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -474,7 +475,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Phone ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -486,7 +487,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'TV ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.AVAILABLE),
-        createdAt: new Date(2022, 1, 1 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 1, day: 1 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
@@ -543,7 +544,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2021, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2021, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       expectedProducts.push(product)
@@ -557,7 +558,7 @@ describe('Fetch Recent Products', () => {
         categoryId: category.id,
         title: 'Book ' + (i + 1),
         status: ProductStatus.create(ProductStatusEnum.SOLD),
-        createdAt: new Date(2022, 0, 20 + i),
+        createdAt: dayjs.utc({ year: 2022, month: 0, day: 20 + i }).toDate(),
       })
       await inMemoryProductsRepository.create(product)
       otherProducts.push(product)
