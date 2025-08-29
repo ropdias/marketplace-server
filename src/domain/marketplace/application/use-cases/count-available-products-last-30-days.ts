@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { ProductsRepository } from '../repositories/products-repository'
 import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { dayjs } from '@/core/libs/dayjs'
 
 interface CountAvailableProductsLast30DaysRequest {
   sellerId: string
@@ -29,8 +30,7 @@ export class CountAvailableProductsLast30DaysUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-    since.setHours(0, 0, 0, 0)
+    const since = dayjs().utc().startOf('day').subtract(30, 'day').toDate()
 
     const amount = await this.productsRepository.countAvailableSince({
       ownerId: sellerId,

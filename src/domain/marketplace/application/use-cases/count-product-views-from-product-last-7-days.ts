@@ -4,6 +4,7 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductViewsRepository } from '../repositories/product-views-repository'
 import { ProductsRepository } from '../repositories/products-repository'
+import { dayjs } from '@/core/libs/dayjs'
 
 interface CountProductViewsFromProductLast7DaysRequest {
   sellerId: string
@@ -39,8 +40,7 @@ export class CountProductViewsFromProductLast7DaysUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    since.setHours(0, 0, 0, 0)
+    const since = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
 
     const amount = await this.productViewsRepository.countViewsFromProductSince(
       {
