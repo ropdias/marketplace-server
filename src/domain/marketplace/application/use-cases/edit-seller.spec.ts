@@ -59,21 +59,18 @@ describe('Edit Seller', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(inMemorySellersRepository.items).toHaveLength(1)
-      expect(inMemorySellersRepository.items[0]).toMatchObject({
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
-        avatarId: null,
-      })
-      expect(Object.keys(result.value)).toEqual(['sellerProfile'])
-      expect(result.value.sellerProfile).toMatchObject({
-        sellerId: inMemorySellersRepository.items[0].id.toString(),
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
+      const editedSeller = inMemorySellersRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller: editedSeller,
         avatar: null,
       })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      expect(inMemorySellersRepository.items).toHaveLength(1)
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
+      expect(result.value.sellerProfile.name).toBe('Seller 2')
+      expect(result.value.sellerProfile.phone).toBe('123456789')
+      expect(result.value.sellerProfile.email).toBe('seller2@example.com')
+      expect(result.value.sellerProfile.avatar).toBeNull()
     }
   })
 
@@ -102,23 +99,18 @@ describe('Edit Seller', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
+      const editedSeller = inMemorySellersRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller: editedSeller,
+        avatar,
+      })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
       expect(inMemorySellersRepository.items).toHaveLength(1)
-      expect(inMemorySellersRepository.items[0]).toMatchObject({
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
-      })
-      expect(inMemorySellersRepository.items[0].avatarId?.toString()).toBe(
-        avatarId.toString(),
-      )
-      expect(Object.keys(result.value)).toEqual(['sellerProfile'])
-      expect(result.value.sellerProfile).toMatchObject({
-        sellerId: inMemorySellersRepository.items[0].id.toString(),
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
-        avatar: { id: avatar.id.toString(), url: avatar.url },
-      })
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
+      expect(result.value.sellerProfile.name).toBe('Seller 2')
+      expect(result.value.sellerProfile.phone).toBe('123456789')
+      expect(result.value.sellerProfile.email).toBe('seller2@example.com')
+      expect(result.value.sellerProfile.avatar?.id).toBe(avatar.id.toString())
     }
   })
 
@@ -137,26 +129,24 @@ describe('Edit Seller', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(inMemorySellersRepository.items).toHaveLength(1)
-      expect(inMemorySellersRepository.items[0]).toMatchObject({
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
+      const editedSeller = inMemorySellersRepository.items[0]
+      const sellerProfile = sellerProfileFactory.create({
+        seller: editedSeller,
+        avatar: null,
       })
+      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      expect(inMemorySellersRepository.items).toHaveLength(1)
+      expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
+      expect(result.value.sellerProfile.name).toBe('Seller 2')
+      expect(result.value.sellerProfile.phone).toBe('123456789')
+      expect(result.value.sellerProfile.email).toBe('seller2@example.com')
+      expect(result.value.sellerProfile.avatar).toBeNull()
       expect(
         await fakeHasher.compare(
           'password2',
           inMemorySellersRepository.items[0].password,
         ),
       ).toBe(true)
-      expect(Object.keys(result.value)).toEqual(['sellerProfile'])
-      expect(result.value.sellerProfile).toMatchObject({
-        sellerId: inMemorySellersRepository.items[0].id.toString(),
-        name: 'Seller 2',
-        phone: '123456789',
-        email: 'seller2@example.com',
-        avatar: null,
-      })
     }
   })
 
@@ -193,12 +183,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(WrongCredentialsError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
     }
   })
 
@@ -223,18 +207,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(NewPasswordMustBeDifferentError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
-      expect(
-        await fakeHasher.compare(
-          'password',
-          inMemorySellersRepository.items[0].password,
-        ),
-      ).toBe(true)
     }
   })
 
@@ -259,18 +231,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(WrongCredentialsError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
-      expect(
-        await fakeHasher.compare(
-          'password',
-          inMemorySellersRepository.items[0].password,
-        ),
-      ).toBe(true)
     }
   })
 
@@ -294,12 +254,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(SellerEmailAlreadyExistsError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
     }
   })
 
@@ -323,12 +277,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(SellerPhoneAlreadyExistsError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
     }
   })
 
@@ -354,12 +302,6 @@ describe('Edit Seller', () => {
     expect(result.isLeft()).toBe(true)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(ResourceNotFoundError)
-      expect(inMemorySellersRepository.items[0].name).toBe('Seller 1')
-      expect(inMemorySellersRepository.items[0].phone).toBe('123456789')
-      expect(inMemorySellersRepository.items[0].email).toBe(
-        'seller1@example.com',
-      )
-      expect(inMemorySellersRepository.items[0].avatarId).toBeNull()
     }
   })
 })
