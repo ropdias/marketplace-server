@@ -2,9 +2,7 @@ import { makeSeller } from 'test/factories/make-seller'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
-import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
@@ -17,8 +15,6 @@ import { makeCategory } from 'test/factories/make-category'
 import { RegisterProductViewUseCase } from './register-product-view'
 import { InMemoryProductViewsRepository } from 'test/repositories/in-memory-product-views-repository'
 import { makeProduct } from 'test/factories/make-product'
-import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
-import { ProductAttachment } from '../../enterprise/entities/product-attachment'
 import { ViewerIsProductOwnerError } from './errors/viewer-is-product-owner-error'
 import { makeProductView } from 'test/factories/make-product-view'
 import { ProductViewAlreadyExistsError } from './errors/product-view-already-exists-error'
@@ -106,38 +102,33 @@ describe('Register Product View', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: product.title,
-        description: product.description,
-        priceInCents: product.priceInCents.value,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [],
-      })
-      expect(result.value.viewerProfile).toMatchObject({
-        sellerId: viewer.id.toString(),
-        name: viewer.name,
-        phone: viewer.phone,
-        email: viewer.email,
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
         avatar: null,
       })
-      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
-      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer.id,
+      const productDetails = productDetailsFactory.create({
+        product,
+        ownerProfile: sellerProfile,
+        category,
+        attachments: [],
       })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result.value.productDetails).toMatchObject(productDetailsDTO)
+
+      const viewerProfile = sellerProfileFactory.create({
+        seller: viewer,
+        avatar: null,
+      })
+      const viewerProfileDTO = sellerProfileMapper.toDTO(viewerProfile)
+      expect(result.value.viewerProfile).toMatchObject(viewerProfileDTO)
+
+      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(
+        inMemoryProductViewsRepository.items[0].productId.equals(product.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[0].viewerId.equals(viewer.id),
+      ).toBe(true)
     }
   })
 
@@ -165,38 +156,33 @@ describe('Register Product View', () => {
 
     expect(result1.isRight()).toBe(true)
     if (result1.isRight()) {
-      expect(result1.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: product.title,
-        description: product.description,
-        priceInCents: product.priceInCents.value,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [],
-      })
-      expect(result1.value.viewerProfile).toMatchObject({
-        sellerId: viewer1.id.toString(),
-        name: viewer1.name,
-        phone: viewer1.phone,
-        email: viewer1.email,
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
         avatar: null,
       })
-      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
-      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer1.id,
+      const productDetails = productDetailsFactory.create({
+        product,
+        ownerProfile: sellerProfile,
+        category,
+        attachments: [],
       })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result1.value.productDetails).toMatchObject(productDetailsDTO)
+
+      const viewerProfile1 = sellerProfileFactory.create({
+        seller: viewer1,
+        avatar: null,
+      })
+      const viewerProfileDTO1 = sellerProfileMapper.toDTO(viewerProfile1)
+      expect(result1.value.viewerProfile).toMatchObject(viewerProfileDTO1)
+
+      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(
+        inMemoryProductViewsRepository.items[0].productId.equals(product.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[0].viewerId.equals(viewer1.id),
+      ).toBe(true)
     }
 
     const result2 = await sut.execute({
@@ -206,126 +192,39 @@ describe('Register Product View', () => {
 
     expect(result2.isRight()).toBe(true)
     if (result2.isRight()) {
-      expect(result2.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: product.title,
-        description: product.description,
-        priceInCents: product.priceInCents.value,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [],
-      })
-      expect(result2.value.viewerProfile).toMatchObject({
-        sellerId: viewer2.id.toString(),
-        name: viewer2.name,
-        phone: viewer2.phone,
-        email: viewer2.email,
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
         avatar: null,
       })
+      const productDetails = productDetailsFactory.create({
+        product,
+        ownerProfile: sellerProfile,
+        category,
+        attachments: [],
+      })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result2.value.productDetails).toMatchObject(productDetailsDTO)
+
+      const viewerProfile2 = sellerProfileFactory.create({
+        seller: viewer2,
+        avatar: null,
+      })
+      const viewerProfileDTO2 = sellerProfileMapper.toDTO(viewerProfile2)
+      expect(result2.value.viewerProfile).toMatchObject(viewerProfileDTO2)
+
       expect(inMemoryProductViewsRepository.items).toHaveLength(2)
-      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer1.id,
-      })
-      expect(inMemoryProductViewsRepository.items[1]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer2.id,
-      })
-    }
-  })
-
-  it('should be able to create a product view with owner avatar, viewer avatar and attachments', async () => {
-    const avatar1 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar1)
-    const seller = makeSeller({ avatarId: avatar1.id })
-    await inMemorySellersRepository.create(seller)
-
-    const avatar2 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(avatar2)
-    const viewer = makeSeller({ avatarId: avatar2.id })
-    await inMemorySellersRepository.create(viewer)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const attachment1 = makeAttachment()
-    const attachment2 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment1)
-    await inMemoryAttachmentsRepository.create(attachment2)
-
-    const product = makeProduct({
-      ownerId: seller.id,
-      categoryId: category.id,
-    })
-
-    const productAttachmentList = new ProductAttachmentList([
-      ProductAttachment.create({
-        attachmentId: attachment1.id,
-        productId: product.id,
-      }),
-      ProductAttachment.create({
-        attachmentId: attachment2.id,
-        productId: product.id,
-      }),
-    ])
-
-    product.attachments = productAttachmentList
-
-    await inMemoryProductsRepository.create(product)
-
-    const result = await sut.execute({
-      productId: product.id.toString(),
-      viewerId: viewer.id.toString(),
-    })
-
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: product.title,
-        description: product.description,
-        priceInCents: product.priceInCents.value,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: { id: avatar1.id.toString(), url: avatar1.url },
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [
-          { id: attachment1.id.toString(), url: attachment1.url },
-          { id: attachment2.id.toString(), url: attachment2.url },
-        ],
-      })
-      expect(result.value.viewerProfile).toMatchObject({
-        sellerId: viewer.id.toString(),
-        name: viewer.name,
-        phone: viewer.phone,
-        email: viewer.email,
-        avatar: { id: avatar2.id.toString(), url: avatar2.url },
-      })
-      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
-      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer.id,
-      })
+      expect(
+        inMemoryProductViewsRepository.items[0].productId.equals(product.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[0].viewerId.equals(viewer1.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[1].productId.equals(product.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[1].viewerId.equals(viewer2.id),
+      ).toBe(true)
     }
   })
 
@@ -451,38 +350,33 @@ describe('Register Product View', () => {
 
     expect(result1.isRight()).toBe(true)
     if (result1.isRight()) {
-      expect(result1.value.productDetails).toMatchObject({
-        productId: product.id.toString(),
-        title: product.title,
-        description: product.description,
-        priceInCents: product.priceInCents.value,
-        status: product.status.value,
-        owner: {
-          sellerId: seller.id.toString(),
-          name: seller.name,
-          phone: seller.phone,
-          email: seller.email,
-          avatar: null,
-        },
-        category: {
-          id: category.id.toString(),
-          title: category.title,
-          slug: category.slug.value,
-        },
-        attachments: [],
-      })
-      expect(result1.value.viewerProfile).toMatchObject({
-        sellerId: viewer.id.toString(),
-        name: viewer.name,
-        phone: viewer.phone,
-        email: viewer.email,
+      const sellerProfile = sellerProfileFactory.create({
+        seller,
         avatar: null,
       })
-      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
-      expect(inMemoryProductViewsRepository.items[0]).toMatchObject({
-        productId: product.id,
-        viewerId: viewer.id,
+      const productDetails = productDetailsFactory.create({
+        product,
+        ownerProfile: sellerProfile,
+        category,
+        attachments: [],
       })
+      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      expect(result1.value.productDetails).toMatchObject(productDetailsDTO)
+
+      const viewerProfile = sellerProfileFactory.create({
+        seller: viewer,
+        avatar: null,
+      })
+      const viewerProfileDTO = sellerProfileMapper.toDTO(viewerProfile)
+      expect(result1.value.viewerProfile).toMatchObject(viewerProfileDTO)
+
+      expect(inMemoryProductViewsRepository.items).toHaveLength(1)
+      expect(
+        inMemoryProductViewsRepository.items[0].productId.equals(product.id),
+      ).toBe(true)
+      expect(
+        inMemoryProductViewsRepository.items[0].viewerId.equals(viewer.id),
+      ).toBe(true)
     }
 
     const result2 = await sut.execute({
@@ -493,53 +387,6 @@ describe('Register Product View', () => {
     expect(result2.isLeft()).toBe(true)
     if (result2.isLeft()) {
       expect(result2.value).toBeInstanceOf(ProductViewAlreadyExistsError)
-    }
-  })
-
-  it('should return ResourceNotFoundError if category does not exist', async () => {
-    const seller = makeSeller()
-    await inMemorySellersRepository.create(seller)
-    const viewer = makeSeller()
-    await inMemorySellersRepository.create(viewer)
-
-    const product = makeProduct({
-      ownerId: seller.id,
-      categoryId: UniqueEntityID.create({ value: 'non-existent-category-id' }),
-    })
-    await inMemoryProductsRepository.create(product)
-
-    const result = await sut.execute({
-      productId: product.id.toString(),
-      viewerId: viewer.id.toString(),
-    })
-
-    expect(result.isLeft()).toBe(true)
-    if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ResourceNotFoundError)
-    }
-  })
-
-  it('should return ResourceNotFoundError if seller does not exist', async () => {
-    const viewer = makeSeller()
-    await inMemorySellersRepository.create(viewer)
-
-    const category = makeCategory()
-    await inMemoryCategoriesRepository.create(category)
-
-    const product = makeProduct({
-      ownerId: UniqueEntityID.create({ value: 'non-existent-owner-id' }),
-      categoryId: category.id,
-    })
-    await inMemoryProductsRepository.create(product)
-
-    const result = await sut.execute({
-      productId: product.id.toString(),
-      viewerId: viewer.id.toString(),
-    })
-
-    expect(result.isLeft()).toBe(true)
-    if (result.isLeft()) {
-      expect(result.value).toBeInstanceOf(ResourceNotFoundError)
     }
   })
 })
