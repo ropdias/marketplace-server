@@ -7,6 +7,7 @@ import {
 } from './value-objects/product-status'
 import { Optional } from '@/core/types/optional'
 import { PriceInCents } from './value-objects/price-in-cents'
+import { dayjs } from '@/core/libs/dayjs'
 
 export interface ProductProps {
   title: string
@@ -99,11 +100,11 @@ export class Product extends AggregateRoot<ProductProps> {
   }
 
   private touch() {
-    this.props.updatedAt = new Date()
+    this.props.updatedAt = dayjs.utc().toDate()
   }
 
   private markAsSold() {
-    this.props.soldAt = new Date()
+    this.props.soldAt = dayjs.utc().toDate()
   }
 
   private clearSoldAt() {
@@ -120,7 +121,7 @@ export class Product extends AggregateRoot<ProductProps> {
         status:
           props.status ?? ProductStatus.create(ProductStatusEnum.AVAILABLE),
         attachments: props.attachments ?? new ProductAttachmentList(),
-        createdAt: props.createdAt ?? new Date(),
+        createdAt: props.createdAt ?? dayjs.utc().toDate(),
       },
       id,
     )

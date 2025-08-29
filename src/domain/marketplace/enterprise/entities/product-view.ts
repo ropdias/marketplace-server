@@ -1,6 +1,7 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { dayjs } from '@/core/libs/dayjs'
 
 export interface ProductViewProps {
   productId: UniqueEntityID
@@ -26,7 +27,7 @@ export class ProductView extends Entity<ProductViewProps> {
     id?: UniqueEntityID,
   ) {
     const productView = new ProductView(
-      { ...props, createdAt: props.createdAt ?? new Date() },
+      { ...props, createdAt: props.createdAt ?? dayjs.utc().toDate() },
       id,
     )
 
