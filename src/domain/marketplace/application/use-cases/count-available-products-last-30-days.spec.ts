@@ -13,6 +13,7 @@ import {
   ProductStatus,
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
+import { dayjs } from '@/core/libs/dayjs'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -49,12 +50,11 @@ describe('Count Available Products Last 30 Days', () => {
     const expectedProducts: Product[] = []
     const otherProducts: Product[] = []
 
-    const now = new Date()
+    const now = dayjs().utc().startOf('day').toDate()
 
     // Create expectedProducts
     for (let i = 0; i < 30; i++) {
-      const createdAt = new Date(now)
-      createdAt.setDate(now.getDate() - i)
+      const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = makeProduct({
         ownerId: sellers[0].id,
         categoryId: category.id,
@@ -66,8 +66,7 @@ describe('Count Available Products Last 30 Days', () => {
 
     // Create otherProducts
     for (let i = 31; i < 61; i++) {
-      const createdAt = new Date(now)
-      createdAt.setDate(now.getDate() - i)
+      const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = makeProduct({
         ownerId: sellers[0].id,
         categoryId: category.id,
@@ -77,8 +76,7 @@ describe('Count Available Products Last 30 Days', () => {
       otherProducts.push(product)
     }
     for (let i = 0; i < 30; i++) {
-      const createdAt = new Date(now)
-      createdAt.setDate(now.getDate() - i)
+      const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const seller = sellers[1 + (i % (sellers.length - 1))]
       const product = makeProduct({
         ownerId: seller.id,
@@ -89,8 +87,7 @@ describe('Count Available Products Last 30 Days', () => {
       otherProducts.push(product)
     }
     for (let i = 0; i < 30; i++) {
-      const createdAt = new Date(now)
-      createdAt.setDate(now.getDate() - i)
+      const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = makeProduct({
         ownerId: sellers[0].id,
         categoryId: category.id,
@@ -101,8 +98,7 @@ describe('Count Available Products Last 30 Days', () => {
       otherProducts.push(product)
     }
     for (let i = 0; i < 30; i++) {
-      const createdAt = new Date(now)
-      createdAt.setDate(now.getDate() - i)
+      const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = makeProduct({
         ownerId: sellers[0].id,
         categoryId: category.id,
