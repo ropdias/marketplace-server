@@ -11,6 +11,7 @@ import { Product } from '../../enterprise/entities/product'
 import { CountProductViewsLast30DaysUseCase } from './count-product-views-last-30-days'
 import { InMemoryProductViewsRepository } from 'test/repositories/in-memory-product-views-repository'
 import { makeProductView } from 'test/factories/make-product-view'
+import { dayjs } from '@/core/libs/dayjs'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
@@ -47,7 +48,7 @@ describe('Count Product Views Last 30 Days', () => {
     const category = makeCategory()
     await inMemoryCategoriesRepository.create(category)
 
-    const now = new Date()
+    const now = dayjs().utc().startOf('day').toDate()
 
     // 10 products to seller[0] (target)
     const productsFromSeller: Product[] = []
@@ -78,9 +79,10 @@ describe('Count Product Views Last 30 Days', () => {
       const viewer = sellers[i]
       for (let j = 0; j < 3; j++) {
         const product = productsFromSeller[i * 3 + j - 1]
-        const createdAt = new Date(now)
-        createdAt.setDate(now.getDate() - (i * 3 + j)) // deterministic in the last 30 days
-        createdAt.setHours(12, 0, 0, 0)
+        const createdAt = dayjs
+          .utc(now)
+          .subtract(i * 3 + j, 'day')
+          .toDate()
 
         await inMemoryProductViewsRepository.create(
           makeProductView({
@@ -100,14 +102,14 @@ describe('Count Product Views Last 30 Days', () => {
       makeProductView({
         productId: productsFromOtherSellers[0].id,
         viewerId: sellers[0].id, // own seller
-        createdAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000), // within 30 days
+        createdAt: dayjs.utc(now).subtract(5, 'day').toDate(), // within 30 days
       }),
     )
     await inMemoryProductViewsRepository.create(
       makeProductView({
         productId: productsFromSeller[0].id,
         viewerId: sellers[1].id,
-        createdAt: new Date(now.getTime() - 31 * 24 * 60 * 60 * 1000), // older than 30 days
+        createdAt: dayjs.utc(now).subtract(31, 'day').toDate(), // older than 30 days
       }),
     )
 
