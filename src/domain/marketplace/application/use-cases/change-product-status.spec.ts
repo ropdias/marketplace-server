@@ -117,6 +117,7 @@ describe('Change Product Status', () => {
       const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
       expect(result1.value.productDetails).toMatchObject(productDetailsDTO)
       expect(result1.value.productDetails.status).toBe('sold')
+      expect(editedProduct.soldAt).not.toBeUndefined()
     }
 
     const result2 = await sut.execute({
@@ -141,6 +142,7 @@ describe('Change Product Status', () => {
       const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
       expect(result2.value.productDetails).toMatchObject(productDetailsDTO)
       expect(result2.value.productDetails.status).toBe('available')
+      expect(editedProduct.soldAt).toBeUndefined()
     }
   })
 
