@@ -101,8 +101,7 @@ describe('Count Product Views Per Day Last 30 Days', () => {
     }
 
     // Views that SHOULD NOT count:
-    // - seller viewing their own product
-    // - products from other sellers
+    // - sellers[0] viewing products from other sellers within 30 days
     // - old views (>30 days)
     await inMemoryProductViewsRepository.create(
       makeProductView({
