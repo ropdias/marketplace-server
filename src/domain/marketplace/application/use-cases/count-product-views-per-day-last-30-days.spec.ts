@@ -1,0 +1,148 @@
+import { makeSeller } from 'test/factories/make-seller'
+import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
+import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
+import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
+import { makeCategory } from 'test/factories/make-category'
+import { makeProduct } from 'test/factories/make-product'
+import { Seller } from '../../enterprise/entities/seller'
+import { Product } from '../../enterprise/entities/product'
+import { InMemoryProductViewsRepository } from 'test/repositories/in-memory-product-views-repository'
+import { makeProductView } from 'test/factories/make-product-view'
+import { CountProductViewsPerDayLast30DaysUseCase } from './count-product-views-per-day-last-30-days'
+import { dayjs } from '@/core/libs/dayjs'
+
+let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
+let inMemoryProductsRepository: InMemoryProductsRepository
+let inMemorySellersRepository: InMemorySellersRepository
+let inMemoryCategoriesRepository: InMemoryCategoriesRepository
+let inMemoryProductViewsRepository: InMemoryProductViewsRepository
+let sut: CountProductViewsPerDayLast30DaysUseCase
+
+describe('Count Product Views Per Day Last 30 Days', () => {
+  beforeEach(() => {
+    inMemoryProductAttachmentsRepository =
+      new InMemoryProductAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+    )
+    inMemorySellersRepository = new InMemorySellersRepository()
+    inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
+    inMemoryProductViewsRepository = new InMemoryProductViewsRepository()
+    sut = new CountProductViewsPerDayLast30DaysUseCase(
+      inMemoryProductViewsRepository,
+      inMemorySellersRepository,
+      inMemoryProductsRepository,
+    )
+  })
+
+  it('should be able to count product views per day from last 30 days', async () => {
+    const sellers: Seller[] = []
+    for (let i = 0; i < 3; i++) {
+      const seller = makeSeller()
+      await inMemorySellersRepository.create(seller)
+      sellers.push(seller)
+    }
+
+    const category = makeCategory()
+    await inMemoryCategoriesRepository.create(category)
+
+    const now = new Date()
+
+    // 10 products to seller[0] (target)
+    const productsFromSeller: Product[] = []
+    for (let i = 0; i < 10; i++) {
+      const product = makeProduct({
+        ownerId: sellers[0].id,
+        categoryId: category.id,
+      })
+      await inMemoryProductsRepository.create(product)
+      productsFromSeller.push(product)
+    }
+
+    // 5 products for other sellers
+    const productsFromOtherSellers: Product[] = []
+    for (let i = 0; i < 5; i++) {
+      const seller = sellers[1 + (i % 2)]
+      const product = makeProduct({
+        ownerId: seller.id,
+        categoryId: category.id,
+      })
+      await inMemoryProductsRepository.create(product)
+      productsFromOtherSellers.push(product)
+    }
+
+    // Map to hold expected counts per day
+    const viewsPerDayMap = new Map<string, number>()
+
+    // Create valid views: sellers 1 and 2 viewing products from seller[0] in the last 30 days
+    // Each seller views 3 distinct products
+    for (let i = 1; i <= 2; i++) {
+      const viewer = sellers[i]
+      for (let j = 0; j < 3; j++) {
+        const product = productsFromSeller[i * 3 + j - 1]
+        const createdAt = dayjs()
+          .utc()
+          .startOf('day')
+          .subtract(i * 3 + j, 'day')
+          .toDate()
+
+        const dayKey = createdAt.valueOf().toString()
+        viewsPerDayMap.set(dayKey, (viewsPerDayMap.get(dayKey) || 0) + 1)
+
+        await inMemoryProductViewsRepository.create(
+          makeProductView({
+            productId: product.id,
+            viewerId: viewer.id,
+            createdAt,
+          }),
+        )
+      }
+    }
+
+    // Views that SHOULD NOT count:
+    // - seller viewing their own product
+    // - products from other sellers
+    // - old views (>30 days)
+    await inMemoryProductViewsRepository.create(
+      makeProductView({
+        productId: productsFromOtherSellers[0].id,
+        viewerId: sellers[0].id, // own seller
+        createdAt: dayjs.utc(now).startOf('day').subtract(5, 'day').toDate(), // within 30 days
+      }),
+    )
+    await inMemoryProductViewsRepository.create(
+      makeProductView({
+        productId: productsFromSeller[0].id,
+        viewerId: sellers[1].id,
+        createdAt: dayjs.utc(now).startOf('day').subtract(31, 'day').toDate(), // older than 30 days
+      }),
+    )
+
+    const expectedArray = Array.from(viewsPerDayMap.entries())
+      .map(([date, amount]) => ({
+        date: dayjs.utc(Number(date)).toDate(),
+        amount,
+      }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+
+    const result = await sut.execute({ sellerId: sellers[0].id.toString() })
+
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.viewsPerDay).toEqual(expectedArray)
+    }
+  })
+
+  it('should return ResourceNotFoundError if seller does not exist', async () => {
+    const result = await sut.execute({
+      sellerId: 'non-existent-seller-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    if (result.isLeft()) {
+      expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+    }
+  })
+})
