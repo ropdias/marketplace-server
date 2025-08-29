@@ -4,6 +4,7 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductViewsRepository } from '../repositories/product-views-repository'
 import { ProductsRepository } from '../repositories/products-repository'
+import { dayjs } from '@/core/libs/dayjs'
 
 interface CountProductViewsPerDayLast30DaysRequest {
   sellerId: string
@@ -35,8 +36,7 @@ export class CountProductViewsPerDayLast30DaysUseCase {
       sellerId,
     })
 
-    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-    since.setHours(0, 0, 0, 0)
+    const since = dayjs().utc().startOf('day').subtract(30, 'day').toDate()
 
     const viewsPerDay = await this.productViewsRepository.countViewsPerDaySince(
       {
