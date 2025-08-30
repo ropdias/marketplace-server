@@ -9,4 +9,8 @@
   "material-icon-theme.files.associations": {
     "vitest.config.e2e.ts": "vitest",
   },
+  "[prisma]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
 }
