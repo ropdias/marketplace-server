@@ -4,6 +4,8 @@ import { HashComparator } from '@/domain/marketplace/application/cryptography/ha
 import { HashGenerator } from '@/domain/marketplace/application/cryptography/hash-generator'
 
 import { BcryptHasher } from './bcrypt-hasher'
+import { Encrypter } from '@/domain/marketplace/application/cryptography/encrypter'
+import { JwtEncrypter } from './jwt-encrypter'
 
 @Module({
   providers: [
@@ -15,7 +17,11 @@ import { BcryptHasher } from './bcrypt-hasher'
       provide: HashGenerator,
       useClass: BcryptHasher,
     },
+    {
+      provide: Encrypter,
+      useClass: JwtEncrypter,
+    },
   ],
-  exports: [HashComparator, HashGenerator],
+  exports: [HashComparator, HashGenerator, Encrypter],
 })
 export class CryptographyModule {}
