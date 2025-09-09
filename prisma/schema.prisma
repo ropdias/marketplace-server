@@ -7,3 +7,81 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+enum ProductStatus {
+  AVAILABLE
+  CANCELLED
+  SOLD
+}
+
+model Seller {
+  id       String  @id @default(uuid())
+  name     String
+  phone    String  @unique
+  email    String  @unique
+  password String
+  avatarId String? @unique @map("avatar_id")
+
+  products     Product[]
+  productViews ProductView[]
+  avatar       Attachment?   @relation("SellerAvatar", fields: [avatarId], references: [id], onDelete: SetNull)
+
+  @@map("sellers")
+}
+
+model Attachment {
+  id        String  @id @default(uuid())
+  url       String
+  productId String? @map("product_id")
+
+  // Relationship 1->N: A product can have multiple attachments
+  product Product? @relation("ProductAttachments", fields: [productId], references: [id], onDelete: Cascade)
+
+  // Relationship 1->1: Seller avatar
+  seller Seller? @relation("SellerAvatar")
+
+  @@map("attachments")
+}
+
+model Category {
+  id    String @id @default(uuid())
+  title String
+  slug  String @unique
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id           String        @id @default(uuid())
+  categoryId   String        @map("category_id")
+  title        String
+  description  String
+  priceInCents Int           @map("price_in_cents")
+  status       ProductStatus @default(AVAILABLE)
+  ownerId      String        @map("owner_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @updatedAt @map("updated_at")
+  soldAt       DateTime?     @map("sold_at")
+
+  category     Category      @relation(fields: [categoryId], references: [id])
+  owner        Seller        @relation(fields: [ownerId], references: [id])
+  attachments  Attachment[]  @relation("ProductAttachments")
+  productViews ProductView[]
+
+  @@map("products")
+}
+
+model ProductView {
+  id        String   @id @default(uuid())
+  productId String   @map("product_id")
+  viewerId  String   @map("viewer_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  viewer  Seller  @relation(fields: [viewerId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, viewerId])
+  @@map("product_views")
+}
