@@ -7,7 +7,7 @@ import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-ob
 import { PrismaAttachmentMapper } from './prisma-attachment-mapper'
 
 export type PrismaSellerProfile = PrismaSeller & {
-  attachment: PrismaAttachment | null
+  avatar: PrismaAttachment | null
 }
 
 export class PrismaSellerProfileMapper {
@@ -17,9 +17,7 @@ export class PrismaSellerProfileMapper {
       name: raw.name,
       phone: raw.phone,
       email: raw.email,
-      avatar: raw.attachment
-        ? PrismaAttachmentMapper.toDomain(raw.attachment)
-        : null,
+      avatar: raw.avatar ? PrismaAttachmentMapper.toDomain(raw.avatar) : null,
     })
   }
 }
