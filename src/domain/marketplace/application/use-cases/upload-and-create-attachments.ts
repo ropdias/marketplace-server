@@ -17,7 +17,7 @@ interface UploadAndCreateAttachmentsRequest {
 }
 
 type UploadAndCreateAttachmentsResponse = Either<
-  InvalidAttachmentTypeError,
+  InvalidAttachmentTypeError | UploadFailedError,
   { attachments: AttachmentDTO[] }
 >
 
