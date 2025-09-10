@@ -12,6 +12,7 @@ interface Upload {
 
 export class FakeUploader implements Uploader {
   public uploads: Upload[] = []
+  public shouldFail = false
 
   async upload({ fileName }: UploadParams): Promise<{ url: string }> {
     const url = randomUUID()
@@ -22,5 +23,12 @@ export class FakeUploader implements Uploader {
     })
 
     return { url }
+  }
+
+  async deleteMany(urls: string[]): Promise<void> {
+    if (this.shouldFail) {
+      throw new Error('Simulated delete failure')
+    }
+    this.uploads = this.uploads.filter((upload) => !urls.includes(upload.url))
   }
 }
