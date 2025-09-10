@@ -143,8 +143,7 @@ describe('Edit Product', () => {
 
     const attachment1 = makeAttachment()
     const attachment2 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment1)
-    await inMemoryAttachmentsRepository.create(attachment2)
+    await inMemoryAttachmentsRepository.createMany([attachment1, attachment2])
 
     const product = makeProduct({
       ownerId: seller.id,
@@ -171,8 +170,7 @@ describe('Edit Product', () => {
 
     const attachment3 = makeAttachment()
     const attachment4 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment3)
-    await inMemoryAttachmentsRepository.create(attachment4)
+    await inMemoryAttachmentsRepository.createMany([attachment3, attachment4])
 
     const result = await sut.execute({
       productId: product.id.toString(),

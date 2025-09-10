@@ -145,8 +145,7 @@ describe('Create Product', () => {
 
     const attachment1 = makeAttachment()
     const attachment2 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment1)
-    await inMemoryAttachmentsRepository.create(attachment2)
+    await inMemoryAttachmentsRepository.createMany([attachment1, attachment2])
 
     const product = makeProduct({
       title: 'Product',
@@ -288,9 +287,8 @@ describe('Create Product', () => {
     await inMemoryCategoriesRepository.create(category)
 
     const attachment1 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment1)
     const attachment2 = makeAttachment()
-    await inMemoryAttachmentsRepository.create(attachment2)
+    await inMemoryAttachmentsRepository.createMany([attachment1, attachment2])
 
     const product = makeProduct({
       title: 'Product',

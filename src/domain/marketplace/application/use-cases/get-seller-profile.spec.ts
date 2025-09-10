@@ -58,7 +58,7 @@ describe('Get Seller Profile', () => {
     const avatar = makeAttachment()
     seller.avatarId = avatar.id
 
-    await inMemoryAttachmentsRepository.create(avatar)
+    await inMemoryAttachmentsRepository.createMany([avatar])
     await inMemorySellersRepository.create(seller)
 
     const result = await sut.execute({ sellerId: seller.id.toString() })

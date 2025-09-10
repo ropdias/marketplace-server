@@ -87,7 +87,7 @@ describe('Edit Seller', () => {
       value: 'new-attachment-id',
     })
     const avatar = makeAttachment({}, avatarId)
-    await inMemoryAttachmentsRepository.create(avatar)
+    await inMemoryAttachmentsRepository.createMany([avatar])
 
     const result = await sut.execute({
       sellerId: seller.id.toString(),

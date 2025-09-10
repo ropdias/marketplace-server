@@ -87,7 +87,7 @@ describe('Create Seller', () => {
       value: 'non-existent-attachment-id',
     })
     const avatar = makeAttachment({}, avatarId)
-    await inMemoryAttachmentsRepository.create(avatar)
+    await inMemoryAttachmentsRepository.createMany([avatar])
 
     const seller = makeSeller({
       name: 'Seller',
