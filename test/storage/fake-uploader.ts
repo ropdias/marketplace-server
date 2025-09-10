@@ -15,6 +15,10 @@ export class FakeUploader implements Uploader {
   public shouldFail = false
 
   async upload({ fileName }: UploadParams): Promise<{ url: string }> {
+    if (this.shouldFail) {
+      throw new Error('Simulated upload failure')
+    }
+
     const url = randomUUID()
 
     this.uploads.push({
