@@ -20,7 +20,7 @@ export class PrismaProductAttachmentMapper {
     )
   }
 
-  static toPrismaUpdateMany(
+  static toPrismaUpdateManyArgs(
     attachments: ProductAttachment[],
   ): Prisma.AttachmentUpdateManyArgs {
     const attachmentIds = attachments.map((attachment) => {
