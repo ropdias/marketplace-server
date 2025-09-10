@@ -20,7 +20,7 @@ export class InMemoryAttachmentsRepository implements AttachmentsRepository {
     return this.items.filter((item) => idsSet.has(item.id.toString()))
   }
 
-  async create(attachment: Attachment) {
-    this.items.push(attachment)
+  async createMany(attachments: Attachment[]) {
+    this.items.push(...attachments)
   }
 }

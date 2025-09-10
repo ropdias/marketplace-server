@@ -28,8 +28,8 @@ export class PrismaAttachmentsRepository implements AttachmentsRepository {
     )
   }
 
-  async create(attachment: Attachment): Promise<void> {
-    const data = PrismaAttachmentMapper.toPrisma(attachment)
-    await this.prisma.attachment.create({ data })
+  async createMany(attachments: Attachment[]): Promise<void> {
+    const data = attachments.map((a) => PrismaAttachmentMapper.toPrisma(a))
+    await this.prisma.attachment.createMany({ data })
   }
 }
