@@ -83,7 +83,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
     this.items[itemIndex] = product
 
-    await this.productAttachmentsRepository.createMany(
+    await this.productAttachmentsRepository.updateMany(
       product.attachments.getNewItems(),
     )
 
@@ -95,7 +95,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
   async create(product: Product): Promise<void> {
     this.items.push(product)
 
-    await this.productAttachmentsRepository.createMany(
+    await this.productAttachmentsRepository.updateMany(
       product.attachments.getItems(),
     )
   }

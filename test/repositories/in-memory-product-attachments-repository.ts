@@ -7,7 +7,7 @@ export class InMemoryProductAttachmentsRepository
 {
   public items: ProductAttachment[] = []
 
-  async createMany(attachments: ProductAttachment[]): Promise<void> {
+  async updateMany(attachments: ProductAttachment[]): Promise<void> {
     this.items.push(...attachments)
   }
 
