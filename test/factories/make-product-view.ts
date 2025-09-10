@@ -4,6 +4,9 @@ import {
   ProductView,
   ProductViewProps,
 } from '@/domain/marketplace/enterprise/entities/product-view'
+import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { PrismaProductViewMapper } from '@/infra/database/prisma/mappers/prisma-product-view-mapper'
 
 export function makeProductView(
   override: Partial<ProductViewProps> = {},
@@ -20,4 +23,21 @@ export function makeProductView(
   )
 
   return productView
+}
+
+@Injectable()
+export class ProductViewFactory {
+  constructor(private prisma: PrismaService) {}
+
+  async makePrismaProductView(
+    data: Partial<ProductViewProps> = {},
+  ): Promise<ProductView> {
+    const productView = makeProductView(data)
+
+    await this.prisma.productView.create({
+      data: PrismaProductViewMapper.toPrisma(productView),
+    })
+
+    return productView
+  }
 }
