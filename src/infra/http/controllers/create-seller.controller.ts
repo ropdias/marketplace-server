@@ -4,6 +4,7 @@ import {
   ConflictException,
   Controller,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Post,
   UsePipes,
@@ -35,7 +36,7 @@ export class CreateSellerController {
   constructor(private createSeller: CreateSellerUseCase) {}
 
   @Post()
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   @UsePipes(new ZodValidationPipe(createSellerBodySchema))
   async handle(@Body() body: CreateSellerBodySchema) {
     const { name, phone, email, avatarId, password, passwordConfirmation } =
