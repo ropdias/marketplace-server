@@ -22,7 +22,6 @@ export class GetSellerProfileUseCase {
   constructor(
     private sellersRepository: SellersRepository,
     private sellerProfileAssembler: SellerProfileAssembler,
-    private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
   async execute({
@@ -39,7 +38,7 @@ export class GetSellerProfileUseCase {
     })
     if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
 
-    const sellerProfileDTO = this.sellerProfileMapper.toDTO(
+    const sellerProfileDTO = SellerProfileMapper.toDTO(
       sellerProfileEither.value,
     )
 

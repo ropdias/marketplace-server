@@ -4,14 +4,11 @@ import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { CategoryMapper } from '../mappers/category-mapper'
 import { makeProduct } from 'test/factories/make-product'
 import { makeCategory } from 'test/factories/make-category'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
@@ -31,14 +28,8 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileFactory: SellerProfileFactory
-let productDetailsFactory: ProductDetailsFactory
 let sellerProfileAssembler: SellerProfileAssembler
 let productDetailsAssembler: ProductDetailsAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
-let categoryMapper: CategoryMapper
-let productDetailsMapper: ProductDetailsMapper
 let sut: EditProductUseCase
 
 describe('Edit Product', () => {
@@ -51,26 +42,14 @@ describe('Edit Product', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory()
-    productDetailsFactory = new ProductDetailsFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
-    categoryMapper = new CategoryMapper()
-    productDetailsMapper = new ProductDetailsMapper(
-      sellerProfileMapper,
-      categoryMapper,
-      attachmentMapper,
-    )
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
       sellerProfileAssembler,
-      productDetailsFactory,
     )
     sut = new EditProductUseCase(
       inMemoryProductsRepository,
@@ -79,7 +58,6 @@ describe('Edit Product', () => {
       inMemoryAttachmentsRepository,
       inMemoryProductAttachmentsRepository,
       productDetailsAssembler,
-      productDetailsMapper,
     )
   })
 
@@ -112,17 +90,17 @@ describe('Edit Product', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       const editedProduct = inMemoryProductsRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar: null,
       })
-      const productDetails = productDetailsFactory.create({
+      const productDetails = ProductDetailsFactory.create({
         product: editedProduct,
         ownerProfile: sellerProfile,
         category: newCategory,
         attachments: [],
       })
-      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
       expect(result.value.productDetails).toMatchObject(productDetailsDTO)
 
       expect(result.value.productDetails.title).toBe('New Title')
@@ -189,17 +167,17 @@ describe('Edit Product', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       const editedProduct = inMemoryProductsRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar: null,
       })
-      const productDetails = productDetailsFactory.create({
+      const productDetails = ProductDetailsFactory.create({
         product: editedProduct,
         ownerProfile: sellerProfile,
         category: newCategory,
         attachments: [attachment1, attachment3, attachment4],
       })
-      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
       expect(result.value.productDetails).toMatchObject(productDetailsDTO)
 
       expect(result.value.productDetails.title).toBe('New Title')

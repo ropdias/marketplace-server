@@ -6,32 +6,23 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileFactory: SellerProfileFactory
 let sellerProfileAssembler: SellerProfileAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
 let sut: GetSellerProfileUseCase
 
 describe('Get Seller Profile', () => {
   beforeEach(() => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     sut = new GetSellerProfileUseCase(
       inMemorySellersRepository,
       sellerProfileAssembler,
-      sellerProfileMapper,
     )
   })
 
@@ -44,11 +35,11 @@ describe('Get Seller Profile', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar: null,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
       expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })
@@ -65,11 +56,11 @@ describe('Get Seller Profile', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
       expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
     }
   })

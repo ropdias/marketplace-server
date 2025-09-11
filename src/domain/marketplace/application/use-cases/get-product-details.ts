@@ -21,7 +21,6 @@ type GetProductDetailsUseCaseResponse = Either<
 export class GetProductDetailsUseCase {
   constructor(
     private productsRepository: ProductsRepository,
-    private productDetailsMapper: ProductDetailsMapper,
     private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
@@ -39,7 +38,7 @@ export class GetProductDetailsUseCase {
     })
     if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(
+    const productDetailsDTO = ProductDetailsMapper.toDTO(
       productDetailsEither.value,
     )
 

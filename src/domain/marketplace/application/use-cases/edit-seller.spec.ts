@@ -2,7 +2,6 @@ import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-r
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { FakeHasher } from 'test/cryptography/fake-hasher'
 import { makeSeller } from 'test/factories/make-seller'
 import { SellerEmailAlreadyExistsError } from './errors/seller-email-already-exists-error'
@@ -18,10 +17,7 @@ import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
-let sellerProfileFactory: SellerProfileFactory
 let sellerProfileAssembler: SellerProfileAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
 let sut: EditSellerUseCase
 
 describe('Edit Seller', () => {
@@ -29,12 +25,8 @@ describe('Edit Seller', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
-    sellerProfileFactory = new SellerProfileFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     sut = new EditSellerUseCase(
       inMemorySellersRepository,
@@ -42,7 +34,6 @@ describe('Edit Seller', () => {
       fakeHasher,
       fakeHasher,
       sellerProfileAssembler,
-      sellerProfileMapper,
     )
   })
 
@@ -60,11 +51,11 @@ describe('Edit Seller', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       const editedSeller = inMemorySellersRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller: editedSeller,
         avatar: null,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
       expect(inMemorySellersRepository.items).toHaveLength(1)
       expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
       expect(result.value.sellerProfile.name).toBe('Seller 2')
@@ -100,11 +91,11 @@ describe('Edit Seller', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       const editedSeller = inMemorySellersRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller: editedSeller,
         avatar,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
       expect(inMemorySellersRepository.items).toHaveLength(1)
       expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
       expect(result.value.sellerProfile.name).toBe('Seller 2')
@@ -130,11 +121,11 @@ describe('Edit Seller', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       const editedSeller = inMemorySellersRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller: editedSeller,
         avatar: null,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
       expect(inMemorySellersRepository.items).toHaveLength(1)
       expect(result.value.sellerProfile).toMatchObject(sellerProfileDTO)
       expect(result.value.sellerProfile.name).toBe('Seller 2')

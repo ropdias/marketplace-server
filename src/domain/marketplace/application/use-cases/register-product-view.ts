@@ -35,8 +35,6 @@ export class RegisterProductViewUseCase {
     private sellersRepository: SellersRepository,
     private sellerProfileAssembler: SellerProfileAssembler,
     private productDetailsAssembler: ProductDetailsAssembler,
-    private sellerProfileMapper: SellerProfileMapper,
-    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -73,7 +71,7 @@ export class RegisterProductViewUseCase {
     })
     if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(
+    const productDetailsDTO = ProductDetailsMapper.toDTO(
       productDetailsEither.value,
     )
 
@@ -82,7 +80,7 @@ export class RegisterProductViewUseCase {
     })
     if (viewerProfileEither.isLeft()) return left(viewerProfileEither.value)
 
-    const viewerProfileDTO = this.sellerProfileMapper.toDTO(
+    const viewerProfileDTO = SellerProfileMapper.toDTO(
       viewerProfileEither.value,
     )
 

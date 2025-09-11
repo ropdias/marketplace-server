@@ -39,7 +39,6 @@ export class CreateSellerUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
     private sellerProfileAssembler: SellerProfileAssembler,
-    private sellerProfileMapper: SellerProfileMapper,
   ) {}
 
   async execute({
@@ -89,7 +88,7 @@ export class CreateSellerUseCase {
     })
     if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
 
-    const sellerProfileDTO = this.sellerProfileMapper.toDTO(
+    const sellerProfileDTO = SellerProfileMapper.toDTO(
       sellerProfileEither.value,
     )
 

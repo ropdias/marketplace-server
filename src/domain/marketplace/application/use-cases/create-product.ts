@@ -38,7 +38,6 @@ export class CreateProductUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productDetailsAssembler: ProductDetailsAssembler,
-    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -90,7 +89,7 @@ export class CreateProductUseCase {
     })
     if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
 
-    const productDetailsDTO = this.productDetailsMapper.toDTO(
+    const productDetailsDTO = ProductDetailsMapper.toDTO(
       productDetailsEither.value,
     )
 

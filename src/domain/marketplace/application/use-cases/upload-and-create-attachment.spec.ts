@@ -7,19 +7,16 @@ import { AttachmentMapper } from '../mappers/attachment-mapper'
 
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeUploader: FakeUploader
-let attachmentMapper: AttachmentMapper
 let sut: UploadAndCreateAttachmentsUseCase
 
 describe('Upload and create attachments', () => {
   beforeEach(() => {
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeUploader = new FakeUploader()
-    attachmentMapper = new AttachmentMapper()
 
     sut = new UploadAndCreateAttachmentsUseCase(
       inMemoryAttachmentsRepository,
       fakeUploader,
-      attachmentMapper,
     )
   })
 
@@ -38,7 +35,7 @@ describe('Upload and create attachments', () => {
     if (result.isRight()) {
       expect(inMemoryAttachmentsRepository.items).toHaveLength(1)
       const createdAttachment = inMemoryAttachmentsRepository.items[0]
-      const attachmentDTO = attachmentMapper.toDTO(createdAttachment)
+      const attachmentDTO = AttachmentMapper.toDTO(createdAttachment)
 
       expect(result.value.attachments[0]).toMatchObject(attachmentDTO)
       expect(fakeUploader.uploads).toHaveLength(1)
@@ -74,15 +71,15 @@ describe('Upload and create attachments', () => {
       expect(inMemoryAttachmentsRepository.items).toHaveLength(3)
 
       const createdAttachment1 = inMemoryAttachmentsRepository.items[0]
-      const attachmentDTO1 = attachmentMapper.toDTO(createdAttachment1)
+      const attachmentDTO1 = AttachmentMapper.toDTO(createdAttachment1)
       expect(result.value.attachments[0]).toMatchObject(attachmentDTO1)
 
       const createdAttachment2 = inMemoryAttachmentsRepository.items[1]
-      const attachmentDTO2 = attachmentMapper.toDTO(createdAttachment2)
+      const attachmentDTO2 = AttachmentMapper.toDTO(createdAttachment2)
       expect(result.value.attachments[1]).toMatchObject(attachmentDTO2)
 
       const createdAttachment3 = inMemoryAttachmentsRepository.items[2]
-      const attachmentDTO3 = attachmentMapper.toDTO(createdAttachment3)
+      const attachmentDTO3 = AttachmentMapper.toDTO(createdAttachment3)
       expect(result.value.attachments[2]).toMatchObject(attachmentDTO3)
 
       expect(result.value.attachments).toHaveLength(3)

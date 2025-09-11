@@ -29,7 +29,6 @@ export class FetchRecentProductsUseCase {
   constructor(
     private productsRepository: ProductsRepository,
     private productDetailsAssembler: ProductDetailsAssembler,
-    private productDetailsMapper: ProductDetailsMapper,
   ) {}
 
   async execute({
@@ -63,7 +62,7 @@ export class FetchRecentProductsUseCase {
       return left(productDetailsListEither.value)
 
     productDetailsDTOList = productDetailsListEither.value.map(
-      (productDetails) => this.productDetailsMapper.toDTO(productDetails),
+      (productDetails) => ProductDetailsMapper.toDTO(productDetails),
     )
 
     return right({ productDetailsList: productDetailsDTOList })

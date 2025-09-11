@@ -26,7 +26,6 @@ export class UploadAndCreateAttachmentsUseCase {
   constructor(
     private attachmentsRepository: AttachmentsRepository,
     private uploader: Uploader,
-    private attachmentMapper: AttachmentMapper,
   ) {}
 
   async execute({
@@ -52,7 +51,7 @@ export class UploadAndCreateAttachmentsUseCase {
       await this.attachmentsRepository.createMany(attachments)
 
       return right({
-        attachments: attachments.map((a) => this.attachmentMapper.toDTO(a)),
+        attachments: attachments.map((a) => AttachmentMapper.toDTO(a)),
       })
     } catch (err: unknown) {
       if (uploadedUrls.length > 0) {

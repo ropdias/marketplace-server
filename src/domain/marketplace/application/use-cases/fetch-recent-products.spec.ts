@@ -1,14 +1,11 @@
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
-import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { CategoryMapper } from '../mappers/category-mapper'
 import { FetchRecentProductsUseCase } from './fetch-recent-products'
 import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
@@ -29,14 +26,8 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileFactory: SellerProfileFactory
-let productDetailsFactory: ProductDetailsFactory
 let sellerProfileAssembler: SellerProfileAssembler
 let productDetailsAssembler: ProductDetailsAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
-let categoryMapper: CategoryMapper
-let productDetailsMapper: ProductDetailsMapper
 let sut: FetchRecentProductsUseCase
 
 describe('Fetch Recent Products', () => {
@@ -49,31 +40,18 @@ describe('Fetch Recent Products', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory()
-    productDetailsFactory = new ProductDetailsFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
-    categoryMapper = new CategoryMapper()
-    productDetailsMapper = new ProductDetailsMapper(
-      sellerProfileMapper,
-      categoryMapper,
-      attachmentMapper,
-    )
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
       sellerProfileAssembler,
-      productDetailsFactory,
     )
     sut = new FetchRecentProductsUseCase(
       inMemoryProductsRepository,
       productDetailsAssembler,
-      productDetailsMapper,
     )
   })
 
@@ -108,18 +86,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -175,18 +153,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -244,18 +222,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -339,18 +317,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -420,18 +398,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -501,18 +479,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)
@@ -576,18 +554,18 @@ describe('Fetch Recent Products', () => {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .map((p) => {
           const owner = sellers.find((s) => s.id.equals(p.ownerId))!
-          const sellerProfile = sellerProfileFactory.create({
+          const sellerProfile = SellerProfileFactory.create({
             seller: owner,
             avatar: null,
           })
-          const productDetails = productDetailsFactory.create({
+          const productDetails = ProductDetailsFactory.create({
             product: p,
             ownerProfile: sellerProfile,
             category,
             attachments: [],
           })
 
-          return productDetailsMapper.toDTO(productDetails)
+          return ProductDetailsMapper.toDTO(productDetails)
         })
 
       expect(result.value.productDetailsList).toMatchObject(expected)

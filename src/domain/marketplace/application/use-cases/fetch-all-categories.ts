@@ -11,15 +11,12 @@ type FetchAllCategoriesUseCaseResponse = Either<
 
 @Injectable()
 export class FetchAllCategoriesUseCase {
-  constructor(
-    private categoriesRepository: CategoriesRepository,
-    private categoryMapper: CategoryMapper,
-  ) {}
+  constructor(private categoriesRepository: CategoriesRepository) {}
 
   async execute(): Promise<FetchAllCategoriesUseCaseResponse> {
     const categories = await this.categoriesRepository.findAll()
 
-    const categoriesDTO = this.categoryMapper.toDTOList(categories)
+    const categoriesDTO = CategoryMapper.toDTOList(categories)
 
     return right({ categories: categoriesDTO })
   }

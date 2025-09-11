@@ -4,17 +4,12 @@ import { makeCategory } from 'test/factories/make-category'
 import { CategoryMapper } from '../mappers/category-mapper'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
-let categoriesMapper: CategoryMapper
 let sut: FetchAllCategoriesUseCase
 
 describe('Fetch All Categories', () => {
   beforeEach(() => {
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
-    categoriesMapper = new CategoryMapper()
-    sut = new FetchAllCategoriesUseCase(
-      inMemoryCategoriesRepository,
-      categoriesMapper,
-    )
+    sut = new FetchAllCategoriesUseCase(inMemoryCategoriesRepository)
   })
 
   it('should be able to fetch all categories', async () => {
@@ -30,7 +25,7 @@ describe('Fetch All Categories', () => {
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      const categoriesDTO = categoriesMapper.toDTOList([
+      const categoriesDTO = CategoryMapper.toDTOList([
         category1,
         category2,
         category3,

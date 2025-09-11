@@ -4,14 +4,11 @@ import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { CategoryMapper } from '../mappers/category-mapper'
 import { makeProduct } from 'test/factories/make-product'
 import { makeCategory } from 'test/factories/make-category'
 import { NotProductOwnerError } from './errors/not-product-owner-error'
@@ -32,14 +29,8 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileFactory: SellerProfileFactory
-let productDetailsFactory: ProductDetailsFactory
 let sellerProfileAssembler: SellerProfileAssembler
 let productDetailsAssembler: ProductDetailsAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
-let categoryMapper: CategoryMapper
-let productDetailsMapper: ProductDetailsMapper
 let sut: ChangeProductStatusUseCase
 
 describe('Change Product Status', () => {
@@ -52,32 +43,19 @@ describe('Change Product Status', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileFactory = new SellerProfileFactory()
-    productDetailsFactory = new ProductDetailsFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
-    categoryMapper = new CategoryMapper()
-    productDetailsMapper = new ProductDetailsMapper(
-      sellerProfileMapper,
-      categoryMapper,
-      attachmentMapper,
-    )
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     productDetailsAssembler = new ProductDetailsAssembler(
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
       sellerProfileAssembler,
-      productDetailsFactory,
     )
     sut = new ChangeProductStatusUseCase(
       inMemoryProductsRepository,
       inMemorySellersRepository,
       productDetailsAssembler,
-      productDetailsMapper,
     )
   })
 
@@ -104,17 +82,17 @@ describe('Change Product Status', () => {
     expect(result1.isRight()).toBe(true)
     if (result1.isRight()) {
       const editedProduct = inMemoryProductsRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar: null,
       })
-      const productDetails = productDetailsFactory.create({
+      const productDetails = ProductDetailsFactory.create({
         product: editedProduct,
         ownerProfile: sellerProfile,
         category,
         attachments: [],
       })
-      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
       expect(result1.value.productDetails).toMatchObject(productDetailsDTO)
       expect(result1.value.productDetails.status).toBe('sold')
       expect(editedProduct.soldAt).not.toBeUndefined()
@@ -129,17 +107,17 @@ describe('Change Product Status', () => {
     expect(result2.isRight()).toBe(true)
     if (result2.isRight()) {
       const editedProduct = inMemoryProductsRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller,
         avatar: null,
       })
-      const productDetails = productDetailsFactory.create({
+      const productDetails = ProductDetailsFactory.create({
         product: editedProduct,
         ownerProfile: sellerProfile,
         category,
         attachments: [],
       })
-      const productDetailsDTO = productDetailsMapper.toDTO(productDetails)
+      const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
       expect(result2.value.productDetails).toMatchObject(productDetailsDTO)
       expect(result2.value.productDetails.status).toBe('available')
       expect(editedProduct.soldAt).toBeUndefined()

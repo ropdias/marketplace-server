@@ -2,7 +2,6 @@ import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-r
 import { SellerProfileFactory } from '../factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { AttachmentMapper } from '../mappers/attachment-mapper'
 import { FakeHasher } from 'test/cryptography/fake-hasher'
 import { CreateSellerUseCase } from './create-seller'
 import { PasswordIsDifferentError } from './errors/password-is-different-error'
@@ -17,10 +16,7 @@ import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
-let sellerProfileFactory: SellerProfileFactory
 let sellerProfileAssembler: SellerProfileAssembler
-let attachmentMapper: AttachmentMapper
-let sellerProfileMapper: SellerProfileMapper
 let sut: CreateSellerUseCase
 
 describe('Create Seller', () => {
@@ -28,19 +24,14 @@ describe('Create Seller', () => {
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeHasher = new FakeHasher()
-    sellerProfileFactory = new SellerProfileFactory()
-    attachmentMapper = new AttachmentMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
     sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileFactory,
     )
     sut = new CreateSellerUseCase(
       inMemorySellersRepository,
       inMemoryAttachmentsRepository,
       fakeHasher,
       sellerProfileAssembler,
-      sellerProfileMapper,
     )
   })
 
@@ -66,11 +57,11 @@ describe('Create Seller', () => {
     if (result.isRight()) {
       expect(inMemorySellersRepository.items).toHaveLength(1)
       const createdSeller = inMemorySellersRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller: createdSeller,
         avatar: null,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
 
       expect(createdSeller).toMatchObject({
         name: seller.name,
@@ -110,11 +101,11 @@ describe('Create Seller', () => {
     if (result.isRight()) {
       expect(inMemorySellersRepository.items).toHaveLength(1)
       const createdSeller = inMemorySellersRepository.items[0]
-      const sellerProfile = sellerProfileFactory.create({
+      const sellerProfile = SellerProfileFactory.create({
         seller: createdSeller,
         avatar,
       })
-      const sellerProfileDTO = sellerProfileMapper.toDTO(sellerProfile)
+      const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
 
       expect(createdSeller).toMatchObject({
         name: seller.name,
