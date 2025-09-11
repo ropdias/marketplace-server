@@ -7,13 +7,20 @@ import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-
 import { CreateSellerController } from './controllers/create-seller.controller'
 import { CreateSellerUseCase } from '@/domain/marketplace/application/use-cases/create-seller'
 import { SellerProfileAssembler } from '@/domain/marketplace/application/assemblers/seller-profile-assembler'
+import { GetSellerProfileController } from './controllers/get-seller-profile.controller'
+import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
-  controllers: [AuthenticateSellerController, CreateSellerController],
+  controllers: [
+    AuthenticateSellerController,
+    CreateSellerController,
+    GetSellerProfileController,
+  ],
   providers: [
     AuthenticateSellerUseCase,
     CreateSellerUseCase,
+    GetSellerProfileUseCase,
     SellerProfileAssembler,
   ],
 })
