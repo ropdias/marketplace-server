@@ -4,6 +4,13 @@
   "entryFile": "main",
   "sourceRoot": "src/infra",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "../generated/**/*",
+        "outDir": "dist/src/generated",
+        "watchAssets": true
+      }
+    ]
   }
 }
