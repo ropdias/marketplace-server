@@ -48,7 +48,7 @@ export class AuthenticateSellerController {
     const { accessToken } = result.value
 
     return {
-      accessToken: accessToken,
+      accessToken,
     }
   }
 }
