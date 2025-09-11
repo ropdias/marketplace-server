@@ -9,23 +9,7 @@ import { makeCategory } from 'test/factories/make-category'
 import { makeProduct } from 'test/factories/make-product'
 import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 
-let attachmentMapper: AttachmentMapper
-let categoryMapper: CategoryMapper
-let sellerProfileMapper: SellerProfileMapper
-let sut: ProductDetailsMapper
-
 describe('ProductDetailsMapper', () => {
-  beforeEach(() => {
-    attachmentMapper = new AttachmentMapper()
-    categoryMapper = new CategoryMapper()
-    sellerProfileMapper = new SellerProfileMapper(attachmentMapper)
-    sut = new ProductDetailsMapper(
-      sellerProfileMapper,
-      categoryMapper,
-      attachmentMapper,
-    )
-  })
-
   it('should map a product details to DTO', () => {
     const seller = makeSeller()
     const sellerProfile = SellerProfile.create({
@@ -55,7 +39,7 @@ describe('ProductDetailsMapper', () => {
       attachments: [attachment1, attachment2],
     })
 
-    const dto = sut.toDTO(productDetails)
+    const dto = ProductDetailsMapper.toDTO(productDetails)
 
     expect(dto).toEqual({
       productId: product.id.toString(),
@@ -63,10 +47,10 @@ describe('ProductDetailsMapper', () => {
       description: product.description,
       priceInCents: product.priceInCents.value,
       status: product.status.value,
-      owner: sellerProfileMapper.toDTO(sellerProfile),
-      category: categoryMapper.toDTO(category),
+      owner: SellerProfileMapper.toDTO(sellerProfile),
+      category: CategoryMapper.toDTO(category),
       attachments: [attachment1, attachment2].map((attachment) =>
-        attachmentMapper.toDTO(attachment),
+        AttachmentMapper.toDTO(attachment),
       ),
     })
   })

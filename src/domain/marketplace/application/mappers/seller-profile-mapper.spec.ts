@@ -4,15 +4,7 @@ import { makeSeller } from 'test/factories/make-seller'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
 
-let attachmentMapper: AttachmentMapper
-let sut: SellerProfileMapper
-
 describe('SellerProfileMapper', () => {
-  beforeEach(() => {
-    attachmentMapper = new AttachmentMapper()
-    sut = new SellerProfileMapper(attachmentMapper)
-  })
-
   it('should map seller profile without avatar to DTO', () => {
     const seller = makeSeller()
     const sellerProfile = SellerProfile.create({
@@ -23,7 +15,7 @@ describe('SellerProfileMapper', () => {
       avatar: null,
     })
 
-    const dto = sut.toDTO(sellerProfile)
+    const dto = SellerProfileMapper.toDTO(sellerProfile)
 
     expect(dto).toEqual({
       sellerId: seller.id.toString(),
@@ -46,14 +38,14 @@ describe('SellerProfileMapper', () => {
       avatar,
     })
 
-    const dto = sut.toDTO(sellerProfile)
+    const dto = SellerProfileMapper.toDTO(sellerProfile)
 
     expect(dto).toEqual({
       sellerId: seller.id.toString(),
       name: seller.name,
       phone: seller.phone,
       email: seller.email,
-      avatar: attachmentMapper.toDTO(avatar),
+      avatar: AttachmentMapper.toDTO(avatar),
     })
   })
 
@@ -67,7 +59,7 @@ describe('SellerProfileMapper', () => {
       avatar: null,
     })
 
-    const dto = sut.toDTO(sellerProfile)
+    const dto = SellerProfileMapper.toDTO(sellerProfile)
 
     expect(dto).not.toHaveProperty('password')
   })

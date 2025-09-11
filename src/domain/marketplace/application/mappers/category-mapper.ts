@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common'
 import { Category } from '../../enterprise/entities/category'
 import { CategoryDTO } from '../dtos/category-dtos'
 
-@Injectable()
 export class CategoryMapper {
-  public toDTO(category: Category): CategoryDTO {
+  static toDTO(category: Category): CategoryDTO {
     return {
       id: category.id.toString(),
       title: category.title,
@@ -12,7 +10,7 @@ export class CategoryMapper {
     }
   }
 
-  public toDTOList(categories: Category[]): CategoryDTO[] {
+  static toDTOList(categories: Category[]): CategoryDTO[] {
     return categories.map((category) => this.toDTO(category))
   }
 }

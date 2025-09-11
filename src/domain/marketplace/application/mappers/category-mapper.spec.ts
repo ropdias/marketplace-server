@@ -1,17 +1,11 @@
 import { CategoryMapper } from './category-mapper'
 import { makeCategory } from 'test/factories/make-category'
 
-let sut: CategoryMapper
-
 describe('CategoryMapper', () => {
-  beforeEach(() => {
-    sut = new CategoryMapper()
-  })
-
   it('should map category to DTO', () => {
     const category = makeCategory()
 
-    const dto = sut.toDTO(category)
+    const dto = CategoryMapper.toDTO(category)
 
     expect(dto).toEqual({
       id: category.id.toString(),
@@ -23,7 +17,7 @@ describe('CategoryMapper', () => {
   it('should map a category list to a DTO List', () => {
     const categories = [makeCategory(), makeCategory()]
 
-    const dto = sut.toDTOList(categories)
+    const dto = CategoryMapper.toDTOList(categories)
 
     expect(dto).toEqual([
       {
