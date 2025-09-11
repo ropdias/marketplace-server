@@ -6,24 +6,16 @@ import { makeProduct } from 'test/factories/make-product'
 import { Attachment } from '../../enterprise/entities/attachment'
 import { makeAttachment } from 'test/factories/make-attachment'
 
-let sellerProfileFactory: SellerProfileFactory
-let sut: ProductDetailsFactory
-
 describe('ProductDetailsFactory', () => {
-  beforeEach(() => {
-    sellerProfileFactory = new SellerProfileFactory()
-    sut = new ProductDetailsFactory()
-  })
-
   it('should create a product details without attachments if attachment list is empty', () => {
     const seller = makeSeller()
     const category = makeCategory()
     const product = makeProduct({ ownerId: seller.id, categoryId: category.id })
     const attachments: Attachment[] = []
 
-    const ownerProfile = sellerProfileFactory.create({ seller, avatar: null })
+    const ownerProfile = SellerProfileFactory.create({ seller, avatar: null })
 
-    const productDetails = sut.create({
+    const productDetails = ProductDetailsFactory.create({
       product,
       ownerProfile,
       category,
@@ -49,9 +41,9 @@ describe('ProductDetailsFactory', () => {
     const product = makeProduct({ ownerId: seller.id, categoryId: category.id })
     const attachments: Attachment[] = [makeAttachment(), makeAttachment()]
 
-    const ownerProfile = sellerProfileFactory.create({ seller, avatar: null })
+    const ownerProfile = SellerProfileFactory.create({ seller, avatar: null })
 
-    const productDetails = sut.create({
+    const productDetails = ProductDetailsFactory.create({
       product,
       ownerProfile,
       category,

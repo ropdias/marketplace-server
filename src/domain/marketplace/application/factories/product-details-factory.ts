@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common'
 import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 import { Product } from '../../enterprise/entities/product'
 import { Category } from '../../enterprise/entities/category'
@@ -12,11 +11,8 @@ interface ProductDetailsFactoryCreateRequest {
   attachments: Attachment[]
 }
 
-@Injectable()
 export class ProductDetailsFactory {
-  constructor() {}
-
-  create({
+  static create({
     product,
     ownerProfile,
     category,

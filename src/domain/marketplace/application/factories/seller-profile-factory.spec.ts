@@ -2,17 +2,11 @@ import { makeSeller } from 'test/factories/make-seller'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { SellerProfileFactory } from './seller-profile-factory'
 
-let sut: SellerProfileFactory
-
 describe('SellerProfileFactory', () => {
-  beforeEach(() => {
-    sut = new SellerProfileFactory()
-  })
-
   it('should create a seller profile without avatar when attachment is null', () => {
     const seller = makeSeller()
 
-    const sellerProfile = sut.create({ seller, avatar: null })
+    const sellerProfile = SellerProfileFactory.create({ seller, avatar: null })
 
     // VO/Entity equality
     expect(sellerProfile.sellerId.equals(seller.id)).toBe(true)
@@ -27,7 +21,7 @@ describe('SellerProfileFactory', () => {
     const avatar = makeAttachment()
     const seller = makeSeller({ avatarId: avatar.id })
 
-    const sellerProfile = sut.create({ seller, avatar })
+    const sellerProfile = SellerProfileFactory.create({ seller, avatar })
 
     // VO/Entity equality
     expect(sellerProfile.sellerId.equals(seller.id)).toBe(true)
@@ -40,7 +34,7 @@ describe('SellerProfileFactory', () => {
 
   it('should never include password in seller profile', () => {
     const seller = makeSeller({ password: 'super-secret' })
-    const sellerProfile = sut.create({ seller, avatar: null })
+    const sellerProfile = SellerProfileFactory.create({ seller, avatar: null })
 
     expect(sellerProfile).not.toHaveProperty('password')
   })
