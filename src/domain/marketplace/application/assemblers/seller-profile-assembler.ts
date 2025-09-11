@@ -18,10 +18,7 @@ type SellerProfileAssemblerResponse = Either<
 
 @Injectable()
 export class SellerProfileAssembler {
-  constructor(
-    private attachmentsRepository: AttachmentsRepository,
-    private sellerProfileFactory: SellerProfileFactory,
-  ) {}
+  constructor(private attachmentsRepository: AttachmentsRepository) {}
 
   async assemble({
     seller,
@@ -37,7 +34,7 @@ export class SellerProfileAssembler {
       }
     }
 
-    const sellerProfile = this.sellerProfileFactory.create({
+    const sellerProfile = SellerProfileFactory.create({
       seller,
       avatar,
     })

@@ -19,7 +19,6 @@ export class ProductDetailsAssembler {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private sellerProfileAssembler: SellerProfileAssembler,
-    private productDetailsFactory: ProductDetailsFactory,
   ) {}
 
   async assemble({
@@ -44,7 +43,7 @@ export class ProductDetailsAssembler {
     })
     if (ownerProfileEither.isLeft()) return left(ownerProfileEither.value)
 
-    const productDetails = this.productDetailsFactory.create({
+    const productDetails = ProductDetailsFactory.create({
       product,
       ownerProfile: ownerProfileEither.value,
       category,
@@ -106,7 +105,7 @@ export class ProductDetailsAssembler {
       if (!ownerProfile) return left(new ResourceNotFoundError())
 
       productDetailsList.push(
-        this.productDetailsFactory.create({
+        ProductDetailsFactory.create({
           product,
           ownerProfile,
           category,
@@ -159,7 +158,7 @@ export class ProductDetailsAssembler {
       if (!category) return left(new ResourceNotFoundError())
 
       productDetailsList.push(
-        this.productDetailsFactory.create({
+        ProductDetailsFactory.create({
           product,
           ownerProfile: ownerProfileEither.value,
           category,
