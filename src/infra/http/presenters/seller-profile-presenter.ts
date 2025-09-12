@@ -3,18 +3,10 @@ import type { SellerProfileDTO } from '@/domain/marketplace/application/dtos/sel
 import { AttachmentDTOResponse } from './attachment-presenter'
 
 export class SellerProfileDTOResponse {
-  @ApiProperty({ format: 'uuid' })
-  id: string
-
-  @ApiProperty()
-  name: string
-
-  @ApiProperty({ format: 'email' })
-  email: string
-
-  @ApiProperty()
-  phone: string
-
+  @ApiProperty({ format: 'uuid' }) id: string
+  @ApiProperty() name: string
+  @ApiProperty({ format: 'email' }) email: string
+  @ApiProperty() phone: string
   @ApiProperty({
     type: AttachmentDTOResponse,
     nullable: true,
@@ -33,9 +25,7 @@ export class SellerProfileDTOResponse {
 }
 
 export class SellerProfileResponse {
-  @ApiProperty({
-    type: SellerProfileDTOResponse,
-  })
+  @ApiProperty({ type: SellerProfileDTOResponse })
   seller: SellerProfileDTOResponse
 
   constructor(dto: SellerProfileDTO) {

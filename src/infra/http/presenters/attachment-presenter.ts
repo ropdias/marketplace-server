@@ -2,11 +2,8 @@ import { AttachmentDTO } from '@/domain/marketplace/application/dtos/attachment-
 import { ApiProperty } from '@nestjs/swagger'
 
 export class AttachmentDTOResponse {
-  @ApiProperty({ format: 'uuid' })
-  id: string
-
-  @ApiProperty()
-  url: string
+  @ApiProperty({ format: 'uuid' }) id: string
+  @ApiProperty() url: string
 
   constructor(attachment: AttachmentDTO) {
     this.id = attachment.id
@@ -15,9 +12,7 @@ export class AttachmentDTOResponse {
 }
 
 export class AttachmentsResponse {
-  @ApiProperty({
-    type: [AttachmentDTOResponse],
-  })
+  @ApiProperty({ type: [AttachmentDTOResponse] })
   attachments: AttachmentDTOResponse[]
 
   constructor(dtos: AttachmentDTO[]) {

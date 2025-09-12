@@ -6,30 +6,16 @@ import { ApiProperty } from '@nestjs/swagger'
 import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
 
 export class ProductDetailsDTOResponse {
-  @ApiProperty({ format: 'uuid' })
-  id: string
-
-  @ApiProperty()
-  title: string
-
-  @ApiProperty()
-  description: string
-
-  @ApiProperty({ default: 1 })
-  priceInCents: number
-
-  @ApiProperty({ enum: ProductStatusEnum })
-  status: string
-
+  @ApiProperty({ format: 'uuid' }) id: string
+  @ApiProperty() title: string
+  @ApiProperty() description: string
+  @ApiProperty({ default: 1 }) priceInCents: number
+  @ApiProperty({ enum: ProductStatusEnum }) status: string
   @ApiProperty({ type: SellerProfileDTOResponse })
   owner: SellerProfileDTOResponse
-
   @ApiProperty({ type: CategoryDTOResponse })
   category: CategoryDTOResponse
-
-  @ApiProperty({
-    type: [AttachmentDTOResponse],
-  })
+  @ApiProperty({ type: [AttachmentDTOResponse] })
   attachments: AttachmentDTOResponse[]
 
   constructor(productDetails: ProductDetailsDTO) {
@@ -47,9 +33,7 @@ export class ProductDetailsDTOResponse {
 }
 
 export class ProductDetailsResponse {
-  @ApiProperty({
-    type: ProductDetailsDTOResponse,
-  })
+  @ApiProperty({ type: ProductDetailsDTOResponse })
   product: ProductDetailsDTOResponse
 
   constructor(dto: ProductDetailsDTO) {
@@ -58,9 +42,7 @@ export class ProductDetailsResponse {
 }
 
 export class ProductDetailsListResponse {
-  @ApiProperty({
-    type: [ProductDetailsDTOResponse],
-  })
+  @ApiProperty({ type: [ProductDetailsDTOResponse] })
   products: ProductDetailsDTOResponse[]
 
   constructor(dtos: ProductDetailsDTO[]) {
