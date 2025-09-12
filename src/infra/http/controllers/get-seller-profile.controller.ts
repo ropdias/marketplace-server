@@ -28,12 +28,12 @@ export class GetSellerProfileController {
   constructor(private getSellerProfile: GetSellerProfileUseCase) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get the seller profile' })
   @ApiOkResponse({
     description: 'The seller profile was successfully found',
     type: SellerProfileResponse,
   })
-  @HttpCode(HttpStatus.OK)
   async handle(@CurrentUser() user: UserPayload) {
     const sellerId = user.sub
 
