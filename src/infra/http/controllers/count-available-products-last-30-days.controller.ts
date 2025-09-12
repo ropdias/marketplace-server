@@ -40,7 +40,7 @@ export class CountAvailableProductsLast30DaysController {
     type: CountAvailableProductsLast30DaysResponse,
   })
   @ApiNotFoundResponse({
-    description: 'Seller profile not found.',
+    description: 'Seller not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
