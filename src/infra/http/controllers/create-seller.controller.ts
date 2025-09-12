@@ -49,13 +49,17 @@ class CreateSellerBody {
   @ApiProperty()
   name: string
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Unique ' })
   phone: string
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Unique ' })
   email: string
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Created in POST - /attachments',
+  })
   avatarId: string | null
 
   @ApiProperty()
