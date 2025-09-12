@@ -49,11 +49,13 @@ export class ChangeProductStatusController {
     type: String,
     format: 'uuid',
     description: 'The product id (uuid)',
+    required: true,
   })
   @ApiParam({
     name: 'status',
     type: String,
     enum: ProductStatusEnum,
+    required: true,
   })
   @ApiOkResponse({
     description: 'The product status was successfully changed.',

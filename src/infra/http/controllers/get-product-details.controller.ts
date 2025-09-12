@@ -35,6 +35,7 @@ export class GetProductDetailsController {
     type: String,
     format: 'uuid',
     description: 'The product id (uuid)',
+    required: true,
   })
   @ApiOkResponse({
     description: 'The product was successfully found.',

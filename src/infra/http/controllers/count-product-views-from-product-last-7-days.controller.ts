@@ -43,6 +43,7 @@ export class CountProductViewsFromProductLast7DaysController {
     type: String,
     format: 'uuid',
     description: 'The product id (uuid)',
+    required: true,
   })
   @ApiOkResponse({
     description: 'The amount of views received by the product in 7 days.',
