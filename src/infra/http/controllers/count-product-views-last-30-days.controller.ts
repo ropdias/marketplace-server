@@ -59,7 +59,7 @@ export class CountProductViewsLast30DaysController {
           throw new NotFoundException(error.message)
         default:
           // Log the unknown error for debugging
-          console.error('Unexpected error in CreateSellerController:', error)
+          console.error(`Unexpected error in ${this.constructor.name}`, error)
           throw new InternalServerErrorException('An unexpected error occurred')
       }
     }
