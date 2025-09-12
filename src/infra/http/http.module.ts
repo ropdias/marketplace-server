@@ -9,6 +9,8 @@ import { CreateSellerUseCase } from '@/domain/marketplace/application/use-cases/
 import { SellerProfileAssembler } from '@/domain/marketplace/application/assemblers/seller-profile-assembler'
 import { GetSellerProfileController } from './controllers/get-seller-profile.controller'
 import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
+import { CountAvailableProductsLast30DaysController } from './controllers/count-available-products-last-30-days.controller'
+import { CountAvailableProductsLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-available-products-last-30-days'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -16,11 +18,13 @@ import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-ca
     AuthenticateSellerController,
     CreateSellerController,
     GetSellerProfileController,
+    CountAvailableProductsLast30DaysController,
   ],
   providers: [
     AuthenticateSellerUseCase,
     CreateSellerUseCase,
     GetSellerProfileUseCase,
+    CountAvailableProductsLast30DaysUseCase,
     SellerProfileAssembler,
   ],
 })
