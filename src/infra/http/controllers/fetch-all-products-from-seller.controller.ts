@@ -31,7 +31,6 @@ import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/valu
 import { InvalidProductStatusError } from '@/domain/marketplace/application/use-cases/errors/invalid-product-status-error'
 
 const statusQueryParamSchema = z.enum(ProductStatusEnum).optional()
-
 const searchQueryParamSchema = z.string().optional()
 
 const statusQueryValidationPipe = new ZodValidationPipe(statusQueryParamSchema)
