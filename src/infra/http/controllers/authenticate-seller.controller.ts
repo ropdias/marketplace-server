@@ -1,10 +1,10 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Post,
   UsePipes,
 } from '@nestjs/common'
@@ -16,6 +16,7 @@ import { WrongCredentialsError } from '@/domain/marketplace/application/use-case
 import {
   ApiBody,
   ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
   ApiProperty,
@@ -56,6 +57,9 @@ export class AuthenticateSellerController {
   @ApiForbiddenResponse({
     description: 'Invalid credentials.',
   })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
   async handle(@Body() body: AuthenticateBodySchema) {
     const result = await this.authenticateSeller.execute(body)
 
@@ -66,7 +70,9 @@ export class AuthenticateSellerController {
         case WrongCredentialsError:
           throw new ForbiddenException(error.message)
         default:
-          throw new BadRequestException(error.message)
+          // Log the unknown error for debugging
+          console.error('Unexpected error in CreateSellerController:', error)
+          throw new InternalServerErrorException('An unexpected error occurred')
       }
     }
 
