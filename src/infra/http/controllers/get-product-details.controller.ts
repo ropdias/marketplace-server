@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import {
-  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -36,7 +36,7 @@ export class GetProductDetailsController {
     format: 'uuid',
     description: 'The product id (uuid)',
   })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'The product was successfully found.',
     type: ProductDetailsResponse,
   })
