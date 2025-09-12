@@ -1,9 +1,9 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -16,6 +16,8 @@ import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-ca
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import {
   ApiBearerAuth,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -34,6 +36,12 @@ export class GetSellerProfileController {
     description: 'The seller profile was successfully found',
     type: SellerProfileResponse,
   })
+  @ApiNotFoundResponse({
+    description: 'Seller profile not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
   async handle(@CurrentUser() user: UserPayload) {
     const sellerId = user.sub
 
@@ -46,7 +54,9 @@ export class GetSellerProfileController {
         case ResourceNotFoundError:
           throw new NotFoundException(error.message)
         default:
-          throw new BadRequestException(error.message)
+          // Log the unknown error for debugging
+          console.error('Unexpected error in CreateSellerController:', error)
+          throw new InternalServerErrorException('An unexpected error occurred')
       }
     }
 
