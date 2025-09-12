@@ -5,6 +5,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   Post,
   UsePipes,
@@ -17,7 +18,21 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { PasswordIsDifferentError } from '@/domain/marketplace/application/use-cases/errors/password-is-different-error'
 import { SellerEmailAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/seller-phone-already-exists-error'
-import { SellerProfilePresenter } from '../presenters/seller-profile-presenter'
+import {
+  SellerProfilePresenter,
+  SellerProfileResponse,
+} from '../presenters/seller-profile-presenter'
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger'
 
 const createSellerBodySchema = z.object({
   name: z.string(),
@@ -30,26 +45,60 @@ const createSellerBodySchema = z.object({
 
 type CreateSellerBodySchema = z.infer<typeof createSellerBodySchema>
 
+class CreateSellerBody {
+  @ApiProperty()
+  name: string
+
+  @ApiProperty()
+  phone: string
+
+  @ApiProperty()
+  email: string
+
+  @ApiProperty({ nullable: true })
+  avatarId: string | null
+
+  @ApiProperty()
+  password: string
+
+  @ApiProperty()
+  passwordConfirmation: string
+
+  constructor(data: CreateSellerBodySchema) {
+    this.name = data.name
+    this.phone = data.phone
+    this.email = data.email
+    this.avatarId = data.avatarId
+    this.password = data.password
+    this.passwordConfirmation = data.passwordConfirmation
+  }
+}
+
 @Controller('/sellers')
 @Public()
+@ApiTags('Sellers')
 export class CreateSellerController {
   constructor(private createSeller: CreateSellerUseCase) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(new ZodValidationPipe(createSellerBodySchema))
+  @ApiOperation({ summary: 'Create a new seller' })
+  @ApiBody({ type: CreateSellerBody })
+  @ApiCreatedResponse({
+    description: 'The record has been successfully created.',
+    type: SellerProfileResponse,
+  })
+  @ApiBadRequestResponse({ description: 'Password is different.' })
+  @ApiNotFoundResponse({ description: 'The avatar was not found.' })
+  @ApiConflictResponse({
+    description: 'The email or phone already exists.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
   async handle(@Body() body: CreateSellerBodySchema) {
-    const { name, phone, email, avatarId, password, passwordConfirmation } =
-      body
-
-    const result = await this.createSeller.execute({
-      name,
-      phone,
-      email,
-      avatarId,
-      password,
-      passwordConfirmation,
-    })
+    const result = await this.createSeller.execute(body)
 
     if (result.isLeft()) {
       const error = result.value
@@ -64,7 +113,9 @@ export class CreateSellerController {
         case SellerPhoneAlreadyExistsError:
           throw new ConflictException(error.message)
         default:
-          throw new BadRequestException(error.message)
+          // Log the unknown error for debugging
+          console.error('Unexpected error in CreateSellerController:', error)
+          throw new InternalServerErrorException('An unexpected error occurred')
       }
     }
 
