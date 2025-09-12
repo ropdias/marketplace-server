@@ -92,7 +92,7 @@ export class CreateSellerController {
         case PasswordIsDifferentError:
           throw new BadRequestException(error.message)
         case ResourceNotFoundError:
-          throw new NotFoundException('The avatar was not found.')
+          throw new NotFoundException(error.message)
         case SellerEmailAlreadyExistsError:
           throw new ConflictException(error.message)
         case SellerPhoneAlreadyExistsError:

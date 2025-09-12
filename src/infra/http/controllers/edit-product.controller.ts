@@ -98,13 +98,11 @@ export class EditProductController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(
-            'The seller, category or attachments were not found.',
-          )
+          throw new NotFoundException(error.message)
         case NotProductOwnerError:
-          throw new ForbiddenException('You are not the owner of this product.')
+          throw new ForbiddenException(error.message)
         case ProductHasAlreadyBeenSoldError:
-          throw new ForbiddenException('The product has already been sold.')
+          throw new ForbiddenException(error.message)
         default:
           // Log the unknown error for debugging
           console.error(`Unexpected error in ${this.constructor.name}`, error)

@@ -80,9 +80,7 @@ export class CreateProductController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(
-            'The seller, category or attachments were not found.',
-          )
+          throw new NotFoundException(error.message)
         default:
           // Log the unknown error for debugging
           console.error(`Unexpected error in ${this.constructor.name}`, error)

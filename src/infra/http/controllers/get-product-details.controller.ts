@@ -54,7 +54,7 @@ export class GetProductDetailsController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException('The product was not found.')
+          throw new NotFoundException(error.message)
         default:
           // Log the unknown error for debugging
           console.error(`Unexpected error in ${this.constructor.name}`, error)
