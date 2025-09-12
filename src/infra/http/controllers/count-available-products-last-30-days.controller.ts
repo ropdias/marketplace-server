@@ -33,7 +33,7 @@ export class CountAvailableProductsLast30DaysController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Count the amount of available products in 30 days.​​',
+    summary: 'Count the amount of available products in 30 days.',
   })
   @ApiOkResponse({
     description: 'The amount of available products in 30 days.',
