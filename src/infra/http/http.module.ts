@@ -32,6 +32,8 @@ import { FetchAllProductsFromSellerController } from './controllers/fetch-all-pr
 import { FetchAllProductsFromSellerUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-products-from-seller'
 import { FetchRecentProductsController } from './controllers/fetch-recent-products.controller'
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products'
+import { ChangeProductStatusController } from './controllers/change-product-status.controller'
+import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -50,6 +52,7 @@ import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use
     FetchRecentProductsController,
     GetProductDetailsController,
     EditProductController,
+    ChangeProductStatusController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -66,6 +69,7 @@ import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use
     FetchRecentProductsUseCase,
     GetProductDetailsUseCase,
     EditProductUseCase,
+    ChangeProductStatusUseCase,
     SellerProfileAssembler,
     ProductDetailsAssembler,
   ],
