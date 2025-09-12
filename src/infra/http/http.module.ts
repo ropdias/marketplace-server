@@ -15,6 +15,8 @@ import { CountProductViewsFromProductLast7DaysController } from './controllers/c
 import { CountProductViewsFromProductLast7DaysUseCase } from '@/domain/marketplace/application/use-cases/count-product-views-from-product-last-7-days'
 import { CountProductViewsLast30DaysController } from './controllers/count-product-views-last-30-days.controller'
 import { CountProductViewsLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-product-views-last-30-days'
+import { CountProductViewsPerDayLast30DaysController } from './controllers/count-product-views-per-day-last-30-days.controller'
+import { CountProductViewsPerDayLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-product-views-per-day-last-30-days'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -24,6 +26,7 @@ import { CountProductViewsLast30DaysUseCase } from '@/domain/marketplace/applica
     GetSellerProfileController,
     CountAvailableProductsLast30DaysController,
     CountProductViewsLast30DaysController,
+    CountProductViewsPerDayLast30DaysController,
     CountProductViewsFromProductLast7DaysController,
   ],
   providers: [
@@ -32,6 +35,7 @@ import { CountProductViewsLast30DaysUseCase } from '@/domain/marketplace/applica
     GetSellerProfileUseCase,
     CountAvailableProductsLast30DaysUseCase,
     CountProductViewsLast30DaysUseCase,
+    CountProductViewsPerDayLast30DaysUseCase,
     CountProductViewsFromProductLast7DaysUseCase,
     SellerProfileAssembler,
   ],
