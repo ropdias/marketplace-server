@@ -106,8 +106,6 @@ export class CreateSellerController {
 
     const { sellerProfile } = result.value
 
-    return {
-      seller: SellerProfilePresenter.toHTTP(sellerProfile),
-    }
+    return SellerProfilePresenter.toHTTP(sellerProfile)
   }
 }
