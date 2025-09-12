@@ -12,6 +12,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger'
@@ -36,6 +37,12 @@ export class CountProductViewsFromProductLast7DaysController {
   @ApiOperation({
     summary:
       'Count the number of views received by a product in the last 7 days.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    format: 'uuid',
+    description: 'The product id (uuid)',
   })
   @ApiOkResponse({
     description: 'The amount of views received by the product in 7 days.',
