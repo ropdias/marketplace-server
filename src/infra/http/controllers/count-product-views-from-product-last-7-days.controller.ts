@@ -42,7 +42,7 @@ export class CountProductViewsFromProductLast7DaysController {
     type: CountProductViewsFromProductLast7DaysResponse,
   })
   @ApiNotFoundResponse({
-    description: 'Seller or product not found.',
+    description: 'The seller or product was not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
