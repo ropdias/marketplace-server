@@ -3,6 +3,7 @@ import { SellerProfileDTOResponse } from './seller-profile-presenter'
 import { CategoryDTOResponse } from './category-presenter'
 import { AttachmentDTOResponse } from './attachment-presenter'
 import { ApiProperty } from '@nestjs/swagger'
+import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
 
 export class ProductDetailsDTOResponse {
   @ApiProperty({ format: 'uuid' })
@@ -17,7 +18,7 @@ export class ProductDetailsDTOResponse {
   @ApiProperty({ default: 1 })
   priceInCents: number
 
-  @ApiProperty({ default: 'available' })
+  @ApiProperty({ enum: ProductStatusEnum })
   status: string
 
   @ApiProperty({ type: SellerProfileDTOResponse })
