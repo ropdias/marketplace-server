@@ -45,37 +45,18 @@ const createSellerBodySchema = z.object({
 
 type CreateSellerBodySchema = z.infer<typeof createSellerBodySchema>
 
-class CreateSellerBody {
-  @ApiProperty()
-  name: string
-
-  @ApiProperty({ description: 'Unique ' })
-  phone: string
-
-  @ApiProperty({ description: 'Unique ' })
-  email: string
-
+class CreateSellerBody implements CreateSellerBodySchema {
+  @ApiProperty() name!: string
+  @ApiProperty({ description: 'Unique ' }) phone!: string
+  @ApiProperty({ description: 'Unique ' }) email!: string
   @ApiProperty({
     type: String,
     nullable: true,
     description: 'Created in POST - /attachments',
   })
-  avatarId: string | null
-
-  @ApiProperty()
-  password: string
-
-  @ApiProperty()
-  passwordConfirmation: string
-
-  constructor(data: CreateSellerBodySchema) {
-    this.name = data.name
-    this.phone = data.phone
-    this.email = data.email
-    this.avatarId = data.avatarId
-    this.password = data.password
-    this.passwordConfirmation = data.passwordConfirmation
-  }
+  avatarId!: string | null
+  @ApiProperty() password!: string
+  @ApiProperty() passwordConfirmation!: string
 }
 
 @Controller('/sellers')
