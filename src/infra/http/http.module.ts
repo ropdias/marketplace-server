@@ -36,6 +36,8 @@ import { ChangeProductStatusController } from './controllers/change-product-stat
 import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
 import { RegisterProductViewController } from './controllers/register-product-view.controller'
 import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view'
+import { FetchAllCategoriesController } from './controllers/fetch-all-categories.controller'
+import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -56,6 +58,7 @@ import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use
     EditProductController,
     ChangeProductStatusController,
     RegisterProductViewController,
+    FetchAllCategoriesController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -74,6 +77,7 @@ import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use
     EditProductUseCase,
     ChangeProductStatusUseCase,
     RegisterProductViewUseCase,
+    FetchAllCategoriesUseCase,
     SellerProfileAssembler,
     ProductDetailsAssembler,
   ],
