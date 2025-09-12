@@ -13,7 +13,7 @@ export class CategoryDTOResponse {
   }
 }
 
-export class CategoriesResponse {
+export class CategoriesListResponse {
   @ApiProperty({ type: [CategoryDTOResponse] })
   categories: CategoryDTOResponse[]
 
@@ -23,7 +23,7 @@ export class CategoriesResponse {
 }
 
 export class CategoryPresenter {
-  static toHTTPList(dtos: CategoryDTO[]): CategoriesResponse {
-    return new CategoriesResponse(dtos)
+  static toHTTPList(dtos: CategoryDTO[]): CategoriesListResponse {
+    return new CategoriesListResponse(dtos)
   }
 }
