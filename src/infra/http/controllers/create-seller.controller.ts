@@ -48,7 +48,7 @@ type CreateSellerBodySchema = z.infer<typeof createSellerBodySchema>
 class CreateSellerBody implements CreateSellerBodySchema {
   @ApiProperty() name!: string
   @ApiProperty({ description: 'Unique ' }) phone!: string
-  @ApiProperty({ description: 'Unique ' }) email!: string
+  @ApiProperty({ description: 'Unique ', format: 'email' }) email!: string
   @ApiProperty({
     type: String,
     nullable: true,
