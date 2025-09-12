@@ -28,6 +28,8 @@ import { EditProductController } from './controllers/edit-product.controller'
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product'
 import { EditSellerController } from './controllers/edit-seller.controller'
 import { EditSellerUseCase } from '@/domain/marketplace/application/use-cases/edit-seller'
+import { FetchAllProductsFromSellerController } from './controllers/fetch-all-products-from-seller.controller'
+import { FetchAllProductsFromSellerUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-products-from-seller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -41,6 +43,7 @@ import { EditSellerUseCase } from '@/domain/marketplace/application/use-cases/ed
     CountProductViewsLast30DaysController,
     CountProductViewsPerDayLast30DaysController,
     CountProductViewsFromProductLast7DaysController,
+    FetchAllProductsFromSellerController,
     CreateProductController,
     GetProductDetailsController,
     EditProductController,
@@ -55,6 +58,7 @@ import { EditSellerUseCase } from '@/domain/marketplace/application/use-cases/ed
     CountProductViewsLast30DaysUseCase,
     CountProductViewsPerDayLast30DaysUseCase,
     CountProductViewsFromProductLast7DaysUseCase,
+    FetchAllProductsFromSellerUseCase,
     CreateProductUseCase,
     GetProductDetailsUseCase,
     EditProductUseCase,
