@@ -19,6 +19,9 @@ import { CountProductViewsPerDayLast30DaysController } from './controllers/count
 import { CountProductViewsPerDayLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-product-views-per-day-last-30-days'
 import { CountSoldProductsLast30DaysController } from './controllers/count-sold-products-last-30-days.controller'
 import { CountSoldProductsLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-sold-products-last-30-days'
+import { CreateProductController } from './controllers/create-product.controller'
+import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product'
+import { ProductDetailsAssembler } from '@/domain/marketplace/application/assemblers/product-details-assembler'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -31,6 +34,7 @@ import { CountSoldProductsLast30DaysUseCase } from '@/domain/marketplace/applica
     CountProductViewsLast30DaysController,
     CountProductViewsPerDayLast30DaysController,
     CountProductViewsFromProductLast7DaysController,
+    CreateProductController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -41,7 +45,9 @@ import { CountSoldProductsLast30DaysUseCase } from '@/domain/marketplace/applica
     CountProductViewsLast30DaysUseCase,
     CountProductViewsPerDayLast30DaysUseCase,
     CountProductViewsFromProductLast7DaysUseCase,
+    CreateProductUseCase,
     SellerProfileAssembler,
+    ProductDetailsAssembler,
   ],
 })
 export class HttpModule {}
