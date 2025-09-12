@@ -34,6 +34,8 @@ import { FetchRecentProductsController } from './controllers/fetch-recent-produc
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products'
 import { ChangeProductStatusController } from './controllers/change-product-status.controller'
 import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use-cases/change-product-status'
+import { RegisterProductViewController } from './controllers/register-product-view.controller'
+import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -53,6 +55,7 @@ import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use
     GetProductDetailsController,
     EditProductController,
     ChangeProductStatusController,
+    RegisterProductViewController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -70,6 +73,7 @@ import { ChangeProductStatusUseCase } from '@/domain/marketplace/application/use
     GetProductDetailsUseCase,
     EditProductUseCase,
     ChangeProductStatusUseCase,
+    RegisterProductViewUseCase,
     SellerProfileAssembler,
     ProductDetailsAssembler,
   ],
