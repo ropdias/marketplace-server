@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Post,
-  UsePipes,
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
 import { z } from 'zod'
@@ -36,6 +35,8 @@ const createProductBodySchema = z.object({
   attachmentsIds: z.array(z.uuid()),
 })
 
+const bodyValidationPipe = new ZodValidationPipe(createProductBodySchema)
+
 type CreateProductBodySchema = z.infer<typeof createProductBodySchema>
 
 class CreateProductBody implements CreateProductBodySchema {
@@ -53,7 +54,6 @@ export class CreateProductController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ZodValidationPipe(createProductBodySchema))
   @ApiOperation({ summary: 'Create a product to sell' })
   @ApiBody({ type: CreateProductBody })
   @ApiCreatedResponse({
@@ -67,7 +67,7 @@ export class CreateProductController {
     description: 'Internal server error.',
   })
   async handle(
-    @Body() body: CreateProductBodySchema,
+    @Body(bodyValidationPipe) body: CreateProductBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
     const result = await this.createProduct.execute({

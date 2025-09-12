@@ -6,7 +6,6 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Post,
-  UsePipes,
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
 import { z } from 'zod'
@@ -28,6 +27,8 @@ const authenticateBodySchema = z.object({
   password: z.string(),
 })
 
+const bodyValidationPipe = new ZodValidationPipe(authenticateBodySchema)
+
 type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
 
 class AuthenticateSellerBody implements AuthenticateBodySchema {
@@ -47,7 +48,6 @@ export class AuthenticateSellerController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(authenticateBodySchema))
   @ApiOperation({ summary: 'Get the seller access token​' })
   @ApiBody({ type: AuthenticateSellerBody })
   @ApiOkResponse({
@@ -60,7 +60,7 @@ export class AuthenticateSellerController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  async handle(@Body() body: AuthenticateBodySchema) {
+  async handle(@Body(bodyValidationPipe) body: AuthenticateBodySchema) {
     const result = await this.authenticateSeller.execute(body)
 
     if (result.isLeft()) {
