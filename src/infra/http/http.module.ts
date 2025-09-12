@@ -24,6 +24,8 @@ import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases
 import { ProductDetailsAssembler } from '@/domain/marketplace/application/assemblers/product-details-assembler'
 import { GetProductDetailsController } from './controllers/get-product-details.controller'
 import { GetProductDetailsUseCase } from '@/domain/marketplace/application/use-cases/get-product-details'
+import { EditProductController } from './controllers/edit-product.controller'
+import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -38,6 +40,7 @@ import { GetProductDetailsUseCase } from '@/domain/marketplace/application/use-c
     CountProductViewsFromProductLast7DaysController,
     CreateProductController,
     GetProductDetailsController,
+    EditProductController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -50,6 +53,7 @@ import { GetProductDetailsUseCase } from '@/domain/marketplace/application/use-c
     CountProductViewsFromProductLast7DaysUseCase,
     CreateProductUseCase,
     GetProductDetailsUseCase,
+    EditProductUseCase,
     SellerProfileAssembler,
     ProductDetailsAssembler,
   ],
