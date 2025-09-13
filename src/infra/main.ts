@@ -3,6 +3,7 @@ import { AppModule } from './app.module'
 import { EnvService } from './env/env.service'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { apiReference } from '@scalar/nestjs-api-reference'
+import cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -15,11 +16,18 @@ async function bootstrap() {
     credentials: true,
   })
 
+  app.use(cookieParser())
+
   const config = new DocumentBuilder()
     .setTitle('Marketplace API')
     .setDescription('API documentation for the Marketplace project')
     .setVersion('1.0')
-    .addBearerAuth() // for JWT authentication
+    .addCookieAuth('access_token', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'access_token',
+      description: 'JWT token stored in httpOnly cookie',
+    })
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
