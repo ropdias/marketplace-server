@@ -10,6 +10,11 @@ async function bootstrap() {
   const env = app.get(EnvService)
   const port = env.get('PORT')
 
+  app.enableCors({
+    origin: env.get('FRONTEND_URL'),
+    credentials: true,
+  })
+
   const config = new DocumentBuilder()
     .setTitle('Marketplace API')
     .setDescription('API documentation for the Marketplace project')
