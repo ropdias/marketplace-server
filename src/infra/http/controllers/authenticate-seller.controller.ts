@@ -6,6 +6,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Post,
+  Res,
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe'
 import { z } from 'zod'
@@ -21,6 +22,8 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger'
+import { EnvService } from '@/infra/env/env.service'
+import type { Response } from 'express'
 
 const authenticateBodySchema = z.object({
   email: z.email(),
@@ -37,22 +40,41 @@ class AuthenticateSellerBody implements AuthenticateBodySchema {
 }
 
 class AuthenticateSellerResponse {
-  @ApiProperty() accessToken!: string
+  @ApiProperty({
+    default: 'Authentication successful. JWT set in httpOnly cookie.',
+  })
+  message!: string
 }
 
 @Controller('/sellers/sessions')
 @Public()
 @ApiTags('Sessions')
 export class AuthenticateSellerController {
-  constructor(private authenticateSeller: AuthenticateSellerUseCase) {}
+  constructor(
+    private authenticateSeller: AuthenticateSellerUseCase,
+    private env: EnvService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get the seller access token​' })
+  @ApiOperation({
+    summary: 'Authenticate seller',
+    description: 'Authenticates seller and sets JWT in httpOnly cookie',
+  })
   @ApiBody({ type: AuthenticateSellerBody })
   @ApiOkResponse({
-    description: 'The seller access token.',
+    description: 'Authentication successful. JWT set in httpOnly cookie.',
     type: AuthenticateSellerResponse,
+    headers: {
+      'Set-Cookie': {
+        description: 'JWT token in httpOnly cookie',
+        schema: {
+          type: 'string',
+          example:
+            'access_token=eyJhbGc...; HttpOnly; Secure; SameSite=Strict; Path=/',
+        },
+      },
+    },
   })
   @ApiForbiddenResponse({
     description: 'Invalid credentials.',
@@ -60,7 +82,10 @@ export class AuthenticateSellerController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  async handle(@Body(bodyValidationPipe) body: AuthenticateBodySchema) {
+  async handle(
+    @Body(bodyValidationPipe) body: AuthenticateBodySchema,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const result = await this.authenticateSeller.execute(body)
 
     if (result.isLeft()) {
@@ -78,8 +103,19 @@ export class AuthenticateSellerController {
 
     const { accessToken } = result.value
 
+    const isProduction = this.env.get('NODE_ENV') === 'production'
+
+    // Set httpOnly cookie with secure configuration
+    response.cookie('access_token', accessToken, {
+      httpOnly: true, // Prevents XSS attacks
+      secure: isProduction, // HTTPS in production
+      sameSite: 'strict', // Prevents CSRF attacks
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+      path: '/', // Available for entire domain
+    })
+
     return {
-      accessToken,
+      message: 'Authentication successful',
     }
   }
 }
