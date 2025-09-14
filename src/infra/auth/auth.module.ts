@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtAuthGuard } from './jwt-auth.guard'
 import { JwtStrategy } from './jwt.strategy'
+import { JwtCookieService } from './jwt-cookie.service'
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { JwtStrategy } from './jwt.strategy'
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    JwtCookieService,
   ],
+  exports: [JwtCookieService],
 })
 export class AuthModule {}

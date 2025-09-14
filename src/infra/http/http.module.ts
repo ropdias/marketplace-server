@@ -40,9 +40,10 @@ import { FetchAllCategoriesController } from './controllers/fetch-all-categories
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
 import { UploadAndCreateAttachmentsController } from './controllers/upload-attachment.controller'
 import { UploadAndCreateAttachmentsUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachments'
+import { AuthModule } from '../auth/auth.module'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule, StorageModule],
+  imports: [DatabaseModule, CryptographyModule, StorageModule, AuthModule],
   controllers: [
     AuthenticateSellerController,
     CreateSellerController,
