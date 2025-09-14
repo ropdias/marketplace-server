@@ -59,8 +59,8 @@ describe('Upload and create attachments', () => {
           body: Buffer.from(''),
         },
         {
-          fileName: 'thumbnail.png',
-          fileType: 'image/png',
+          fileName: 'thumbnail.jpg',
+          fileType: 'image/jpg',
           body: Buffer.from(''),
         },
       ],
@@ -91,7 +91,7 @@ describe('Upload and create attachments', () => {
         fileName: 'banner.jpeg',
       })
       expect(fakeUploader.uploads[2]).toMatchObject({
-        fileName: 'thumbnail.png',
+        fileName: 'thumbnail.jpg',
       })
     }
   })

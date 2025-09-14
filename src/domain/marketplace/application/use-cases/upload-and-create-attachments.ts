@@ -32,7 +32,7 @@ export class UploadAndCreateAttachmentsUseCase {
     files,
   }: UploadAndCreateAttachmentsRequest): Promise<UploadAndCreateAttachmentsResponse> {
     for (const file of files) {
-      if (!/^(image\/(jpeg|png))$/.test(file.fileType)) {
+      if (!/^(image\/(jpeg|jpg|png))$/.test(file.fileType)) {
         return left(new InvalidAttachmentTypeError(file.fileType))
       }
     }
