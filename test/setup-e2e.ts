@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { execSync } from 'node:child_process'
 import { envSchema } from '@/infra/env/env'
 import fs from 'fs'
+import path from 'path'
 
 config({ path: '.env', override: true })
 config({ path: '.env.test', override: true })
@@ -12,6 +13,7 @@ const env = envSchema.parse(process.env)
 
 let prisma: PrismaClient | null = null
 let schemaId: string | null = null
+let sqliteFilePath: string | null = null
 
 function isPostgres(url: string) {
   return url.startsWith('postgresql://')
@@ -37,7 +39,9 @@ beforeAll(() => {
     process.env.DATABASE_URL = generateUniqueDatabaseURL(schemaId)
     prisma = new PrismaClient()
   } else if (isSQLite(env.DATABASE_URL)) {
-    process.env.DATABASE_URL = env.DATABASE_URL
+    // cria um arquivo SQLite único para esta suite
+    sqliteFilePath = path.resolve(__dirname, `test-${randomUUID()}.db`)
+    process.env.DATABASE_URL = `file:${sqliteFilePath}`
   }
 
   execSync('pnpm prisma migrate deploy')
@@ -56,14 +60,7 @@ afterAll(async () => {
   }
 
   // Cleanup SQLite file
-  if (isSQLite(process.env.DATABASE_URL!)) {
-    const match = process.env.DATABASE_URL!.match(/^file:\s*(?!:memory:)(.+)$/)
-
-    if (match) {
-      const filePath = match[1].trim()
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath)
-      }
-    }
+  if (sqliteFilePath && fs.existsSync(sqliteFilePath)) {
+    fs.unlinkSync(sqliteFilePath)
   }
 })
