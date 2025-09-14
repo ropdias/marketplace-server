@@ -22,8 +22,8 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger'
-import { EnvService } from '@/infra/env/env.service'
 import type { Response } from 'express'
+import { JwtCookieService } from '@/infra/auth/jwt-cookie.service'
 
 const authenticateBodySchema = z.object({
   email: z.email(),
@@ -52,7 +52,7 @@ class AuthenticateSellerResponse {
 export class AuthenticateSellerController {
   constructor(
     private authenticateSeller: AuthenticateSellerUseCase,
-    private env: EnvService,
+    private jwtCookie: JwtCookieService,
   ) {}
 
   @Post()
@@ -103,16 +103,7 @@ export class AuthenticateSellerController {
 
     const { accessToken } = result.value
 
-    const isProduction = this.env.get('NODE_ENV') === 'production'
-
-    // Set httpOnly cookie with secure configuration
-    response.cookie('access_token', accessToken, {
-      httpOnly: true, // Prevents XSS attacks
-      secure: isProduction, // HTTPS in production
-      sameSite: 'strict', // Prevents CSRF attacks
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
-      path: '/', // Available for entire domain
-    })
+    this.jwtCookie.setCookie(response, accessToken)
 
     return {
       message: 'Authentication successful',
