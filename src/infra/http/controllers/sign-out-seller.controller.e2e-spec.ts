@@ -7,7 +7,7 @@ import { SellerFactory } from 'test/factories/make-seller'
 import type { Server } from 'http'
 import { createSellerAndLogin } from 'test/utils/create-seller-and-login'
 
-describe('Sign Out (E2E)', () => {
+describe('Sign Out Seller (E2E)', () => {
   let app: INestApplication
   let httpServer: Server
   let sellerFactory: SellerFactory
