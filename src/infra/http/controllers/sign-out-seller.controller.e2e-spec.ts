@@ -56,10 +56,9 @@ describe('Sign Out (E2E)', () => {
     const clearCookieHeader = signOutResponse.headers['set-cookie'][0]
     expect(clearCookieHeader).toContain('access_token=')
     // Check if the cookie is being cleared (without value or with expires in the past)
-    expect(
-      clearCookieHeader.includes('access_token=;') ||
-        clearCookieHeader.includes('Expires='),
-    ).toBe(true)
+    expect(/access_token=.*;.*(Expires|Max-Age)/.test(clearCookieHeader)).toBe(
+      true,
+    )
   })
 
   test('[POST] /sign-out - should work even without authentication cookie', async () => {
@@ -74,6 +73,9 @@ describe('Sign Out (E2E)', () => {
     expect(response.headers['set-cookie']).toBeDefined()
     const clearCookieHeader = response.headers['set-cookie'][0]
     expect(clearCookieHeader).toContain('access_token=')
+    expect(/access_token=.*;.*(Expires|Max-Age)/.test(clearCookieHeader)).toBe(
+      true,
+    )
   })
 
   test('[POST] /sign-out - should work with invalid/expired cookie', async () => {
@@ -90,6 +92,9 @@ describe('Sign Out (E2E)', () => {
     expect(response.headers['set-cookie']).toBeDefined()
     const clearCookieHeader = response.headers['set-cookie'][0]
     expect(clearCookieHeader).toContain('access_token=')
+    expect(/access_token=.*;.*(Expires|Max-Age)/.test(clearCookieHeader)).toBe(
+      true,
+    )
   })
 
   afterAll(async () => {
