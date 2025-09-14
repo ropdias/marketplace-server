@@ -41,11 +41,13 @@ import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-
 import { UploadAndCreateAttachmentsController } from './controllers/upload-attachment.controller'
 import { UploadAndCreateAttachmentsUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachments'
 import { AuthModule } from '../auth/auth.module'
+import { SignOutSellerController } from './controllers/sign-out-seller.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule, AuthModule],
   controllers: [
     AuthenticateSellerController,
+    SignOutSellerController,
     CreateSellerController,
     EditSellerController,
     GetSellerProfileController,
