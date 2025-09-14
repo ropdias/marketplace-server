@@ -38,6 +38,8 @@ import { RegisterProductViewController } from './controllers/register-product-vi
 import { RegisterProductViewUseCase } from '@/domain/marketplace/application/use-cases/register-product-view'
 import { FetchAllCategoriesController } from './controllers/fetch-all-categories.controller'
 import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-cases/fetch-all-categories'
+import { UploadAndCreateAttachmentsController } from './controllers/upload-attachment.controller'
+import { UploadAndCreateAttachmentsUseCase } from '@/domain/marketplace/application/use-cases/upload-and-create-attachments'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -59,6 +61,7 @@ import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-
     ChangeProductStatusController,
     RegisterProductViewController,
     FetchAllCategoriesController,
+    UploadAndCreateAttachmentsController,
   ],
   providers: [
     AuthenticateSellerUseCase,
@@ -78,6 +81,7 @@ import { FetchAllCategoriesUseCase } from '@/domain/marketplace/application/use-
     ChangeProductStatusUseCase,
     RegisterProductViewUseCase,
     FetchAllCategoriesUseCase,
+    UploadAndCreateAttachmentsUseCase,
     SellerProfileAssembler,
     ProductDetailsAssembler,
   ],
