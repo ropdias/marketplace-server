@@ -5,12 +5,14 @@ import { Test } from '@nestjs/testing'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { SellerFactory } from 'test/factories/make-seller'
 import type { Server } from 'http'
-import { createSellerAndLogin } from 'test/utils/create-seller-and-login'
+import { createSellerAndLoginWithCookie } from 'test/utils/create-seller-and-login'
+import { JwtService } from '@nestjs/jwt'
 
 describe('Sign Out Seller (E2E)', () => {
   let app: INestApplication
   let httpServer: Server
   let sellerFactory: SellerFactory
+  let jwtService: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -20,6 +22,7 @@ describe('Sign Out Seller (E2E)', () => {
 
     app = moduleRef.createNestApplication()
     httpServer = app.getHttpServer() as Server
+    jwtService = moduleRef.get(JwtService)
 
     sellerFactory = moduleRef.get(SellerFactory)
 
@@ -27,20 +30,23 @@ describe('Sign Out Seller (E2E)', () => {
   })
 
   test('[POST] /sign-out - should clear cookie and return success message', async () => {
-    const { cookies } = await createSellerAndLogin(httpServer, sellerFactory)
+    const { cookieString } = await createSellerAndLoginWithCookie(
+      sellerFactory,
+      jwtService,
+    )
 
-    const signOutResponse = await request(httpServer)
+    const response = await request(httpServer)
       .post('/sign-out')
-      .set('Cookie', cookies)
+      .set('Cookie', cookieString)
 
-    expect(signOutResponse.statusCode).toBe(200)
-    expect(signOutResponse.body).toEqual({
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual({
       message: 'The user was successfully signed out.',
     })
 
     // Check if the cookie was cleared (Set-Cookie with empty or expired value)
-    expect(signOutResponse.headers['set-cookie']).toBeDefined()
-    const clearCookieHeader = signOutResponse.headers['set-cookie'][0]
+    expect(response.headers['set-cookie']).toBeDefined()
+    const clearCookieHeader = response.headers['set-cookie'][0]
     expect(clearCookieHeader).toContain('access_token=')
     // Check if the cookie is being cleared (without value or with expires in the past)
     expect(/access_token=.*;.*(Expires|Max-Age)/.test(clearCookieHeader)).toBe(
