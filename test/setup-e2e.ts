@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { execSync } from 'node:child_process'
 import { envSchema } from '@/infra/env/env'
 import fs from 'fs'
-import path from 'path'
+import path from 'node:path'
 
 config({ path: '.env', override: true })
 config({ path: '.env.test', override: true })
@@ -39,7 +39,6 @@ beforeAll(() => {
     process.env.DATABASE_URL = generateUniqueDatabaseURL(schemaId)
     prisma = new PrismaClient()
   } else if (isSQLite(env.DATABASE_URL)) {
-    // cria um arquivo SQLite único para esta suite
     sqliteFilePath = path.resolve(__dirname, `test-${randomUUID()}.db`)
     process.env.DATABASE_URL = `file:${sqliteFilePath}`
   }
