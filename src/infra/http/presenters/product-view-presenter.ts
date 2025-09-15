@@ -44,11 +44,10 @@ export class ProductViewPresenter {
   }: {
     productDetails: ProductDetailsDTO
     viewerProfile: SellerProfileDTO
-  }): ProductViewResponseType {
-    const response = new ProductViewResponse({
+  }): ProductViewResponse {
+    return new ProductViewResponse({
       productDetails,
       viewerProfile,
     })
-    return productViewResponseSchema.parse(response)
   }
 }

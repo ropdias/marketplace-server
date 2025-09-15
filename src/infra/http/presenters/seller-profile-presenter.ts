@@ -58,8 +58,7 @@ export class SellerProfileResponse implements SellerProfileResponseType {
 }
 
 export class SellerProfilePresenter {
-  static toHTTP(dto: SellerProfileDTO): SellerProfileResponseType {
-    const response = new SellerProfileResponse(dto)
-    return sellerProfileResponseSchema.parse(response)
+  static toHTTP(dto: SellerProfileDTO): SellerProfileResponse {
+    return new SellerProfileResponse(dto)
   }
 }

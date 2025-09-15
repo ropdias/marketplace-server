@@ -35,8 +35,7 @@ export class AttachmentsResponse implements AttachmentsResponseType {
 }
 
 export class AttachmentPresenter {
-  static toHTTPMany(dtos: AttachmentDTO[]): AttachmentsResponseType {
-    const response = new AttachmentsResponse(dtos)
-    return attachmentsResponseSchema.parse(response)
+  static toHTTPMany(dtos: AttachmentDTO[]): AttachmentsResponse {
+    return new AttachmentsResponse(dtos)
   }
 }

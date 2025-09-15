@@ -40,8 +40,7 @@ export class CategoriesListResponse implements CategoriesListResponseType {
 }
 
 export class CategoryPresenter {
-  static toHTTPMany(dtos: CategoryDTO[]): CategoriesListResponseType {
-    const response = new CategoriesListResponse(dtos)
-    return categoriesListResponseSchema.parse(response)
+  static toHTTPMany(dtos: CategoryDTO[]): CategoriesListResponse {
+    return new CategoriesListResponse(dtos)
   }
 }

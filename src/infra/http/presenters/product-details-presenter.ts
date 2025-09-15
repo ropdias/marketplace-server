@@ -93,13 +93,11 @@ export class ProductDetailsListResponse
 }
 
 export class ProductDetailsPresenter {
-  static toHTTP(dto: ProductDetailsDTO): ProductDetailsResponseType {
-    const response = new ProductDetailsResponse(dto)
-    return productDetailsResponseSchema.parse(response)
+  static toHTTP(dto: ProductDetailsDTO): ProductDetailsResponse {
+    return new ProductDetailsResponse(dto)
   }
 
-  static toHTTPMany(dtos: ProductDetailsDTO[]): ProductDetailsListResponseType {
-    const response = new ProductDetailsListResponse(dtos)
-    return productDetailsListResponseSchema.parse(response)
+  static toHTTPMany(dtos: ProductDetailsDTO[]): ProductDetailsListResponse {
+    return new ProductDetailsListResponse(dtos)
   }
 }
