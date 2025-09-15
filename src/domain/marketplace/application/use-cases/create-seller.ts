@@ -69,7 +69,7 @@ export class CreateSellerUseCase {
       const foundAvatar = await this.attachmentsRepository.findById(avatarId)
 
       if (!foundAvatar) {
-        return left(new ResourceNotFoundError())
+        return left(new ResourceNotFoundError('The avatar was not found.'))
       }
     }
 
