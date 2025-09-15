@@ -1,6 +1,9 @@
 import { hash } from 'bcryptjs'
 import { SellerFactory } from '../factories/make-seller'
-import { Seller } from '@/domain/marketplace/enterprise/entities/seller'
+import {
+  Seller,
+  SellerProps,
+} from '@/domain/marketplace/enterprise/entities/seller'
 import { JwtService } from '@nestjs/jwt'
 import { JwtCookieService } from '@/infra/auth/jwt-cookie.service'
 
@@ -16,13 +19,14 @@ export function loginSellerWithCookie(seller: Seller, jwtService: JwtService) {
 export async function createSellerAndLoginWithCookie(
   sellerFactory: SellerFactory,
   jwtService: JwtService,
-  email = 'johndoe@example.com',
-  password = '123456',
+  data: Partial<SellerProps> = {},
 ): Promise<{ seller: Seller; cookieString: string }> {
   // 1. Create the seller in the database
   const seller = await sellerFactory.makePrismaSeller({
-    email,
-    password: await hash(password, 10),
+    ...data,
+    password: data.password
+      ? await hash(data.password, 10)
+      : await hash('123456', 10),
   })
 
   const cookieString = loginSellerWithCookie(seller, jwtService)
