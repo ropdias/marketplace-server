@@ -59,7 +59,7 @@ export class EditSellerUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     if (newPassword) {
@@ -105,7 +105,7 @@ export class EditSellerUseCase {
       const foundAvatar = await this.attachmentsRepository.findById(avatarId)
 
       if (!foundAvatar) {
-        return left(new ResourceNotFoundError())
+        return left(new ResourceNotFoundError('Avatar not found.'))
       }
     }
 
