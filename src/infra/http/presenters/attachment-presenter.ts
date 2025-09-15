@@ -1,7 +1,21 @@
 import { AttachmentDTO } from '@/domain/marketplace/application/dtos/attachment-dtos'
 import { ApiProperty } from '@nestjs/swagger'
+import { z } from 'zod'
 
-export class AttachmentDTOResponse {
+export const attachmentDTOSchema = z.object({
+  id: z.uuid(),
+  url: z.url(),
+})
+
+export type AttachmentDTOResponseType = z.infer<typeof attachmentDTOSchema>
+
+export const attachmentsResponseSchema = z.object({
+  attachments: z.array(attachmentDTOSchema),
+})
+
+export type AttachmentsResponseType = z.infer<typeof attachmentsResponseSchema>
+
+export class AttachmentDTOResponse implements AttachmentDTOResponseType {
   @ApiProperty({ format: 'uuid' }) id: string
   @ApiProperty() url: string
 
@@ -11,7 +25,7 @@ export class AttachmentDTOResponse {
   }
 }
 
-export class AttachmentsResponse {
+export class AttachmentsResponse implements AttachmentsResponseType {
   @ApiProperty({ type: [AttachmentDTOResponse] })
   attachments: AttachmentDTOResponse[]
 
@@ -21,7 +35,8 @@ export class AttachmentsResponse {
 }
 
 export class AttachmentPresenter {
-  static toHTTPArray(dtos: AttachmentDTO[]): AttachmentsResponse {
-    return new AttachmentsResponse(dtos)
+  static toHTTPMany(dtos: AttachmentDTO[]): AttachmentsResponseType {
+    const response = new AttachmentsResponse(dtos)
+    return attachmentsResponseSchema.parse(response)
   }
 }

@@ -1,7 +1,24 @@
 import { CategoryDTO } from '@/domain/marketplace/application/dtos/category-dtos'
 import { ApiProperty } from '@nestjs/swagger'
+import { z } from 'zod'
 
-export class CategoryDTOResponse {
+export const categoryDTOSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  slug: z.string(),
+})
+
+export type CategoryDTOResponseType = z.infer<typeof categoryDTOSchema>
+
+export const categoriesListResponseSchema = z.object({
+  categories: z.array(categoryDTOSchema),
+})
+
+export type CategoriesListResponseType = z.infer<
+  typeof categoriesListResponseSchema
+>
+
+export class CategoryDTOResponse implements CategoryDTOResponseType {
   @ApiProperty({ format: 'uuid' }) id: string
   @ApiProperty() title: string
   @ApiProperty() slug: string
@@ -13,7 +30,7 @@ export class CategoryDTOResponse {
   }
 }
 
-export class CategoriesListResponse {
+export class CategoriesListResponse implements CategoriesListResponseType {
   @ApiProperty({ type: [CategoryDTOResponse] })
   categories: CategoryDTOResponse[]
 
@@ -23,7 +40,8 @@ export class CategoriesListResponse {
 }
 
 export class CategoryPresenter {
-  static toHTTPList(dtos: CategoryDTO[]): CategoriesListResponse {
-    return new CategoriesListResponse(dtos)
+  static toHTTPMany(dtos: CategoryDTO[]): CategoriesListResponseType {
+    const response = new CategoriesListResponse(dtos)
+    return categoriesListResponseSchema.parse(response)
   }
 }

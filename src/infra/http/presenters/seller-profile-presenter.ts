@@ -1,8 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger'
 import type { SellerProfileDTO } from '@/domain/marketplace/application/dtos/seller-profile-dtos'
-import { AttachmentDTOResponse } from './attachment-presenter'
+import {
+  AttachmentDTOResponse,
+  attachmentDTOSchema,
+} from './attachment-presenter'
+import { z } from 'zod'
 
-export class SellerProfileDTOResponse {
+export const sellerProfileDTOSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  email: z.email(),
+  phone: z.string(),
+  avatar: attachmentDTOSchema.nullable(),
+})
+
+export type SellerProfileDTOResponseType = z.infer<
+  typeof sellerProfileDTOSchema
+>
+
+export const sellerProfileResponseSchema = z.object({
+  seller: sellerProfileDTOSchema,
+})
+
+export type SellerProfileResponseType = z.infer<
+  typeof sellerProfileResponseSchema
+>
+
+export class SellerProfileDTOResponse implements SellerProfileDTOResponseType {
   @ApiProperty({ format: 'uuid' }) id: string
   @ApiProperty() name: string
   @ApiProperty({ format: 'email' }) email: string
@@ -24,7 +48,7 @@ export class SellerProfileDTOResponse {
   }
 }
 
-export class SellerProfileResponse {
+export class SellerProfileResponse implements SellerProfileResponseType {
   @ApiProperty({ type: SellerProfileDTOResponse })
   seller: SellerProfileDTOResponse
 
@@ -34,7 +58,8 @@ export class SellerProfileResponse {
 }
 
 export class SellerProfilePresenter {
-  static toHTTP(dto: SellerProfileDTO): SellerProfileResponse {
-    return new SellerProfileResponse(dto)
+  static toHTTP(dto: SellerProfileDTO): SellerProfileResponseType {
+    const response = new SellerProfileResponse(dto)
+    return sellerProfileResponseSchema.parse(response)
   }
 }

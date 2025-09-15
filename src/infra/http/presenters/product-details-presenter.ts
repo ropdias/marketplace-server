@@ -1,11 +1,51 @@
 import { ProductDetailsDTO } from '@/domain/marketplace/application/dtos/product-details-dtos'
-import { SellerProfileDTOResponse } from './seller-profile-presenter'
-import { CategoryDTOResponse } from './category-presenter'
-import { AttachmentDTOResponse } from './attachment-presenter'
+import {
+  SellerProfileDTOResponse,
+  sellerProfileDTOSchema,
+} from './seller-profile-presenter'
+import { CategoryDTOResponse, categoryDTOSchema } from './category-presenter'
+import {
+  AttachmentDTOResponse,
+  attachmentDTOSchema,
+} from './attachment-presenter'
 import { ApiProperty } from '@nestjs/swagger'
 import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
+import { z } from 'zod'
 
-export class ProductDetailsDTOResponse {
+export const productDetailsDTOSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  description: z.string(),
+  priceInCents: z.number().nonnegative(),
+  status: z.string(),
+  owner: sellerProfileDTOSchema,
+  category: categoryDTOSchema,
+  attachments: z.array(attachmentDTOSchema),
+})
+
+export type ProductDetailsDTOResponseType = z.infer<
+  typeof productDetailsDTOSchema
+>
+
+export const productDetailsResponseSchema = z.object({
+  product: productDetailsDTOSchema,
+})
+
+export type ProductDetailsResponseType = z.infer<
+  typeof productDetailsResponseSchema
+>
+
+export const productDetailsListResponseSchema = z.object({
+  products: z.array(productDetailsDTOSchema),
+})
+
+export type ProductDetailsListResponseType = z.infer<
+  typeof productDetailsListResponseSchema
+>
+
+export class ProductDetailsDTOResponse
+  implements ProductDetailsDTOResponseType
+{
   @ApiProperty({ format: 'uuid' }) id: string
   @ApiProperty() title: string
   @ApiProperty() description: string
@@ -32,7 +72,7 @@ export class ProductDetailsDTOResponse {
   }
 }
 
-export class ProductDetailsResponse {
+export class ProductDetailsResponse implements ProductDetailsResponseType {
   @ApiProperty({ type: ProductDetailsDTOResponse })
   product: ProductDetailsDTOResponse
 
@@ -41,7 +81,9 @@ export class ProductDetailsResponse {
   }
 }
 
-export class ProductDetailsListResponse {
+export class ProductDetailsListResponse
+  implements ProductDetailsListResponseType
+{
   @ApiProperty({ type: [ProductDetailsDTOResponse] })
   products: ProductDetailsDTOResponse[]
 
@@ -51,11 +93,13 @@ export class ProductDetailsListResponse {
 }
 
 export class ProductDetailsPresenter {
-  static toHTTP(dto: ProductDetailsDTO): ProductDetailsResponse {
-    return new ProductDetailsResponse(dto)
+  static toHTTP(dto: ProductDetailsDTO): ProductDetailsResponseType {
+    const response = new ProductDetailsResponse(dto)
+    return productDetailsResponseSchema.parse(response)
   }
 
-  static toHTTPList(dtos: ProductDetailsDTO[]): ProductDetailsListResponse {
-    return new ProductDetailsListResponse(dtos)
+  static toHTTPMany(dtos: ProductDetailsDTO[]): ProductDetailsListResponseType {
+    const response = new ProductDetailsListResponse(dtos)
+    return productDetailsListResponseSchema.parse(response)
   }
 }

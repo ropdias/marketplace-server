@@ -1,10 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { SellerProfileDTOResponse } from './seller-profile-presenter'
+import {
+  SellerProfileDTOResponse,
+  sellerProfileDTOSchema,
+} from './seller-profile-presenter'
 import { ProductDetailsDTO } from '@/domain/marketplace/application/dtos/product-details-dtos'
-import { ProductDetailsDTOResponse } from './product-details-presenter'
+import {
+  ProductDetailsDTOResponse,
+  productDetailsDTOSchema,
+} from './product-details-presenter'
 import { SellerProfileDTO } from '@/domain/marketplace/application/dtos/seller-profile-dtos'
+import { z } from 'zod'
 
-export class ProductViewResponse {
+export const productViewResponseSchema = z.object({
+  product: productDetailsDTOSchema,
+  viewer: sellerProfileDTOSchema,
+})
+
+export type ProductViewResponseType = z.infer<typeof productViewResponseSchema>
+
+export class ProductViewResponse implements ProductViewResponseType {
   @ApiProperty({ type: ProductDetailsDTOResponse })
   product: ProductDetailsDTOResponse
 
@@ -30,10 +44,11 @@ export class ProductViewPresenter {
   }: {
     productDetails: ProductDetailsDTO
     viewerProfile: SellerProfileDTO
-  }): ProductViewResponse {
-    return new ProductViewResponse({
+  }): ProductViewResponseType {
+    const response = new ProductViewResponse({
       productDetails,
       viewerProfile,
     })
+    return productViewResponseSchema.parse(response)
   }
 }
