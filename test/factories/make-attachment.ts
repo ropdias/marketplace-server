@@ -14,7 +14,7 @@ export function makeAttachment(
 ) {
   const attachment = Attachment.create(
     {
-      url: faker.lorem.slug(),
+      url: faker.internet.url(),
       ...override, // we will override any props that have been passed to make this entity
     },
     id,
