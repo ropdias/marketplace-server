@@ -68,7 +68,7 @@ describe('Get Seller Profile (E2E)', () => {
     const { cookieString, seller } = await createSellerAndLoginWithCookie(
       sellerFactory,
       jwtService,
-      'sellerwithavatar@test.com',
+      { email: 'sellerwithavatar@test.com' },
     )
 
     // Update the seller in the database to have an avatar
@@ -115,7 +115,7 @@ describe('Get Seller Profile (E2E)', () => {
     const { cookieString, seller } = await createSellerAndLoginWithCookie(
       sellerFactory,
       jwtService,
-      'sellertodelete@test.com',
+      { email: 'sellertodelete@test.com' },
     )
 
     // Delete the seller from the database to simulate not found
