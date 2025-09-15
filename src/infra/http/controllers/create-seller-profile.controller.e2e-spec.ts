@@ -8,7 +8,7 @@ import type { Server } from 'http'
 import { sellerProfileResponseSchema } from '../presenters/seller-profile-presenter'
 import cookieParser from 'cookie-parser'
 
-describe('Get Seller Profile (E2E)', () => {
+describe('Create a new seller (E2E)', () => {
   let app: INestApplication
   let httpServer: Server
   let attachmentFactory: AttachmentFactory
