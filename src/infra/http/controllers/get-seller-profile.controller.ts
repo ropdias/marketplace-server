@@ -15,7 +15,6 @@ import { CurrentUser } from '@/infra/auth/current-user.decorator'
 import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import {
-  ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -24,7 +23,6 @@ import {
 } from '@nestjs/swagger'
 
 @Controller('/sellers/me')
-@ApiBearerAuth()
 @ApiTags('Sellers')
 export class GetSellerProfileController {
   constructor(private getSellerProfile: GetSellerProfileUseCase) {}
