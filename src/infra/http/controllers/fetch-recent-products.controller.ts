@@ -97,6 +97,6 @@ export class FetchRecentProductsController {
 
     const { productDetailsList } = result.value
 
-    return ProductDetailsPresenter.toHTTPList(productDetailsList)
+    return ProductDetailsPresenter.toHTTPMany(productDetailsList)
   }
 }

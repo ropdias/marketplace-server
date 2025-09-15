@@ -107,6 +107,6 @@ export class UploadAndCreateAttachmentsController {
 
     const { attachments } = result.value
 
-    return AttachmentPresenter.toHTTPArray(attachments)
+    return AttachmentPresenter.toHTTPMany(attachments)
   }
 }

@@ -101,6 +101,6 @@ export class FetchAllProductsFromSellerController {
 
     const { productDetailsList } = result.value
 
-    return ProductDetailsPresenter.toHTTPList(productDetailsList)
+    return ProductDetailsPresenter.toHTTPMany(productDetailsList)
   }
 }

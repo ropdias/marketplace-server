@@ -47,6 +47,6 @@ export class FetchAllCategoriesController {
 
     const { categories } = result.value
 
-    return CategoryPresenter.toHTTPList(categories)
+    return CategoryPresenter.toHTTPMany(categories)
   }
 }
