@@ -11,7 +11,6 @@ import { SellerFactory } from 'test/factories/make-seller'
 import { JwtService } from '@nestjs/jwt'
 import { CategoryFactory } from 'test/factories/make-category'
 import { productDetailsListResponseSchema } from '../presenters/product-details-presenter'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import {
   ProductStatus,
   ProductStatusEnum,
@@ -25,7 +24,6 @@ describe('List all products​ (E2E)', () => {
   let jwtService: JwtService
   let categoryFactory: CategoryFactory
   let productFactory: ProductFactory
-  let prisma: PrismaService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -42,15 +40,8 @@ describe('List all products​ (E2E)', () => {
     jwtService = moduleRef.get(JwtService)
     categoryFactory = moduleRef.get(CategoryFactory)
     productFactory = moduleRef.get(ProductFactory)
-    prisma = moduleRef.get(PrismaService)
 
     await app.init()
-  })
-
-  beforeEach(async () => {
-    await prisma.product.deleteMany()
-    await prisma.seller.deleteMany()
-    await prisma.category.deleteMany()
   })
 
   test('[GET] /products - should be able to get all recent products', async () => {
