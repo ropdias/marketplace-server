@@ -59,28 +59,22 @@ export class EditProductUseCase {
   }: EditProductUseCaseRequest): Promise<EditProductUseCaseResponse> {
     const seller = await this.sellersRepository.findById(sellerId)
 
-    if (!seller) {
-      return left(new ResourceNotFoundError())
-    }
+    if (!seller) return left(new ResourceNotFoundError('Seller not found.'))
 
     const category = await this.categoriesRepository.findById(categoryId)
 
-    if (!category) {
-      return left(new ResourceNotFoundError())
-    }
+    if (!category) return left(new ResourceNotFoundError('Category not found.'))
 
     const attachments =
       await this.attachmentsRepository.findManyByIds(attachmentsIds)
 
     if (attachments.length !== attachmentsIds.length) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Some attachments were not found.'))
     }
 
     const product = await this.productsRepository.findById(productId)
 
-    if (!product) {
-      return left(new ResourceNotFoundError())
-    }
+    if (!product) return left(new ResourceNotFoundError('Product not found.'))
 
     if (product.ownerId.toString() !== sellerId) {
       return left(new NotProductOwnerError())
