@@ -27,7 +27,7 @@ export class CountSoldProductsLast30DaysUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     const since = dayjs().utc().startOf('day').subtract(30, 'day').toDate()
