@@ -44,13 +44,13 @@ export class RegisterProductViewUseCase {
     const viewer = await this.sellersRepository.findById(viewerId)
 
     if (!viewer) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Product not found.'))
     }
 
     if (product.ownerId.equals(viewer.id)) {
