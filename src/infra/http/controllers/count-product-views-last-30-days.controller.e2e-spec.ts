@@ -110,7 +110,7 @@ describe('Count the number of views received by the seller in 30 days', () => {
     }
 
     // Views that SHOULD NOT count:
-    // - sellers[0] viewing products from other sellers within 30 days
+    // - seller viewing products from other sellers within 30 days
     // - old views (>30 days)
     await productViewFactory.makePrismaProductView({
       productId: productsFromOtherSellers[0].id,
