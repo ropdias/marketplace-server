@@ -37,13 +37,29 @@ beforeAll(() => {
   if (isPostgres(env.DATABASE_URL)) {
     schemaId = randomUUID()
     process.env.DATABASE_URL = generateUniqueDatabaseURL(schemaId)
-    prisma = new PrismaClient()
   } else if (isSQLite(env.DATABASE_URL)) {
     sqliteFilePath = path.resolve(__dirname, `test-${randomUUID()}.db`)
     process.env.DATABASE_URL = `file:${sqliteFilePath}`
+  } else {
+    throw new Error(
+      'Please provide a valid DATABASE_URL (PostgreSQL or SQLite)',
+    )
   }
 
+  prisma = new PrismaClient()
   execSync('pnpm prisma migrate deploy')
+})
+
+beforeEach(async () => {
+  if (!prisma) return
+
+  // Clean up all tables
+  // Note: The order of deletion matters due to foreign key constraints
+  await prisma.productView.deleteMany()
+  await prisma.product.deleteMany()
+  await prisma.seller.deleteMany()
+  await prisma.category.deleteMany()
+  await prisma.attachment.deleteMany()
 })
 
 afterAll(async () => {
