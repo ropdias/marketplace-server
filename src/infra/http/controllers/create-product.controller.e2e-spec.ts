@@ -6,7 +6,6 @@ import { DatabaseModule } from '@/infra/database/database.module'
 import { AttachmentFactory } from 'test/factories/make-attachment'
 import type { Server } from 'http'
 import cookieParser from 'cookie-parser'
-import { ProductFactory } from 'test/factories/make-product'
 import { createSellerAndLoginWithCookie } from 'test/utils/create-seller-and-login'
 import { SellerFactory } from 'test/factories/make-seller'
 import { JwtService } from '@nestjs/jwt'
@@ -27,12 +26,7 @@ describe('Create a product to sell (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [
-        AttachmentFactory,
-        ProductFactory,
-        SellerFactory,
-        CategoryFactory,
-      ],
+      providers: [AttachmentFactory, SellerFactory, CategoryFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
