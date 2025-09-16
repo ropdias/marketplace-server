@@ -25,7 +25,7 @@ import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/valu
 import { InvalidProductStatusError } from '@/domain/marketplace/application/use-cases/errors/invalid-product-status-error'
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products'
 
-const pageQueryParamSchema = z.number().nonnegative().optional()
+const pageQueryParamSchema = z.coerce.number().nonnegative().optional()
 const statusQueryParamSchema = z.enum(ProductStatusEnum).optional()
 const searchQueryParamSchema = z.string().optional()
 
