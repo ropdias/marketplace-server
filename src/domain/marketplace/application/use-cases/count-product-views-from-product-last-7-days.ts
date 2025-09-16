@@ -31,13 +31,13 @@ export class CountProductViewsFromProductLast7DaysUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Product not found.'))
     }
 
     const since = dayjs().utc().startOf('day').subtract(7, 'day').toDate()
