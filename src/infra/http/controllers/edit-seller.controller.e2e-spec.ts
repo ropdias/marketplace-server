@@ -12,7 +12,7 @@ import { sellerProfileResponseSchema } from '../presenters/seller-profile-presen
 import cookieParser from 'cookie-parser'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 
-describe('Update the current seller​ (E2E)', () => {
+describe('Update the current seller (E2E)', () => {
   let app: INestApplication
   let httpServer: Server
   let sellerFactory: SellerFactory
