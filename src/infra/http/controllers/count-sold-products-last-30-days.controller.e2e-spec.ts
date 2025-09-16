@@ -90,7 +90,7 @@ describe('Count the number of products sold by the seller in 30 days (E2E)', () 
     for (let i = 31; i < 61; i++) {
       const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = await productFactory.makePrismaProduct({
-        ownerId: sellers[0].id,
+        ownerId: seller.id,
         categoryId: category.id,
         createdAt,
       })
