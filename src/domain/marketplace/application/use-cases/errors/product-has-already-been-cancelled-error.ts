@@ -5,6 +5,6 @@ export class ProductHasAlreadyBeenCancelledError
   implements UseCaseError
 {
   constructor() {
-    super('Product has already been cancelled')
+    super('Product has already been cancelled.')
   }
 }
