@@ -41,7 +41,7 @@ export class FetchAllProductsFromSellerUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     if (status && !ProductStatus.isValid(status)) {
