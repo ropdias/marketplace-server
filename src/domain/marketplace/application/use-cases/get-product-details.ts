@@ -30,7 +30,7 @@ export class GetProductDetailsUseCase {
     const product = await this.productsRepository.findById(productId)
 
     if (!product) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Product not found.'))
     }
 
     const productDetailsEither = await this.productDetailsAssembler.assemble({
