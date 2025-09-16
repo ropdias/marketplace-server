@@ -64,7 +64,7 @@ export class ChangeProductStatusUseCase {
     }
 
     if (!ProductStatus.isValid(status)) {
-      return left(new InvalidProductStatusError(status))
+      return left(new InvalidProductStatusError())
     }
 
     const newStatus = ProductStatus.create(status as ProductStatusEnum)

@@ -45,7 +45,7 @@ export class FetchAllProductsFromSellerUseCase {
     }
 
     if (status && !ProductStatus.isValid(status)) {
-      return left(new InvalidProductStatusError(status))
+      return left(new InvalidProductStatusError())
     }
 
     const products = await this.productsRepository.findManyBySellerId({

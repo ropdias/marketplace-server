@@ -37,7 +37,7 @@ export class FetchRecentProductsUseCase {
     search,
   }: FetchRecentProductsUseCaseRequest): Promise<FetchRecentProductsUseCaseResponse> {
     if (status && !ProductStatus.isValid(status)) {
-      return left(new InvalidProductStatusError(status))
+      return left(new InvalidProductStatusError())
     }
 
     const products = await this.productsRepository.findManyRecent({
