@@ -113,14 +113,14 @@ describe('Update the current seller​ (E2E)', () => {
   })
 
   test('[PUT] /sellers - should return 401 when no authentication cookie is provided', async () => {
-    const response = await request(httpServer).get('/sellers/me')
+    const response = await request(httpServer).put('/sellers')
 
     expect(response.statusCode).toBe(401)
   })
 
   test('[PUT] /sellers - should return 401 when invalid authentication cookie is provided', async () => {
     const response = await request(httpServer)
-      .get('/sellers/me')
+      .put('/sellers')
       .set('Cookie', 'access_token=invalid-token')
 
     expect(response.statusCode).toBe(401)
