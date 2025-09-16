@@ -29,7 +29,7 @@ export class CountProductViewsPerDayLast30DaysUseCase {
     const seller = await this.sellersRepository.findById(sellerId)
 
     if (!seller) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
     const products = await this.productsRepository.findManyBySellerId({
