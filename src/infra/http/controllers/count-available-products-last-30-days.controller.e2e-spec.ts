@@ -107,7 +107,7 @@ describe('Count the amount of available products in 30 days (E2E)', () => {
     for (let i = 0; i < 30; i++) {
       const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = await productFactory.makePrismaProduct({
-        ownerId: sellers[0].id,
+        ownerId: seller.id,
         categoryId: category.id,
         createdAt,
         status: ProductStatus.create(ProductStatusEnum.SOLD),
@@ -117,7 +117,7 @@ describe('Count the amount of available products in 30 days (E2E)', () => {
     for (let i = 0; i < 30; i++) {
       const createdAt = dayjs.utc(now).subtract(i, 'day').toDate()
       const product = await productFactory.makePrismaProduct({
-        ownerId: sellers[0].id,
+        ownerId: seller.id,
         categoryId: category.id,
         createdAt,
         status: ProductStatus.create(ProductStatusEnum.CANCELLED),
