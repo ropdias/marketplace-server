@@ -43,6 +43,14 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+dev.db
+test.db
+/prisma/dev.db
+
 # temp directory
 .temp
 .tmp
