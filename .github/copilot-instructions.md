@@ -1,5 +1,12 @@
 # Marketplace Server AI Agent Instructions
 
+## Security & Sensitive Files
+**CRITICAL**: Never read or access the following sensitive files without explicit permission:
+- `.env*` files (environment variables with secrets)
+- `private-key.pem`, `public-key.pem` (JWT keys)
+- Any files containing API keys, passwords, or credentials
+- Always ask before reading files that may contain sensitive data
+
 ## Project Overview
 This is a NestJS-based marketplace server implementing Domain-Driven Design (DDD) and Clean Architecture principles.
 
