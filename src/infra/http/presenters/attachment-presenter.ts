@@ -19,9 +19,9 @@ export class AttachmentDTOResponse implements AttachmentDTOResponseType {
   @ApiProperty({ format: 'uuid' }) id: string
   @ApiProperty() url: string
 
-  constructor(attachment: AttachmentDTO) {
+  constructor(attachment: AttachmentDTO, bucketName: string, region: string) {
     this.id = attachment.id
-    this.url = attachment.url
+    this.url = `https://${bucketName}.s3.${region}.amazonaws.com/${attachment.url}`
   }
 }
 
@@ -29,13 +29,19 @@ export class AttachmentsResponse implements AttachmentsResponseType {
   @ApiProperty({ type: [AttachmentDTOResponse] })
   attachments: AttachmentDTOResponse[]
 
-  constructor(dtos: AttachmentDTO[]) {
-    this.attachments = dtos.map((dto) => new AttachmentDTOResponse(dto))
+  constructor(dtos: AttachmentDTO[], bucketName: string, region: string) {
+    this.attachments = dtos.map(
+      (dto) => new AttachmentDTOResponse(dto, bucketName, region),
+    )
   }
 }
 
 export class AttachmentPresenter {
-  static toHTTPMany(dtos: AttachmentDTO[]): AttachmentsResponse {
-    return new AttachmentsResponse(dtos)
+  static toHTTPMany(
+    dtos: AttachmentDTO[],
+    bucketName: string,
+    region: string,
+  ): AttachmentsResponse {
+    return new AttachmentsResponse(dtos, bucketName, region)
   }
 }

@@ -29,6 +29,7 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger'
+import { EnvService } from '@/infra/env/env.service'
 
 class UploadAttachmentsBody {
   @ApiProperty({
@@ -48,6 +49,7 @@ class UploadAttachmentsBody {
 export class UploadAndCreateAttachmentsController {
   constructor(
     private uploadAndCreateAttachments: UploadAndCreateAttachmentsUseCase,
+    private env: EnvService,
   ) {}
 
   @Post()
@@ -107,6 +109,10 @@ export class UploadAndCreateAttachmentsController {
 
     const { attachments } = result.value
 
-    return AttachmentPresenter.toHTTPMany(attachments)
+    return AttachmentPresenter.toHTTPMany(
+      attachments,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }
