@@ -73,7 +73,7 @@ describe('Update the current seller (E2E)', () => {
         name: 'John Doe Updated',
         email: 'johndoeupdated@example.com',
         phone: '1234567890',
-        avatar: { id: avatar.id.toString(), url: avatar.url },
+        avatar: { id: avatar.id.toString() },
       },
     })
   })

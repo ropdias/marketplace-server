@@ -91,7 +91,6 @@ describe('Get Seller Profile (E2E)', () => {
         phone: seller.phone,
         avatar: {
           id: avatar.id.toString(),
-          url: avatar.url,
         },
       },
     })

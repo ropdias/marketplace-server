@@ -70,7 +70,7 @@ describe('Create a new seller (E2E)', () => {
         name: 'John Doe',
         email: 'johndoe2@example.com',
         phone: '12345678902',
-        avatar: { id: avatar.id.toString(), url: avatar.url },
+        avatar: { id: avatar.id.toString() },
       },
     })
   })
