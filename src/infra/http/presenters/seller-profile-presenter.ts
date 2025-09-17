@@ -37,13 +37,17 @@ export class SellerProfileDTOResponse implements SellerProfileDTOResponseType {
   })
   avatar: AttachmentDTOResponse | null
 
-  constructor(sellerProfile: SellerProfileDTO) {
+  constructor(
+    sellerProfile: SellerProfileDTO,
+    bucketName: string,
+    region: string,
+  ) {
     this.id = sellerProfile.sellerId
     this.name = sellerProfile.name
     this.email = sellerProfile.email
     this.phone = sellerProfile.phone
     this.avatar = sellerProfile.avatar
-      ? new AttachmentDTOResponse(sellerProfile.avatar)
+      ? new AttachmentDTOResponse(sellerProfile.avatar, bucketName, region)
       : null
   }
 }
@@ -52,13 +56,17 @@ export class SellerProfileResponse implements SellerProfileResponseType {
   @ApiProperty({ type: SellerProfileDTOResponse })
   seller: SellerProfileDTOResponse
 
-  constructor(dto: SellerProfileDTO) {
-    this.seller = new SellerProfileDTOResponse(dto)
+  constructor(dto: SellerProfileDTO, bucketName: string, region: string) {
+    this.seller = new SellerProfileDTOResponse(dto, bucketName, region)
   }
 }
 
 export class SellerProfilePresenter {
-  static toHTTP(dto: SellerProfileDTO): SellerProfileResponse {
-    return new SellerProfileResponse(dto)
+  static toHTTP(
+    dto: SellerProfileDTO,
+    bucketName: string,
+    region: string,
+  ): SellerProfileResponse {
+    return new SellerProfileResponse(dto, bucketName, region)
   }
 }

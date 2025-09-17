@@ -28,12 +28,24 @@ export class ProductViewResponse implements ProductViewResponseType {
   constructor({
     productDetails,
     viewerProfile,
+    bucketName,
+    region,
   }: {
     productDetails: ProductDetailsDTO
     viewerProfile: SellerProfileDTO
+    bucketName: string
+    region: string
   }) {
-    this.product = new ProductDetailsDTOResponse(productDetails)
-    this.viewer = new SellerProfileDTOResponse(viewerProfile)
+    this.product = new ProductDetailsDTOResponse(
+      productDetails,
+      bucketName,
+      region,
+    )
+    this.viewer = new SellerProfileDTOResponse(
+      viewerProfile,
+      bucketName,
+      region,
+    )
   }
 }
 
@@ -41,13 +53,19 @@ export class ProductViewPresenter {
   static toHTTP({
     productDetails,
     viewerProfile,
+    bucketName,
+    region,
   }: {
     productDetails: ProductDetailsDTO
     viewerProfile: SellerProfileDTO
+    bucketName: string
+    region: string
   }): ProductViewResponse {
     return new ProductViewResponse({
       productDetails,
       viewerProfile,
+      bucketName,
+      region,
     })
   }
 }

@@ -58,16 +58,24 @@ export class ProductDetailsDTOResponse
   @ApiProperty({ type: [AttachmentDTOResponse] })
   attachments: AttachmentDTOResponse[]
 
-  constructor(productDetails: ProductDetailsDTO) {
+  constructor(
+    productDetails: ProductDetailsDTO,
+    bucketName: string,
+    region: string,
+  ) {
     this.id = productDetails.productId
     this.title = productDetails.title
     this.description = productDetails.description
     this.priceInCents = productDetails.priceInCents
     this.status = productDetails.status
-    this.owner = new SellerProfileDTOResponse(productDetails.owner)
+    this.owner = new SellerProfileDTOResponse(
+      productDetails.owner,
+      bucketName,
+      region,
+    )
     this.category = new CategoryDTOResponse(productDetails.category)
     this.attachments = productDetails.attachments.map(
-      (attachment) => new AttachmentDTOResponse(attachment),
+      (attachment) => new AttachmentDTOResponse(attachment, bucketName, region),
     )
   }
 }
@@ -76,8 +84,8 @@ export class ProductDetailsResponse implements ProductDetailsResponseType {
   @ApiProperty({ type: ProductDetailsDTOResponse })
   product: ProductDetailsDTOResponse
 
-  constructor(dto: ProductDetailsDTO) {
-    this.product = new ProductDetailsDTOResponse(dto)
+  constructor(dto: ProductDetailsDTO, bucketName: string, region: string) {
+    this.product = new ProductDetailsDTOResponse(dto, bucketName, region)
   }
 }
 
@@ -87,17 +95,27 @@ export class ProductDetailsListResponse
   @ApiProperty({ type: [ProductDetailsDTOResponse] })
   products: ProductDetailsDTOResponse[]
 
-  constructor(dtos: ProductDetailsDTO[]) {
-    this.products = dtos.map((dto) => new ProductDetailsDTOResponse(dto))
+  constructor(dtos: ProductDetailsDTO[], bucketName: string, region: string) {
+    this.products = dtos.map(
+      (dto) => new ProductDetailsDTOResponse(dto, bucketName, region),
+    )
   }
 }
 
 export class ProductDetailsPresenter {
-  static toHTTP(dto: ProductDetailsDTO): ProductDetailsResponse {
-    return new ProductDetailsResponse(dto)
+  static toHTTP(
+    dto: ProductDetailsDTO,
+    bucketName: string,
+    region: string,
+  ): ProductDetailsResponse {
+    return new ProductDetailsResponse(dto, bucketName, region)
   }
 
-  static toHTTPMany(dtos: ProductDetailsDTO[]): ProductDetailsListResponse {
-    return new ProductDetailsListResponse(dtos)
+  static toHTTPMany(
+    dtos: ProductDetailsDTO[],
+    bucketName: string,
+    region: string,
+  ): ProductDetailsListResponse {
+    return new ProductDetailsListResponse(dtos, bucketName, region)
   }
 }
