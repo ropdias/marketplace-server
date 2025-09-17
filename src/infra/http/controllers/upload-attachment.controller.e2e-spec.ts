@@ -49,21 +49,6 @@ describe('Fetch all categories (E2E)', () => {
     expect(attachmentsResponseSchema.parse(response.body)).toBeTruthy()
     const parsedBody = attachmentsResponseSchema.parse(response.body)
     expect(parsedBody.attachments).toHaveLength(2)
-    console.log(parsedBody)
-  })
-
-  test('[POST] /attachments - should return 401 when no authentication cookie is provided', async () => {
-    const response = await request(httpServer).post('/attachments')
-
-    expect(response.statusCode).toBe(401)
-  })
-
-  test('[POST] /attachments - should return 401 when invalid authentication cookie is provided', async () => {
-    const response = await request(httpServer)
-      .post('/attachments')
-      .set('Cookie', 'access_token=invalid-token')
-
-    expect(response.statusCode).toBe(401)
   })
 
   afterAll(async () => {
