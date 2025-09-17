@@ -30,6 +30,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { EnvService } from '@/infra/env/env.service'
+import { Public } from '@/infra/auth/public.decorator'
 
 class UploadAttachmentsBody {
   @ApiProperty({
@@ -45,6 +46,7 @@ class UploadAttachmentsBody {
 }
 
 @Controller('/attachments')
+@Public()
 @ApiTags('Attachments')
 export class UploadAndCreateAttachmentsController {
   constructor(
