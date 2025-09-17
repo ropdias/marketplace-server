@@ -29,11 +29,15 @@ import {
   ProductViewPresenter,
   ProductViewResponse,
 } from '../presenters/product-view-presenter'
+import { EnvService } from '@/infra/env/env.service'
 
 @Controller('/products/:id/views')
 @ApiTags('Viewers')
 export class RegisterProductViewController {
-  constructor(private registerProductView: RegisterProductViewUseCase) {}
+  constructor(
+    private registerProductView: RegisterProductViewUseCase,
+    private env: EnvService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -89,6 +93,11 @@ export class RegisterProductViewController {
 
     const { productDetails, viewerProfile } = result.value
 
-    return ProductViewPresenter.toHTTP({ productDetails, viewerProfile })
+    return ProductViewPresenter.toHTTP({
+      productDetails,
+      viewerProfile,
+      bucketName: this.env.get('AWS_BUCKET_NAME'),
+      region: this.env.get('AWS_REGION'),
+    })
   }
 }

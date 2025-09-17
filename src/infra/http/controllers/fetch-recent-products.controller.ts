@@ -24,6 +24,7 @@ import { z } from 'zod'
 import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from '@/domain/marketplace/application/use-cases/errors/invalid-product-status-error'
 import { FetchRecentProductsUseCase } from '@/domain/marketplace/application/use-cases/fetch-recent-products'
+import { EnvService } from '@/infra/env/env.service'
 
 const pageQueryParamSchema = z.coerce.number().nonnegative().optional()
 const statusQueryParamSchema = z.enum(ProductStatusEnum).optional()
@@ -40,7 +41,10 @@ type SearchQueryParamSchema = z.infer<typeof searchQueryParamSchema>
 @Controller('/products')
 @ApiTags('Products')
 export class FetchRecentProductsController {
-  constructor(private fetchRecentProducts: FetchRecentProductsUseCase) {}
+  constructor(
+    private fetchRecentProducts: FetchRecentProductsUseCase,
+    private env: EnvService,
+  ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -97,6 +101,10 @@ export class FetchRecentProductsController {
 
     const { productDetailsList } = result.value
 
-    return ProductDetailsPresenter.toHTTPMany(productDetailsList)
+    return ProductDetailsPresenter.toHTTPMany(
+      productDetailsList,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

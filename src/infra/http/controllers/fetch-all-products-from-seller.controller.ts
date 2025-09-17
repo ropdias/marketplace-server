@@ -29,6 +29,7 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CurrentUser } from '@/infra/auth/current-user.decorator'
 import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from '@/domain/marketplace/application/use-cases/errors/invalid-product-status-error'
+import { EnvService } from '@/infra/env/env.service'
 
 const statusQueryParamSchema = z.enum(ProductStatusEnum).optional()
 const searchQueryParamSchema = z.string().optional()
@@ -44,6 +45,7 @@ type SearchQueryParamSchema = z.infer<typeof searchQueryParamSchema>
 export class FetchAllProductsFromSellerController {
   constructor(
     private fetchAllProductsFromSeller: FetchAllProductsFromSellerUseCase,
+    private env: EnvService,
   ) {}
 
   @Get()
@@ -101,6 +103,10 @@ export class FetchAllProductsFromSellerController {
 
     const { productDetailsList } = result.value
 
-    return ProductDetailsPresenter.toHTTPMany(productDetailsList)
+    return ProductDetailsPresenter.toHTTPMany(
+      productDetailsList,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

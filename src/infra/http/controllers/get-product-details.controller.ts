@@ -21,11 +21,15 @@ import {
   ProductDetailsResponse,
 } from '../presenters/product-details-presenter'
 import { GetProductDetailsUseCase } from '@/domain/marketplace/application/use-cases/get-product-details'
+import { EnvService } from '@/infra/env/env.service'
 
 @Controller('/products/:id')
 @ApiTags('Products')
 export class GetProductDetailsController {
-  constructor(private getProductDetails: GetProductDetailsUseCase) {}
+  constructor(
+    private getProductDetails: GetProductDetailsUseCase,
+    private env: EnvService,
+  ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -65,6 +69,10 @@ export class GetProductDetailsController {
 
     const { productDetails } = result.value
 
-    return ProductDetailsPresenter.toHTTP(productDetails)
+    return ProductDetailsPresenter.toHTTP(
+      productDetails,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

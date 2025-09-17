@@ -21,11 +21,15 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
+import { EnvService } from '@/infra/env/env.service'
 
 @Controller('/sellers/me')
 @ApiTags('Sellers')
 export class GetSellerProfileController {
-  constructor(private getSellerProfile: GetSellerProfileUseCase) {}
+  constructor(
+    private getSellerProfile: GetSellerProfileUseCase,
+    private env: EnvService,
+  ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -60,6 +64,10 @@ export class GetSellerProfileController {
 
     const { sellerProfile } = result.value
 
-    return SellerProfilePresenter.toHTTP(sellerProfile)
+    return SellerProfilePresenter.toHTTP(
+      sellerProfile,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

@@ -32,6 +32,7 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger'
+import { EnvService } from '@/infra/env/env.service'
 
 const createSellerBodySchema = z.object({
   name: z.string(),
@@ -64,7 +65,10 @@ class CreateSellerBody implements CreateSellerBodySchema {
 @Public()
 @ApiTags('Sellers')
 export class CreateSellerController {
-  constructor(private createSeller: CreateSellerUseCase) {}
+  constructor(
+    private createSeller: CreateSellerUseCase,
+    private env: EnvService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -106,6 +110,10 @@ export class CreateSellerController {
 
     const { sellerProfile } = result.value
 
-    return SellerProfilePresenter.toHTTP(sellerProfile)
+    return SellerProfilePresenter.toHTTP(
+      sellerProfile,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

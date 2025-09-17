@@ -35,11 +35,15 @@ import { NotProductOwnerError } from '@/domain/marketplace/application/use-cases
 import { ProductWithSameStatusError } from '@/domain/marketplace/application/use-cases/errors/product-with-same-status-error'
 import { ProductHasAlreadyBeenSoldError } from '@/domain/marketplace/application/use-cases/errors/product-has-already-been-sold-error'
 import { ProductHasAlreadyBeenCancelledError } from '@/domain/marketplace/application/use-cases/errors/product-has-already-been-cancelled-error'
+import { EnvService } from '@/infra/env/env.service'
 
 @Controller('/products/:id/:status')
 @ApiTags('Products')
 export class ChangeProductStatusController {
-  constructor(private changeProductStatus: ChangeProductStatusUseCase) {}
+  constructor(
+    private changeProductStatus: ChangeProductStatusUseCase,
+    private env: EnvService,
+  ) {}
 
   @Patch()
   @HttpCode(HttpStatus.OK)
@@ -114,6 +118,10 @@ export class ChangeProductStatusController {
 
     const { productDetails } = result.value
 
-    return ProductDetailsPresenter.toHTTP(productDetails)
+    return ProductDetailsPresenter.toHTTP(
+      productDetails,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

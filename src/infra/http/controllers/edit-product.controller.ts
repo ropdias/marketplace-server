@@ -32,6 +32,7 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import { EditProductUseCase } from '@/domain/marketplace/application/use-cases/edit-product'
 import { NotProductOwnerError } from '@/domain/marketplace/application/use-cases/errors/not-product-owner-error'
 import { ProductHasAlreadyBeenSoldError } from '@/domain/marketplace/application/use-cases/errors/product-has-already-been-sold-error'
+import { EnvService } from '@/infra/env/env.service'
 
 const editProductBodySchema = z.object({
   title: z.string(),
@@ -56,7 +57,10 @@ class EditProductBody implements EditProductBodySchema {
 @Controller('/products/:id')
 @ApiTags('Products')
 export class EditProductController {
-  constructor(private editProduct: EditProductUseCase) {}
+  constructor(
+    private editProduct: EditProductUseCase,
+    private env: EnvService,
+  ) {}
 
   @Put()
   @HttpCode(HttpStatus.OK)
@@ -113,6 +117,10 @@ export class EditProductController {
 
     const { productDetails } = result.value
 
-    return ProductDetailsPresenter.toHTTP(productDetails)
+    return ProductDetailsPresenter.toHTTP(
+      productDetails,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

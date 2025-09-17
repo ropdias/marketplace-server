@@ -26,6 +26,7 @@ import {
 } from '../presenters/product-details-presenter'
 import { CurrentUser } from '@/infra/auth/current-user.decorator'
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
+import { EnvService } from '@/infra/env/env.service'
 
 const createProductBodySchema = z.object({
   title: z.string(),
@@ -50,7 +51,10 @@ class CreateProductBody implements CreateProductBodySchema {
 @Controller('/products')
 @ApiTags('Products')
 export class CreateProductController {
-  constructor(private createProduct: CreateProductUseCase) {}
+  constructor(
+    private createProduct: CreateProductUseCase,
+    private env: EnvService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -90,6 +94,10 @@ export class CreateProductController {
 
     const { productDetails } = result.value
 
-    return ProductDetailsPresenter.toHTTP(productDetails)
+    return ProductDetailsPresenter.toHTTP(
+      productDetails,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }

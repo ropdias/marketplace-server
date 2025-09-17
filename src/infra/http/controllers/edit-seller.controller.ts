@@ -37,6 +37,7 @@ import { WrongCredentialsError } from '@/domain/marketplace/application/use-case
 import { NewPasswordMustBeDifferentError } from '@/domain/marketplace/application/use-cases/errors/new-password-must-be-different-error'
 import { SellerEmailAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/seller-email-already-exists-error'
 import { SellerPhoneAlreadyExistsError } from '@/domain/marketplace/application/use-cases/errors/seller-phone-already-exists-error'
+import { EnvService } from '@/infra/env/env.service'
 
 const editSellerBodySchema = z.object({
   name: z.string(),
@@ -71,7 +72,10 @@ class EditSellerBody implements EditSellerBodySchema {
 @Controller('/sellers')
 @ApiTags('Sellers')
 export class EditSellerController {
-  constructor(private editSeller: EditSellerUseCase) {}
+  constructor(
+    private editSeller: EditSellerUseCase,
+    private env: EnvService,
+  ) {}
 
   @Put()
   @HttpCode(HttpStatus.OK)
@@ -140,6 +144,10 @@ export class EditSellerController {
 
     const { sellerProfile } = result.value
 
-    return SellerProfilePresenter.toHTTP(sellerProfile)
+    return SellerProfilePresenter.toHTTP(
+      sellerProfile,
+      this.env.get('AWS_BUCKET_NAME'),
+      this.env.get('AWS_REGION'),
+    )
   }
 }
