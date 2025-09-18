@@ -16,7 +16,6 @@ import { makeProduct } from 'test/factories/make-product'
 import { ViewerIsProductOwnerError } from './errors/viewer-is-product-owner-error'
 import { makeProductView } from 'test/factories/make-product-view'
 import { ProductViewAlreadyExistsError } from './errors/product-view-already-exists-error'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemoryProductViewsRepository: InMemoryProductViewsRepository
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
@@ -24,7 +23,6 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
 let sut: RegisterProductViewUseCase
 
 describe('Register Product View', () => {
@@ -32,23 +30,21 @@ describe('Register Product View', () => {
     inMemoryProductViewsRepository = new InMemoryProductViewsRepository()
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryAttachmentsRepository,
+    )
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,
       inMemorySellersRepository,
       inMemoryAttachmentsRepository,
     )
-    sellerProfileAssembler = new SellerProfileAssembler(
-      inMemoryAttachmentsRepository,
-    )
     sut = new RegisterProductViewUseCase(
       inMemoryProductViewsRepository,
       inMemoryProductsRepository,
       inMemorySellersRepository,
-      sellerProfileAssembler,
     )
   })
 

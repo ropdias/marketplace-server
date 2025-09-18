@@ -11,27 +11,23 @@ import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exi
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { makeAttachment } from 'test/factories/make-attachment'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let fakeHasher: FakeHasher
-let sellerProfileAssembler: SellerProfileAssembler
 let sut: CreateSellerUseCase
 
 describe('Create Seller', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    fakeHasher = new FakeHasher()
-    sellerProfileAssembler = new SellerProfileAssembler(
+    inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryAttachmentsRepository,
     )
+    fakeHasher = new FakeHasher()
     sut = new CreateSellerUseCase(
       inMemorySellersRepository,
       inMemoryAttachmentsRepository,
       fakeHasher,
-      sellerProfileAssembler,
     )
   })
 

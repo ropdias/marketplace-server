@@ -6,24 +6,18 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
 let sut: GetSellerProfileUseCase
 
 describe('Get Seller Profile', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
+    inMemorySellersRepository = new InMemorySellersRepository(
       inMemoryAttachmentsRepository,
     )
-    sut = new GetSellerProfileUseCase(
-      inMemorySellersRepository,
-      sellerProfileAssembler,
-    )
+    sut = new GetSellerProfileUseCase(inMemorySellersRepository)
   })
 
   it('should be able to get a seller profile without an avatar', async () => {
