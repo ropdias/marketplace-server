@@ -3,7 +3,9 @@ import { FakeEncrypter } from 'test/cryptography/fake-encrypter'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { AuthenticateSellerUseCase } from './authenticate-seller'
 import { makeSeller } from 'test/factories/make-seller'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let fakeHasher: FakeHasher
 let fakeEncrypter: FakeEncrypter
@@ -12,7 +14,10 @@ let sut: AuthenticateSellerUseCase
 
 describe('Authenticate Seller', () => {
   beforeEach(() => {
-    inMemorySellersRepository = new InMemorySellersRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryAttachmentsRepository,
+    )
     fakeHasher = new FakeHasher()
     fakeEncrypter = new FakeEncrypter()
 

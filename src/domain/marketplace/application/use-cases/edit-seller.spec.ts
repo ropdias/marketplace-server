@@ -1,5 +1,5 @@
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileFactory } from '../../../../../test/factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { FakeHasher } from 'test/cryptography/fake-hasher'

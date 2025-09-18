@@ -1,10 +1,10 @@
 import { makeSeller } from 'test/factories/make-seller'
-import { SellerProfileFactory } from './seller-profile-factory'
-import { ProductDetailsFactory } from './product-details-factory'
 import { makeCategory } from 'test/factories/make-category'
 import { makeProduct } from 'test/factories/make-product'
-import { Attachment } from '../../enterprise/entities/attachment'
 import { makeAttachment } from 'test/factories/make-attachment'
+import { SellerProfileFactory } from './seller-profile-factory'
+import { ProductDetailsFactory } from './product-details-factory'
+import { Attachment } from '@/domain/marketplace/enterprise/entities/attachment'
 
 describe('ProductDetailsFactory', () => {
   it('should create a product details without attachments if attachment list is empty', () => {

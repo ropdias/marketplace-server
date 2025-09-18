@@ -1,8 +1,8 @@
-import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
-import { Product } from '../../enterprise/entities/product'
-import { Category } from '../../enterprise/entities/category'
-import { Attachment } from '../../enterprise/entities/attachment'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
+import { Attachment } from '@/domain/marketplace/enterprise/entities/attachment'
+import { Category } from '@/domain/marketplace/enterprise/entities/category'
+import { Product } from '@/domain/marketplace/enterprise/entities/product'
+import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
+import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-objects/seller-profile'
 
 interface ProductDetailsFactoryCreateRequest {
   product: Product

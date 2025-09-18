@@ -1,13 +1,13 @@
 import { makeSeller } from 'test/factories/make-seller'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileFactory } from '../../../../../test/factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memory-product-attachments-repository'
-import { ProductDetailsFactory } from '../factories/product-details-factory'
+import { ProductDetailsFactory } from '../../../../../test/factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { makeProduct } from 'test/factories/make-product'
 import { makeCategory } from 'test/factories/make-category'
@@ -33,9 +33,11 @@ describe('Change Product Status', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemorySellersRepository = new InMemorySellersRepository(
+      inMemoryAttachmentsRepository,
+    )
     inMemoryProductsRepository = new InMemoryProductsRepository(
       inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,

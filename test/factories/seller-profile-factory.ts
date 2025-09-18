@@ -1,6 +1,6 @@
-import { Seller } from '../../enterprise/entities/seller'
-import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
-import { Attachment } from '../../enterprise/entities/attachment'
+import { Attachment } from '@/domain/marketplace/enterprise/entities/attachment'
+import { Seller } from '@/domain/marketplace/enterprise/entities/seller'
+import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-objects/seller-profile'
 
 interface SellerProfileFactoryCreateRequest {
   seller: Seller

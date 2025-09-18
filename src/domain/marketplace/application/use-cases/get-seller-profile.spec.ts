@@ -1,7 +1,7 @@
 import { makeSeller } from 'test/factories/make-seller'
 import { InMemorySellersRepository } from 'test/repositories/in-memory-sellers-repository'
 import { GetSellerProfileUseCase } from './get-seller-profile'
-import { SellerProfileFactory } from '../factories/seller-profile-factory'
+import { SellerProfileFactory } from '../../../../../test/factories/seller-profile-factory'
 import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { makeAttachment } from 'test/factories/make-attachment'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
