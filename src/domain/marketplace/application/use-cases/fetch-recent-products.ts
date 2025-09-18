@@ -6,7 +6,6 @@ import {
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from './errors/invalid-product-status-error'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 
@@ -17,7 +16,7 @@ interface FetchRecentProductsUseCaseRequest {
 }
 
 type FetchRecentProductsUseCaseResponse = Either<
-  ResourceNotFoundError | InvalidProductStatusError,
+  InvalidProductStatusError,
   {
     productDetailsList: ProductDetailsDTO[]
   }
