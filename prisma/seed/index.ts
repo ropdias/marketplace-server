@@ -63,7 +63,7 @@ async function main() {
     ),
   })
 
-  // criar os produtos
+  // create products
   const numberOfProducts = faker.number.int({ min: 20, max: 50 })
   await Promise.all(
     Array.from({ length: numberOfProducts }).map(async () => {
@@ -89,7 +89,7 @@ async function main() {
 
   const products = await prisma.product.findMany()
 
-  // criar os product views
+  // create product views
   const productViewers = faker.helpers.arrayElements(viewers)
   await Promise.all(
     productViewers.map(async (viewer) => {
