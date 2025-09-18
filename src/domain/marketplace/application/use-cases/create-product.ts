@@ -12,6 +12,7 @@ import { ProductAttachmentList } from '../../enterprise/entities/product-attachm
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
+import { ProductDetails } from '../../enterprise/entities/value-objects/product-details'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -46,9 +47,10 @@ export class CreateProductUseCase {
     attachmentsIds,
     sellerId,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    const seller = await this.sellersRepository.findById(sellerId)
+    const sellerProfile =
+      await this.sellersRepository.findSellerProfileById(sellerId)
 
-    if (!seller) {
+    if (!sellerProfile) {
       return left(new ResourceNotFoundError('Seller not found.'))
     }
 
@@ -84,13 +86,16 @@ export class CreateProductUseCase {
 
     await this.productsRepository.create(product)
 
-    const productDetails = await this.productsRepository.findProductDetailsById(
-      product.id.toString(),
-    )
-
-    if (!productDetails) {
-      return left(new ResourceNotFoundError('Product not found.'))
-    }
+    const productDetails = ProductDetails.create({
+      productId: product.id,
+      title: product.title,
+      description: product.description,
+      priceInCents: product.priceInCents,
+      status: product.status,
+      owner: sellerProfile,
+      category,
+      attachments,
+    })
 
     const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
