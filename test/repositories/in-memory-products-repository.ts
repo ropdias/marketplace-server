@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import {
-  FindManyBySellerIdParams,
-  FindManyRecentParams,
+  FindManyProductDetailsBySellerIdParams,
+  FindManyRecentProductDetailsParams,
   ProductsRepository,
 } from '@/domain/marketplace/application/repositories/products-repository'
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
@@ -10,12 +10,20 @@ import {
   ProductStatus,
   ProductStatusEnum,
 } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
+import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
+import { InMemoryCategoriesRepository } from './in-memory-categories-repository'
+import { InMemorySellersRepository } from './in-memory-sellers-repository'
+import { InMemoryAttachmentsRepository } from './in-memory-attachments-repository'
+import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-objects/seller-profile'
 
 export class InMemoryProductsRepository implements ProductsRepository {
   public items: Product[] = []
 
   constructor(
     private productAttachmentsRepository: InMemoryProductAttachmentsRepository,
+    private categoriesRepository: InMemoryCategoriesRepository,
+    private sellersRepository: InMemorySellersRepository,
+    private attachmentRepository: InMemoryAttachmentsRepository,
   ) {}
 
   async findById(id: string): Promise<Product | null> {
@@ -28,54 +36,8 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product
   }
 
-  async findManyRecent({
-    page,
-    search,
-    status,
-  }: FindManyRecentParams): Promise<Product[]> {
-    let products = this.items
-
-    if (search) {
-      products = products.filter((item) =>
-        item.title.toLowerCase().includes(search.toLowerCase()),
-      )
-    }
-
-    if (status) {
-      products = products.filter((item) => item.status.equals(status))
-    }
-
-    products = products.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    )
-
-    if (page) {
-      products = products.slice((page - 1) * 20, page * 20)
-    }
-
-    return products
-  }
-
-  async findManyBySellerId({
-    sellerId,
-    search,
-    status,
-  }: FindManyBySellerIdParams): Promise<Product[]> {
-    let products = this.items.filter(
-      (item) => item.ownerId.toString() === sellerId,
-    )
-
-    if (search) {
-      products = products.filter((item) =>
-        item.title.toLowerCase().includes(search.toLowerCase()),
-      )
-    }
-
-    if (status) {
-      products = products.filter((item) => item.status.equals(status))
-    }
-
-    return products
+  async findManyBySellerId(sellerId: string): Promise<Product[]> {
+    return this.items.filter((item) => item.ownerId.toString() === sellerId)
   }
 
   async save(product: Product): Promise<void> {
@@ -133,5 +95,258 @@ export class InMemoryProductsRepository implements ProductsRepository {
         item.status.equals(productStatus) &&
         item.createdAt >= since,
     ).length
+  }
+
+  async findProductDetailsById(id: string): Promise<ProductDetails | null> {
+    const product = this.items.find((item) => item.id.toString() === id)
+
+    if (!product) {
+      return null
+    }
+
+    const category = this.categoriesRepository.items.find((category) => {
+      return category.id.equals(product.categoryId)
+    })
+
+    if (!category) {
+      throw new Error(
+        `Category with ID "${product.categoryId.toString()}" does not exist.`,
+      )
+    }
+
+    const owner = this.sellersRepository.items.find((seller) => {
+      return seller.id.equals(product.ownerId)
+    })
+
+    if (!owner) {
+      throw new Error(
+        `Owner with ID "${product.ownerId.toString()}" does not exist.`,
+      )
+    }
+
+    const avatar =
+      this.attachmentRepository.items.find((attachment) => {
+        return owner.avatarId?.equals(attachment.id)
+      }) ?? null
+
+    const productAttachments = this.productAttachmentsRepository.items.filter(
+      (productAttachment) => {
+        return productAttachment.productId.equals(product.id)
+      },
+    )
+
+    const attachments = productAttachments.map((productAttachment) => {
+      const attachment = this.attachmentRepository.items.find((attachment) => {
+        return attachment.id.equals(productAttachment.attachmentId)
+      })
+
+      if (!attachment) {
+        throw new Error(
+          `Attachment with ID "${productAttachment.attachmentId.toString()}" does not exist.`,
+        )
+      }
+
+      return attachment
+    })
+
+    const productDetails = ProductDetails.create({
+      productId: product.id,
+      title: product.title,
+      description: product.description,
+      priceInCents: product.priceInCents,
+      status: product.status,
+      owner: SellerProfile.create({
+        sellerId: owner.id,
+        name: owner.name,
+        email: owner.email,
+        phone: owner.phone,
+        avatar,
+      }),
+      category,
+      attachments,
+    })
+
+    return productDetails
+  }
+
+  async findManyRecentProductDetailsByIds({
+    page,
+    search,
+    status,
+  }: FindManyRecentProductDetailsParams): Promise<ProductDetails[]> {
+    let products = this.items
+
+    if (search) {
+      products = products.filter((item) =>
+        item.title.toLowerCase().includes(search.toLowerCase()),
+      )
+    }
+
+    if (status) {
+      products = products.filter((item) => item.status.equals(status))
+    }
+
+    products = products.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
+
+    if (page) {
+      products = products.slice((page - 1) * 20, page * 20)
+    }
+
+    const productDetails = products.map((product) => {
+      const category = this.categoriesRepository.items.find((category) => {
+        return category.id.equals(product.categoryId)
+      })
+
+      if (!category) {
+        throw new Error(
+          `Category with ID "${product.categoryId.toString()}" does not exist.`,
+        )
+      }
+
+      const owner = this.sellersRepository.items.find((seller) => {
+        return seller.id.equals(product.ownerId)
+      })
+
+      if (!owner) {
+        throw new Error(
+          `Owner with ID "${product.ownerId.toString()}" does not exist.`,
+        )
+      }
+
+      const avatar =
+        this.attachmentRepository.items.find((attachment) => {
+          return owner.avatarId?.equals(attachment.id)
+        }) ?? null
+
+      const productAttachments = this.productAttachmentsRepository.items.filter(
+        (productAttachment) => {
+          return productAttachment.productId.equals(product.id)
+        },
+      )
+
+      const attachments = productAttachments.map((productAttachment) => {
+        const attachment = this.attachmentRepository.items.find(
+          (attachment) => {
+            return attachment.id.equals(productAttachment.attachmentId)
+          },
+        )
+
+        if (!attachment) {
+          throw new Error(
+            `Attachment with ID "${productAttachment.attachmentId.toString()}" does not exist.`,
+          )
+        }
+
+        return attachment
+      })
+
+      return ProductDetails.create({
+        productId: product.id,
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents,
+        status: product.status,
+        owner: SellerProfile.create({
+          sellerId: owner.id,
+          name: owner.name,
+          email: owner.email,
+          phone: owner.phone,
+          avatar,
+        }),
+        category,
+        attachments,
+      })
+    })
+
+    return productDetails
+  }
+  async findManyProductDetailsBySellerId({
+    sellerId,
+    search,
+    status,
+  }: FindManyProductDetailsBySellerIdParams): Promise<ProductDetails[]> {
+    let products = this.items.filter(
+      (item) => item.ownerId.toString() === sellerId,
+    )
+
+    if (search) {
+      products = products.filter((item) =>
+        item.title.toLowerCase().includes(search.toLowerCase()),
+      )
+    }
+
+    if (status) {
+      products = products.filter((item) => item.status.equals(status))
+    }
+
+    const productDetails = products.map((product) => {
+      const category = this.categoriesRepository.items.find((category) => {
+        return category.id.equals(product.categoryId)
+      })
+
+      if (!category) {
+        throw new Error(
+          `Category with ID "${product.categoryId.toString()}" does not exist.`,
+        )
+      }
+
+      const owner = this.sellersRepository.items.find((seller) => {
+        return seller.id.equals(product.ownerId)
+      })
+
+      if (!owner) {
+        throw new Error(
+          `Owner with ID "${product.ownerId.toString()}" does not exist.`,
+        )
+      }
+
+      const avatar =
+        this.attachmentRepository.items.find((attachment) => {
+          return owner.avatarId?.equals(attachment.id)
+        }) ?? null
+
+      const productAttachments = this.productAttachmentsRepository.items.filter(
+        (productAttachment) => {
+          return productAttachment.productId.equals(product.id)
+        },
+      )
+
+      const attachments = productAttachments.map((productAttachment) => {
+        const attachment = this.attachmentRepository.items.find(
+          (attachment) => {
+            return attachment.id.equals(productAttachment.attachmentId)
+          },
+        )
+
+        if (!attachment) {
+          throw new Error(
+            `Attachment with ID "${productAttachment.attachmentId.toString()}" does not exist.`,
+          )
+        }
+
+        return attachment
+      })
+
+      return ProductDetails.create({
+        productId: product.id,
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents,
+        status: product.status,
+        owner: SellerProfile.create({
+          sellerId: owner.id,
+          name: owner.name,
+          email: owner.email,
+          phone: owner.phone,
+          avatar,
+        }),
+        category,
+        attachments,
+      })
+    })
+
+    return productDetails
   }
 }

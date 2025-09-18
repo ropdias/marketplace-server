@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import {
-  FindManyBySellerIdParams,
-  FindManyRecentParams,
+  FindManyProductDetailsBySellerIdParams,
+  FindManyRecentProductDetailsParams,
   ProductsRepository,
 } from '@/domain/marketplace/application/repositories/products-repository'
 import { Product } from '@/domain/marketplace/enterprise/entities/product'
@@ -10,6 +10,8 @@ import { PrismaProductMapper } from '../mappers/prisma-product-mapper'
 import { PrismaProductStatusMapper } from '../mappers/prisma-product-status-mapper'
 import { ProductStatusEnum } from '@/domain/marketplace/enterprise/entities/value-objects/product-status'
 import { ProductAttachmentsRepository } from '@/domain/marketplace/application/repositories/product-attachments-repository'
+import { ProductDetails } from '@/domain/marketplace/enterprise/entities/value-objects/product-details'
+import { PrismaProductDetailsMapper } from '../mappers/prisma-product-details-mapper'
 
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
@@ -28,45 +30,9 @@ export class PrismaProductsRepository implements ProductsRepository {
     return PrismaProductMapper.toDomain(product)
   }
 
-  async findManyRecent({
-    page,
-    search,
-    status,
-  }: FindManyRecentParams): Promise<Product[]> {
+  async findManyBySellerId(sellerId: string): Promise<Product[]> {
     const products = await this.prisma.product.findMany({
-      where: {
-        ...(search ? { title: { contains: search } } : {}),
-        ...(status
-          ? { status: PrismaProductStatusMapper.toPrisma(status.value) }
-          : {}),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      ...(page
-        ? {
-            take: 20,
-            skip: (page - 1) * 20,
-          }
-        : {}),
-    })
-
-    return products.map((product) => PrismaProductMapper.toDomain(product))
-  }
-
-  async findManyBySellerId({
-    sellerId,
-    search,
-    status,
-  }: FindManyBySellerIdParams): Promise<Product[]> {
-    const products = await this.prisma.product.findMany({
-      where: {
-        ownerId: sellerId,
-        ...(search ? { title: { contains: search } } : {}),
-        ...(status
-          ? { status: PrismaProductStatusMapper.toPrisma(status.value) }
-          : {}),
-      },
+      where: { ownerId: sellerId },
     })
 
     return products.map((product) => PrismaProductMapper.toDomain(product))
@@ -134,5 +100,78 @@ export class PrismaProductsRepository implements ProductsRepository {
         },
       },
     })
+  }
+
+  async findProductDetailsById(id: string): Promise<ProductDetails | null> {
+    const productDetails = await this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        attachments: true,
+        owner: { include: { avatar: true } },
+        category: true,
+      },
+    })
+
+    if (!productDetails) return null
+
+    return PrismaProductDetailsMapper.toDomain(productDetails)
+  }
+
+  async findManyRecentProductDetailsByIds({
+    page,
+    search,
+    status,
+  }: FindManyRecentProductDetailsParams): Promise<ProductDetails[]> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        ...(search ? { title: { contains: search } } : {}),
+        ...(status
+          ? { status: PrismaProductStatusMapper.toPrisma(status.value) }
+          : {}),
+      },
+      include: {
+        attachments: true,
+        owner: { include: { avatar: true } },
+        category: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      ...(page
+        ? {
+            take: 20,
+            skip: (page - 1) * 20,
+          }
+        : {}),
+    })
+
+    return products.map((product) =>
+      PrismaProductDetailsMapper.toDomain(product),
+    )
+  }
+
+  async findManyProductDetailsBySellerId({
+    sellerId,
+    search,
+    status,
+  }: FindManyProductDetailsBySellerIdParams): Promise<ProductDetails[]> {
+    const products = await this.prisma.product.findMany({
+      where: {
+        ownerId: sellerId,
+        ...(search ? { title: { contains: search } } : {}),
+        ...(status
+          ? { status: PrismaProductStatusMapper.toPrisma(status.value) }
+          : {}),
+      },
+      include: {
+        attachments: true,
+        owner: { include: { avatar: true } },
+        category: true,
+      },
+    })
+
+    return products.map((product) =>
+      PrismaProductDetailsMapper.toDomain(product),
+    )
   }
 }
