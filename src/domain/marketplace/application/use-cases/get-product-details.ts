@@ -4,7 +4,6 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductsRepository } from '../repositories/products-repository'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface GetProductDetailsUseCaseRequest {
   productId: string
@@ -19,28 +18,19 @@ type GetProductDetailsUseCaseResponse = Either<
 
 @Injectable()
 export class GetProductDetailsUseCase {
-  constructor(
-    private productsRepository: ProductsRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
-  ) {}
+  constructor(private productsRepository: ProductsRepository) {}
 
   async execute({
     productId,
   }: GetProductDetailsUseCaseRequest): Promise<GetProductDetailsUseCaseResponse> {
-    const product = await this.productsRepository.findById(productId)
+    const productDetails =
+      await this.productsRepository.findProductDetailsById(productId)
 
-    if (!product) {
+    if (!productDetails) {
       return left(new ResourceNotFoundError('Product not found.'))
     }
 
-    const productDetailsEither = await this.productDetailsAssembler.assemble({
-      product,
-    })
-    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
-
-    const productDetailsDTO = ProductDetailsMapper.toDTO(
-      productDetailsEither.value,
-    )
+    const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({
       productDetails: productDetailsDTO,

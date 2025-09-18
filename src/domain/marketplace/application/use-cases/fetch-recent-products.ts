@@ -9,7 +9,6 @@ import { InvalidProductStatusError } from './errors/invalid-product-status-error
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface FetchRecentProductsUseCaseRequest {
   page?: number
@@ -26,10 +25,7 @@ type FetchRecentProductsUseCaseResponse = Either<
 
 @Injectable()
 export class FetchRecentProductsUseCase {
-  constructor(
-    private productsRepository: ProductsRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
-  ) {}
+  constructor(private productsRepository: ProductsRepository) {}
 
   async execute({
     page,
@@ -40,29 +36,21 @@ export class FetchRecentProductsUseCase {
       return left(new InvalidProductStatusError())
     }
 
-    const products = await this.productsRepository.findManyRecent({
-      page,
-      status: status
-        ? ProductStatus.create(status as ProductStatusEnum)
-        : undefined,
-      search,
-    })
-
-    let productDetailsDTOList: ProductDetailsDTO[] = []
+    const products =
+      await this.productsRepository.findManyRecentProductDetailsByIds({
+        page,
+        status: status
+          ? ProductStatus.create(status as ProductStatusEnum)
+          : undefined,
+        search,
+      })
 
     if (products.length === 0) {
       return right({ productDetailsList: [] })
     }
 
-    const productDetailsListEither =
-      await this.productDetailsAssembler.assembleMany({
-        products,
-      })
-    if (productDetailsListEither.isLeft())
-      return left(productDetailsListEither.value)
-
-    productDetailsDTOList = productDetailsListEither.value.map(
-      (productDetails) => ProductDetailsMapper.toDTO(productDetails),
+    const productDetailsDTOList = products.map((productDetails) =>
+      ProductDetailsMapper.toDTO(productDetails),
     )
 
     return right({ productDetailsList: productDetailsDTOList })

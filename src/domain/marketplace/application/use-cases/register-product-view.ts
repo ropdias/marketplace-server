@@ -13,7 +13,6 @@ import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface RegisterProductViewRequest {
   productId: string
@@ -34,7 +33,6 @@ export class RegisterProductViewUseCase {
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
     private sellerProfileAssembler: SellerProfileAssembler,
-    private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
   async execute({
@@ -66,15 +64,6 @@ export class RegisterProductViewUseCase {
       return left(new ProductViewAlreadyExistsError())
     }
 
-    const productDetailsEither = await this.productDetailsAssembler.assemble({
-      product,
-    })
-    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
-
-    const productDetailsDTO = ProductDetailsMapper.toDTO(
-      productDetailsEither.value,
-    )
-
     const viewerProfileEither = await this.sellerProfileAssembler.assemble({
       seller: viewer,
     })
@@ -90,6 +79,16 @@ export class RegisterProductViewUseCase {
     })
 
     await this.productViewsRepository.create(productView)
+
+    const productDetails = await this.productsRepository.findProductDetailsById(
+      product.id.toString(),
+    )
+
+    if (!productDetails) {
+      return left(new ResourceNotFoundError('Product not found.'))
+    }
+
+    const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({
       productDetails: productDetailsDTO,

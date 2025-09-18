@@ -14,7 +14,6 @@ import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-bee
 import { ProductHasAlreadyBeenCancelledError } from './errors/product-has-already-been-cancelled-error'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface ChangeProductStatusUseCaseRequest {
   status: string
@@ -39,7 +38,6 @@ export class ChangeProductStatusUseCase {
   constructor(
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
   async execute({
@@ -89,16 +87,17 @@ export class ChangeProductStatusUseCase {
 
     product.status = newStatus
 
-    const productDetailsEither = await this.productDetailsAssembler.assemble({
-      product,
-    })
-    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
+    await this.productsRepository.save(product)
 
-    const productDetailsDTO = ProductDetailsMapper.toDTO(
-      productDetailsEither.value,
+    const productDetails = await this.productsRepository.findProductDetailsById(
+      product.id.toString(),
     )
 
-    await this.productsRepository.save(product)
+    if (!productDetails) {
+      return left(new ResourceNotFoundError('Product not found.'))
+    }
+
+    const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({
       productDetails: productDetailsDTO,

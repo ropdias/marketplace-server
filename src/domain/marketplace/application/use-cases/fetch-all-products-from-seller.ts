@@ -10,7 +10,6 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface FetchAllProductsFromSellerUseCaseRequest {
   sellerId: string
@@ -30,7 +29,6 @@ export class FetchAllProductsFromSellerUseCase {
   constructor(
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
   async execute({
@@ -48,30 +46,21 @@ export class FetchAllProductsFromSellerUseCase {
       return left(new InvalidProductStatusError())
     }
 
-    const products = await this.productsRepository.findManyBySellerId({
-      sellerId,
-      status: status
-        ? ProductStatus.create(status as ProductStatusEnum)
-        : undefined,
-      search,
-    })
-
-    let productDetailsDTOList: ProductDetailsDTO[] = []
+    const products =
+      await this.productsRepository.findManyProductDetailsBySellerId({
+        sellerId,
+        status: status
+          ? ProductStatus.create(status as ProductStatusEnum)
+          : undefined,
+        search,
+      })
 
     if (products.length === 0) {
       return right({ productDetailsList: [] })
     }
 
-    const productDetailsListEither =
-      await this.productDetailsAssembler.assembleManyFromSeller({
-        products,
-        seller,
-      })
-    if (productDetailsListEither.isLeft())
-      return left(productDetailsListEither.value)
-
-    productDetailsDTOList = productDetailsListEither.value.map(
-      (productDetails) => ProductDetailsMapper.toDTO(productDetails),
+    const productDetailsDTOList = products.map((productDetails) =>
+      ProductDetailsMapper.toDTO(productDetails),
     )
 
     return right({ productDetailsList: productDetailsDTOList })

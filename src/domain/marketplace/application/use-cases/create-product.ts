@@ -12,7 +12,6 @@ import { ProductAttachmentList } from '../../enterprise/entities/product-attachm
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface CreateProductUseCaseRequest {
   title: string
@@ -37,7 +36,6 @@ export class CreateProductUseCase {
     private sellersRepository: SellersRepository,
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
   async execute({
@@ -84,16 +82,17 @@ export class CreateProductUseCase {
 
     product.attachments = new ProductAttachmentList(productAttachments)
 
-    const productDetailsEither = await this.productDetailsAssembler.assemble({
-      product,
-    })
-    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
+    await this.productsRepository.create(product)
 
-    const productDetailsDTO = ProductDetailsMapper.toDTO(
-      productDetailsEither.value,
+    const productDetails = await this.productsRepository.findProductDetailsById(
+      product.id.toString(),
     )
 
-    await this.productsRepository.create(product)
+    if (!productDetails) {
+      return left(new ResourceNotFoundError('Product not found.'))
+    }
+
+    const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({
       productDetails: productDetailsDTO,

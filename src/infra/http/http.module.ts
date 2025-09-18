@@ -21,7 +21,6 @@ import { CountSoldProductsLast30DaysController } from './controllers/count-sold-
 import { CountSoldProductsLast30DaysUseCase } from '@/domain/marketplace/application/use-cases/count-sold-products-last-30-days'
 import { CreateProductController } from './controllers/create-product.controller'
 import { CreateProductUseCase } from '@/domain/marketplace/application/use-cases/create-product'
-import { ProductDetailsAssembler } from '@/domain/marketplace/application/assemblers/product-details-assembler'
 import { GetProductDetailsController } from './controllers/get-product-details.controller'
 import { GetProductDetailsUseCase } from '@/domain/marketplace/application/use-cases/get-product-details'
 import { EditProductController } from './controllers/edit-product.controller'
@@ -86,7 +85,6 @@ import { SignOutSellerController } from './controllers/sign-out-seller.controlle
     FetchAllCategoriesUseCase,
     UploadAndCreateAttachmentsUseCase,
     SellerProfileAssembler,
-    ProductDetailsAssembler,
   ],
 })
 export class HttpModule {}

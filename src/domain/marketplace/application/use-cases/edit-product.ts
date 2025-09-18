@@ -18,7 +18,6 @@ import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-c
 import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { ProductHasAlreadyBeenSoldError } from './errors/product-has-already-been-sold-error'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 interface EditProductUseCaseRequest {
   productId: string
@@ -45,7 +44,6 @@ export class EditProductUseCase {
     private categoriesRepository: CategoriesRepository,
     private attachmentsRepository: AttachmentsRepository,
     private productAttachmentsRepository: ProductAttachmentsRepository,
-    private productDetailsAssembler: ProductDetailsAssembler,
   ) {}
 
   async execute({
@@ -106,16 +104,17 @@ export class EditProductUseCase {
     product.description = description
     product.priceInCents = PriceInCents.create(priceInCents)
 
-    const productDetailsEither = await this.productDetailsAssembler.assemble({
-      product,
-    })
-    if (productDetailsEither.isLeft()) return left(productDetailsEither.value)
+    await this.productsRepository.save(product)
 
-    const productDetailsDTO = ProductDetailsMapper.toDTO(
-      productDetailsEither.value,
+    const productDetails = await this.productsRepository.findProductDetailsById(
+      product.id.toString(),
     )
 
-    await this.productsRepository.save(product)
+    if (!productDetails) {
+      return left(new ResourceNotFoundError('Product not found.'))
+    }
+
+    const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({
       productDetails: productDetailsDTO,
