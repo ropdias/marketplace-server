@@ -7,8 +7,6 @@ import { InMemoryProductAttachmentsRepository } from 'test/repositories/in-memor
 import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { FetchRecentProductsUseCase } from './fetch-recent-products'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 import { Seller } from '../../enterprise/entities/seller'
 import { makeSeller } from 'test/factories/make-seller'
 import { makeCategory } from 'test/factories/make-category'
@@ -26,33 +24,22 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
-let productDetailsAssembler: ProductDetailsAssembler
 let sut: FetchRecentProductsUseCase
 
 describe('Fetch Recent Products', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsAssembler = new ProductDetailsAssembler(
-      inMemorySellersRepository,
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,
+      inMemorySellersRepository,
       inMemoryAttachmentsRepository,
-      sellerProfileAssembler,
     )
-    sut = new FetchRecentProductsUseCase(
-      inMemoryProductsRepository,
-      productDetailsAssembler,
-    )
+    sut = new FetchRecentProductsUseCase(inMemoryProductsRepository)
   })
 
   it('should be able to fetch recent products', async () => {

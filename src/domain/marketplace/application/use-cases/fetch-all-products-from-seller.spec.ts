@@ -17,8 +17,6 @@ import {
   ProductStatusEnum,
 } from '../../enterprise/entities/value-objects/product-status'
 import { InvalidProductStatusError } from './errors/invalid-product-status-error'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 import { Seller } from '../../enterprise/entities/seller'
 import { Product } from '../../enterprise/entities/product'
 
@@ -27,33 +25,24 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
-let productDetailsAssembler: ProductDetailsAssembler
 let sut: FetchAllProductsFromSellerUseCase
 
 describe('Fetch All Products From Seller', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsAssembler = new ProductDetailsAssembler(
-      inMemorySellersRepository,
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,
+      inMemorySellersRepository,
       inMemoryAttachmentsRepository,
-      sellerProfileAssembler,
     )
     sut = new FetchAllProductsFromSellerUseCase(
       inMemoryProductsRepository,
       inMemorySellersRepository,
-      productDetailsAssembler,
     )
   })
 

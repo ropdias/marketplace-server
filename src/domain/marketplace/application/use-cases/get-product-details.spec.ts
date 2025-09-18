@@ -11,41 +11,28 @@ import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { makeProduct } from 'test/factories/make-product'
 import { makeCategory } from 'test/factories/make-category'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
-let productDetailsAssembler: ProductDetailsAssembler
 let sut: GetProductDetailsUseCase
 
 describe('Get Product Details', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsAssembler = new ProductDetailsAssembler(
-      inMemorySellersRepository,
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,
+      inMemorySellersRepository,
       inMemoryAttachmentsRepository,
-      sellerProfileAssembler,
     )
-    sut = new GetProductDetailsUseCase(
-      inMemoryProductsRepository,
-      productDetailsAssembler,
-    )
+    sut = new GetProductDetailsUseCase(inMemoryProductsRepository)
   })
 
   it('should be able to get product details', async () => {

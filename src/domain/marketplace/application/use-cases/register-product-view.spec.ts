@@ -17,7 +17,6 @@ import { ViewerIsProductOwnerError } from './errors/viewer-is-product-owner-erro
 import { makeProductView } from 'test/factories/make-product-view'
 import { ProductViewAlreadyExistsError } from './errors/product-view-already-exists-error'
 import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 
 let inMemoryProductViewsRepository: InMemoryProductViewsRepository
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
@@ -26,7 +25,6 @@ let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sellerProfileAssembler: SellerProfileAssembler
-let productDetailsAssembler: ProductDetailsAssembler
 let sut: RegisterProductViewUseCase
 
 describe('Register Product View', () => {
@@ -34,27 +32,23 @@ describe('Register Product View', () => {
     inMemoryProductViewsRepository = new InMemoryProductViewsRepository()
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+      inMemoryCategoriesRepository,
+      inMemorySellersRepository,
       inMemoryAttachmentsRepository,
     )
-    productDetailsAssembler = new ProductDetailsAssembler(
-      inMemorySellersRepository,
-      inMemoryCategoriesRepository,
+    sellerProfileAssembler = new SellerProfileAssembler(
       inMemoryAttachmentsRepository,
-      sellerProfileAssembler,
     )
     sut = new RegisterProductViewUseCase(
       inMemoryProductViewsRepository,
       inMemoryProductsRepository,
       inMemorySellersRepository,
       sellerProfileAssembler,
-      productDetailsAssembler,
     )
   })
 

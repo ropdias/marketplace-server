@@ -11,8 +11,6 @@ import { ProductDetailsFactory } from '../factories/product-details-factory'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
 import { makeCategory } from 'test/factories/make-category'
 import { CreateProductUseCase } from './create-product'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
-import { ProductDetailsAssembler } from '../assemblers/product-details-assembler'
 import { makeProduct } from 'test/factories/make-product'
 import { PriceInCents } from '../../enterprise/entities/value-objects/price-in-cents'
 import { ProductAttachmentList } from '../../enterprise/entities/product-attachment-list'
@@ -24,35 +22,26 @@ let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let sellerProfileAssembler: SellerProfileAssembler
-let productDetailsAssembler: ProductDetailsAssembler
 let sut: CreateProductUseCase
 
 describe('Create Product', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    sellerProfileAssembler = new SellerProfileAssembler(
-      inMemoryAttachmentsRepository,
-    )
-    productDetailsAssembler = new ProductDetailsAssembler(
-      inMemorySellersRepository,
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
       inMemoryCategoriesRepository,
+      inMemorySellersRepository,
       inMemoryAttachmentsRepository,
-      sellerProfileAssembler,
     )
     sut = new CreateProductUseCase(
       inMemoryProductsRepository,
       inMemorySellersRepository,
       inMemoryCategoriesRepository,
       inMemoryAttachmentsRepository,
-      productDetailsAssembler,
     )
   })
 

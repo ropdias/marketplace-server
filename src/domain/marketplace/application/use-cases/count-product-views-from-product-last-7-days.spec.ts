@@ -12,24 +12,30 @@ import { makeProductView } from 'test/factories/make-product-view'
 import { dayjs } from '@/core/libs/dayjs'
 import { CountProductViewsFromProductLast7DaysUseCase } from './count-product-views-from-product-last-7-days'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryProductViewsRepository: InMemoryProductViewsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sut: CountProductViewsFromProductLast7DaysUseCase
 
 describe('Count Product Views from Product Last 7 Days', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryProductViewsRepository = new InMemoryProductViewsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+      inMemoryCategoriesRepository,
+      inMemorySellersRepository,
+      inMemoryAttachmentsRepository,
+    )
     sut = new CountProductViewsFromProductLast7DaysUseCase(
       inMemoryProductViewsRepository,
       inMemorySellersRepository,

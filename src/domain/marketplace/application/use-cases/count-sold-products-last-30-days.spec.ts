@@ -14,22 +14,28 @@ import {
 } from '../../enterprise/entities/value-objects/product-status'
 import { CountSoldProductsLast30DaysUseCase } from './count-sold-products-last-30-days'
 import { dayjs } from '@/core/libs/dayjs'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 
 let inMemoryProductAttachmentsRepository: InMemoryProductAttachmentsRepository
 let inMemoryProductsRepository: InMemoryProductsRepository
 let inMemorySellersRepository: InMemorySellersRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sut: CountSoldProductsLast30DaysUseCase
 
 describe('Count Sold Products Last 30 Days', () => {
   beforeEach(() => {
     inMemoryProductAttachmentsRepository =
       new InMemoryProductAttachmentsRepository()
-    inMemoryProductsRepository = new InMemoryProductsRepository(
-      inMemoryProductAttachmentsRepository,
-    )
     inMemorySellersRepository = new InMemorySellersRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryProductsRepository = new InMemoryProductsRepository(
+      inMemoryProductAttachmentsRepository,
+      inMemoryCategoriesRepository,
+      inMemorySellersRepository,
+      inMemoryAttachmentsRepository,
+    )
     sut = new CountSoldProductsLast30DaysUseCase(
       inMemoryProductsRepository,
       inMemorySellersRepository,
