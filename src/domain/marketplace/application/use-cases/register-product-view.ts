@@ -12,7 +12,6 @@ import { ProductDetailsDTO } from '../dtos/product-details-dtos'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
 import { ProductDetailsMapper } from '../mappers/product-details-mapper'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface RegisterProductViewRequest {
   productId: string
@@ -32,26 +31,27 @@ export class RegisterProductViewUseCase {
     private productViewsRepository: ProductViewsRepository,
     private productsRepository: ProductsRepository,
     private sellersRepository: SellersRepository,
-    private sellerProfileAssembler: SellerProfileAssembler,
   ) {}
 
   async execute({
     productId,
     viewerId,
   }: RegisterProductViewRequest): Promise<RegisterProductViewResponse> {
-    const viewer = await this.sellersRepository.findById(viewerId)
+    const viewerProfile =
+      await this.sellersRepository.findSellerProfileById(viewerId)
 
-    if (!viewer) {
+    if (!viewerProfile) {
       return left(new ResourceNotFoundError('Seller not found.'))
     }
 
-    const product = await this.productsRepository.findById(productId)
+    const productDetails =
+      await this.productsRepository.findProductDetailsById(productId)
 
-    if (!product) {
+    if (!productDetails) {
       return left(new ResourceNotFoundError('Product not found.'))
     }
 
-    if (product.ownerId.equals(viewer.id)) {
+    if (productDetails.owner.sellerId.equals(viewerProfile.sellerId)) {
       return left(new ViewerIsProductOwnerError())
     }
 
@@ -64,15 +64,6 @@ export class RegisterProductViewUseCase {
       return left(new ProductViewAlreadyExistsError())
     }
 
-    const viewerProfileEither = await this.sellerProfileAssembler.assemble({
-      seller: viewer,
-    })
-    if (viewerProfileEither.isLeft()) return left(viewerProfileEither.value)
-
-    const viewerProfileDTO = SellerProfileMapper.toDTO(
-      viewerProfileEither.value,
-    )
-
     const productView = ProductView.create({
       productId: UniqueEntityID.create({ value: productId }),
       viewerId: UniqueEntityID.create({ value: viewerId }),
@@ -80,14 +71,7 @@ export class RegisterProductViewUseCase {
 
     await this.productViewsRepository.create(productView)
 
-    const productDetails = await this.productsRepository.findProductDetailsById(
-      product.id.toString(),
-    )
-
-    if (!productDetails) {
-      return left(new ResourceNotFoundError('Product not found.'))
-    }
-
+    const viewerProfileDTO = SellerProfileMapper.toDTO(viewerProfile)
     const productDetailsDTO = ProductDetailsMapper.toDTO(productDetails)
 
     return right({

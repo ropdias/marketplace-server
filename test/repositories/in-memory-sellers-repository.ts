@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { SellersRepository } from '@/domain/marketplace/application/repositories/sellers-repository'
 import { Seller } from '@/domain/marketplace/enterprise/entities/seller'
+import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-objects/seller-profile'
+import { InMemoryAttachmentsRepository } from './in-memory-attachments-repository'
 
 export class InMemorySellersRepository implements SellersRepository {
   public items: Seller[] = []
+
+  constructor(private attachmentRepository: InMemoryAttachmentsRepository) {}
 
   async findById(id: string): Promise<Seller | null> {
     const seller = this.items.find((item) => item.id.toString() === id)
@@ -48,5 +52,26 @@ export class InMemorySellersRepository implements SellersRepository {
     const itemIndex = this.items.findIndex((item) => item.id === seller.id)
 
     this.items[itemIndex] = seller
+  }
+
+  async findSellerProfileById(id: string): Promise<SellerProfile | null> {
+    const seller = this.items.find((item) => item.id.toString() === id)
+
+    if (!seller) {
+      return null
+    }
+
+    const avatar =
+      this.attachmentRepository.items.find((attachment) => {
+        return seller.avatarId?.equals(attachment.id)
+      }) ?? null
+
+    return SellerProfile.create({
+      sellerId: seller.id,
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatar,
+    })
   }
 }

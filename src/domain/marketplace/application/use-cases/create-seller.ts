@@ -11,7 +11,8 @@ import { SellerPhoneAlreadyExistsError } from './errors/seller-phone-already-exi
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
+import { SellerProfile } from '../../enterprise/entities/value-objects/seller-profile'
+import { Attachment } from '../../enterprise/entities/attachment'
 
 interface CreateSellerUseCaseRequest {
   name: string
@@ -38,7 +39,6 @@ export class CreateSellerUseCase {
     private sellersRepository: SellersRepository,
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
-    private sellerProfileAssembler: SellerProfileAssembler,
   ) {}
 
   async execute({
@@ -65,10 +65,12 @@ export class CreateSellerUseCase {
       return left(new SellerPhoneAlreadyExistsError())
     }
 
-    if (avatarId) {
-      const foundAvatar = await this.attachmentsRepository.findById(avatarId)
+    let avatar: Attachment | null = null
 
-      if (!foundAvatar) {
+    if (avatarId) {
+      avatar = await this.attachmentsRepository.findById(avatarId)
+
+      if (!avatar) {
         return left(new ResourceNotFoundError('The avatar was not found.'))
       }
     }
@@ -83,16 +85,17 @@ export class CreateSellerUseCase {
       avatarId: avatarId ? UniqueEntityID.create({ value: avatarId }) : null,
     })
 
-    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
-      seller: seller,
-    })
-    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
-
-    const sellerProfileDTO = SellerProfileMapper.toDTO(
-      sellerProfileEither.value,
-    )
-
     await this.sellersRepository.create(seller)
+
+    const sellerProfile = SellerProfile.create({
+      sellerId: seller.id,
+      name: seller.name,
+      phone: seller.phone,
+      email: seller.email,
+      avatar,
+    })
+
+    const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
 
     return right({
       sellerProfile: sellerProfileDTO,

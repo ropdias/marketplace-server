@@ -12,7 +12,6 @@ import { HashComparator } from '../cryptography/hash-comparator'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface EditSellerUseCaseRequest {
   sellerId: string
@@ -42,7 +41,6 @@ export class EditSellerUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private hashGenerator: HashGenerator,
     private hashComparator: HashComparator,
-    private sellerProfileAssembler: SellerProfileAssembler,
   ) {}
 
   async execute({
@@ -117,16 +115,17 @@ export class EditSellerUseCase {
       : null
     seller.password = hashedNewPassword || seller.password
 
-    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
-      seller,
-    })
-    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
+    await this.sellersRepository.save(seller)
 
-    const sellerProfileDTO = SellerProfileMapper.toDTO(
-      sellerProfileEither.value,
+    const sellerProfile = await this.sellersRepository.findSellerProfileById(
+      seller.id.toString(),
     )
 
-    await this.sellersRepository.save(seller)
+    if (!sellerProfile) {
+      return left(new ResourceNotFoundError('Seller not found.'))
+    }
+
+    const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
 
     return right({
       sellerProfile: sellerProfileDTO,

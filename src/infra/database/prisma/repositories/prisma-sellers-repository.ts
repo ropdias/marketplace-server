@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma.service'
 import { SellersRepository } from '@/domain/marketplace/application/repositories/sellers-repository'
 import { Seller } from '@/domain/marketplace/enterprise/entities/seller'
 import { PrismaSellerMapper } from '../mappers/prisma-seller-mapper'
+import { SellerProfile } from '@/domain/marketplace/enterprise/entities/value-objects/seller-profile'
+import { PrismaSellerProfileMapper } from '../mappers/prisma-seller-profile-mapper'
 
 @Injectable()
 export class PrismaSellersRepository implements SellersRepository {
@@ -57,5 +59,16 @@ export class PrismaSellersRepository implements SellersRepository {
       where: { id: seller.id.toString() },
       data,
     })
+  }
+
+  async findSellerProfileById(id: string): Promise<SellerProfile | null> {
+    const seller = await this.prisma.seller.findUnique({
+      where: { id },
+      include: { avatar: true },
+    })
+
+    if (!seller) return null
+
+    return PrismaSellerProfileMapper.toDomain(seller)
   }
 }

@@ -6,7 +6,6 @@ import { AuthenticateSellerController } from './controllers/authenticate-seller.
 import { AuthenticateSellerUseCase } from '@/domain/marketplace/application/use-cases/authenticate-seller'
 import { CreateSellerController } from './controllers/create-seller.controller'
 import { CreateSellerUseCase } from '@/domain/marketplace/application/use-cases/create-seller'
-import { SellerProfileAssembler } from '@/domain/marketplace/application/assemblers/seller-profile-assembler'
 import { GetSellerProfileController } from './controllers/get-seller-profile.controller'
 import { GetSellerProfileUseCase } from '@/domain/marketplace/application/use-cases/get-seller-profile'
 import { CountAvailableProductsLast30DaysController } from './controllers/count-available-products-last-30-days.controller'
@@ -84,7 +83,6 @@ import { SignOutSellerController } from './controllers/sign-out-seller.controlle
     RegisterProductViewUseCase,
     FetchAllCategoriesUseCase,
     UploadAndCreateAttachmentsUseCase,
-    SellerProfileAssembler,
   ],
 })
 export class HttpModule {}

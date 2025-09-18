@@ -4,7 +4,6 @@ import { SellersRepository } from '../repositories/sellers-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { SellerProfileDTO } from '../dtos/seller-profile-dtos'
 import { SellerProfileMapper } from '../mappers/seller-profile-mapper'
-import { SellerProfileAssembler } from '../assemblers/seller-profile-assembler'
 
 interface GetSellerProfileUseCaseRequest {
   sellerId: string
@@ -19,28 +18,19 @@ type GetSellerProfileUseCaseResponse = Either<
 
 @Injectable()
 export class GetSellerProfileUseCase {
-  constructor(
-    private sellersRepository: SellersRepository,
-    private sellerProfileAssembler: SellerProfileAssembler,
-  ) {}
+  constructor(private sellersRepository: SellersRepository) {}
 
   async execute({
     sellerId,
   }: GetSellerProfileUseCaseRequest): Promise<GetSellerProfileUseCaseResponse> {
-    const seller = await this.sellersRepository.findById(sellerId)
+    const sellerProfile =
+      await this.sellersRepository.findSellerProfileById(sellerId)
 
-    if (!seller) {
-      return left(new ResourceNotFoundError())
+    if (!sellerProfile) {
+      return left(new ResourceNotFoundError('Seller not found.'))
     }
 
-    const sellerProfileEither = await this.sellerProfileAssembler.assemble({
-      seller: seller,
-    })
-    if (sellerProfileEither.isLeft()) return left(sellerProfileEither.value)
-
-    const sellerProfileDTO = SellerProfileMapper.toDTO(
-      sellerProfileEither.value,
-    )
+    const sellerProfileDTO = SellerProfileMapper.toDTO(sellerProfile)
 
     return right({
       sellerProfile: sellerProfileDTO,
