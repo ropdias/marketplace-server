@@ -58,13 +58,13 @@ async function main() {
   })
 
   const viewers = await prisma.seller.createManyAndReturn({
-    data: Array.from({ length: faker.number.int({ min: 1, max: 15 }) }).map(
+    data: Array.from({ length: faker.number.int({ min: 175, max: 200 }) }).map(
       () => PrismaSellerMapper.toPrisma(makeSeller()),
     ),
   })
 
   // create products
-  const numberOfProducts = faker.number.int({ min: 20, max: 50 })
+  const numberOfProducts = faker.number.int({ min: 10, max: 15 })
   await Promise.all(
     Array.from({ length: numberOfProducts }).map(async () => {
       return prisma.product.create({
@@ -90,9 +90,8 @@ async function main() {
   const products = await prisma.product.findMany()
 
   // create product views
-  const productViewers = faker.helpers.arrayElements(viewers)
   await Promise.all(
-    productViewers.map(async (viewer) => {
+    viewers.map(async (viewer) => {
       return prisma.productView.create({
         data: PrismaProductViewMapper.toPrisma(
           makeProductView({
