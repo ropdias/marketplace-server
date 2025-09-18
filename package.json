@@ -1,6 +1,6 @@
 {
   "name": "marketplace-server",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Marketplace API using NestJS, Prisma, and Zod. Built with Clean Architecture, DDD, SOLID, Repository Pattern, Dependency Injection, and functional error handling.",
   "author": "Rodrigo P. Dias",
   "private": true,
